@@ -40,7 +40,9 @@ class JsonValidatorApp:
 
     def load_file(self):
         """Read and load JSON file"""
-        if file_path := filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")]):
+        # if file_path := filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")]):
+        if True:
+            file_path = "/Users/carlos/Downloads/M_12eb0f7a-26d3-4ff3-b0f9-42a972af9f66_NAL7405305T6_CSI1608178A3_2024-11-30_TDD-0002_TDD_JSON.json"
             try:
                 with open(file_path, "r", encoding="utf-8") as file:
                     json_data = json.load(file)
