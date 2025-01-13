@@ -19,3 +19,9 @@ class CaracterPermisionarioError(BaseError):
 
 class CaracterUsuarioError(BaseError):
     """Custom Usuario Error."""
+
+class LongitudError(BaseError):
+    """Custom length error."""
+
+class RequiredError(BaseError):
+    """Custom length error."""
