@@ -46,3 +46,6 @@ class ControlExistenciasError(BaseError):
 
 class EntregasError(BaseError):
     """Custom reception error."""
+
+class BitacoraMensualError(BaseError):
+    """Custom reception error."""
