@@ -13,7 +13,6 @@ class MonthlyLogValidator:
         self.month_log = month_log if isinstance(month_log, dict) else month_log[0]
 
     def validate_log(self) -> None:
-        print("====== bitacora mensual=======")
         self._validate_numero_registro()
         self._validate_fecha_evento()
         self._validate_usuario_responsable()
@@ -38,8 +37,6 @@ class MonthlyLogValidator:
     def _validate_usuario_responsable(self) -> None:
         if (resp_user := self.month_log.get("UsuarioResponsable")) is None:
             return
-        print("usuario")
-        print(resp_user)
         if not 1 <= len(resp_user) <= 1000:
             raise LongitudError("Error: 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
 

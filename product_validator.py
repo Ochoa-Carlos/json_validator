@@ -45,8 +45,6 @@ class ProductValidator:
             self.validate_products()
         else:
             print("Ya no hay productos por validar")
-            print("<= self.products_len =>", self.products_len)
-            print("<= self._gen_index =>", self._gen_index)
 
     def _validate_clave_producto(self) -> None:
         prod = self.current_product
