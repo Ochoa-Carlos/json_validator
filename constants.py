@@ -28,8 +28,12 @@ products_keys = {
 subproducts_keys = ["PR03", "PR07", "PR08", "PR09", "PR11", "PR13", "PR15", "PR16", "PR17", "PR18", "PR19"]
 petroleo_caracteres = ["contratista", "asignatario"]
 cal_value_caracteres = ["contratista", "asignatario"]
+event_type = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21]
+component_alarm = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 
 VERSION_REGEX = r"[0-9]+\.[0-9]+$"
+RFC_CONTR_REGEX = r"^([A-ZÑ]|\&){3,4}[0-9]{2}(0[1-9]|1[0-2])([12][0-9]|0[1-9]|3[01])[A-Z0-9]{3}$"
 MODALITY_PERMISSION_REGEX = r"^PER([1-9]|[1-4][0-9]|5[0-6])$"
 UTC_FORMAT_REGEX = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$"
 SUBPRODUCTO_REGEX = r"^SP([1-9]|[1-3][0-9]|4[0-8])$"
+CONDENSEDGAS_REGEX = r"^GNC(0[1-9]|10)$"
