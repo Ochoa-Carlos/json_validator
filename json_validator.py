@@ -1,13 +1,17 @@
 import re
 
-from constants import caracteres, VERSION_REGEX, MODALITY_PERMISSION_REGEX, UTC_FORMAT_REGEX
-from custom_expections import (CaracterAsignatarioError,
+from constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
+                       UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
+from custom_exceptions import (CaracterAsignatarioError,
                                CaracterContratistaError,
                                CaracterPermisionarioError,
-                               CaracterUsuarioError, RegexError, LongitudError)
+                               CaracterUsuarioError, LongitudError, RegexError,
+                               ValorMinMaxError)
 from decorators import wrapper_handler
 from enumerators import CaracterTypeEnum
 from json_model import JsonRoot
+from monthly_log import MonthlyLogValidator
+from product_validator import ProductValidator
 
 
 class JsonValidator():
@@ -42,9 +46,12 @@ class JsonValidator():
         """Return True or False if JSON are validated according type and bound."""
         print("==================================== VALIDATE JSON ====================================")
         self._validate_version()
+        self._validate_rfc_contribuyente()
+        self._validate_rfc_representante_legal()
         self._validate_info_according_caracter()
         self._validate_clave_instalacion()
         self._validate_descripcion_instalacion()
+        self._validate_geolocalizacion()
         self._validate_numero_pozos()
         self._validate_numero_tanques()
         self._validate_ductos_io()
@@ -52,6 +59,8 @@ class JsonValidator():
         self._validate_num_dispensarios()
         self._validate_report_date()
         self._validate_rfc_proveedores()
+        self._validate_products()
+        self._validate_monthly_log()
 
     @wrapper_handler
     def _validate_version(self) -> bool:
@@ -61,6 +70,27 @@ class JsonValidator():
         else:
             raise RegexError(f"Error: La version {version} no cumple con el patron {VERSION_REGEX}")
 
+# TODO revisar mas detenidamente los casos para el regex de RFC contribuyente
+# TODO valiar y averiguar la diferencia entre el rfc de persona moral y contribuyente
+    @wrapper_handler
+    def _validate_rfc_contribuyente(self) -> None:
+        rfc = self.json_report.get("RfcContribuyente")
+
+        if not re.match(RFC_CONTR_REGEX, rfc):
+            raise RegexError(f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_CONTR_REGEX}")
+        if not 12 <= len(rfc) <= 13:
+            raise LongitudError("Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13.")
+
+# TODO rfc representante legal
+    @wrapper_handler
+    def _validate_rfc_representante_legal(self) -> None:
+        # rfc = self.json_report.get("RfcRepresentanteLegal")
+
+        # if not re.match(RFC_CONTR_REGEX, rfc):
+        #     raise RegexError(f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_CONTR_REGEX}")
+        # if not 12 <= len(rfc) <= 13:
+        #     raise LongitudError("Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13.")
+        return
 
     @wrapper_handler
     def _validate_info_according_caracter(self) -> bool:
@@ -142,6 +172,18 @@ class JsonValidator():
             )
 
     @wrapper_handler
+    def _validate_geolocalizacion(self) -> None:
+        geolocalizacion = self.json_report.get("Geolocalizacion")[0]
+        geo_lat = geolocalizacion.get("GeolocalizacionLatitud")
+        geo_lon = geolocalizacion.get("GeolocalizacionLongitud")
+
+        if abs(geo_lat) > 90:
+            raise ValorMinMaxError("Error: 'GeolocalizacionLatitud' no está en el rango min -90 o max 90.")
+        if abs(geo_lon) > 180:
+            raise ValorMinMaxError("Error: 'GeolocalizacionLongitud' no está en el rango min -180 o max 180.")
+
+
+    @wrapper_handler
     def _validate_numero_pozos(self) -> None:
         if "NumeroPozos" not in self.json_report:
             raise KeyError(
@@ -193,3 +235,17 @@ class JsonValidator():
                 raise LongitudError(
                     "Error: 'RfcProveedores' no cumple con la longitud min 1."
                     )
+
+    @wrapper_handler
+    def _validate_products(self) -> None:
+        products = self.json_report.get("Producto")
+        caracter = self.json_report.get("Caracter")
+        product_obj = ProductValidator(products=products, caracter=caracter)
+        product_obj.validate_products()
+
+    @wrapper_handler
+    def _validate_monthly_log(self) -> None:
+        if (month_log := self.json_report.get("BitacoraMensual")) is None:
+            return
+        log_obj = MonthlyLogValidator(month_log=month_log)
+        log_obj.validate_log()
