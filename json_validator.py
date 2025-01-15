@@ -19,8 +19,8 @@ class JsonValidator():
     def __init__(self, json_report: dict) -> None:
         self.json_report = json_report
         self.json_model = JsonRoot
-        self.errors = []
-        self.error = {}
+        self.error = []
+        self.errors = {}
         self.executed_functions = set()
 
 
@@ -40,7 +40,7 @@ class JsonValidator():
 
             self.json_model.set_json(json_data=self.json_report)
         except Exception as e:
-            self.errors.append(e)
+            self.error.append(e)
 
     def validate_json(self) -> None:
         """Return True or False if JSON are validated according type and bound."""
@@ -236,16 +236,22 @@ class JsonValidator():
                     "Error: 'RfcProveedores' no cumple con la longitud min 1."
                     )
 
-    @wrapper_handler
+    # @wrapper_handler
     def _validate_products(self) -> None:
         products = self.json_report.get("Producto")
         caracter = self.json_report.get("Caracter")
         product_obj = ProductValidator(products=products, caracter=caracter)
         product_obj.validate_products()
 
-    @wrapper_handler
+        if product_errors := product_obj.errors:
+            self.errors = self.errors | product_errors
+
+    # @wrapper_handler
     def _validate_monthly_log(self) -> None:
         if (month_log := self.json_report.get("BitacoraMensual")) is None:
             return
         log_obj = MonthlyLogValidator(month_log=month_log)
         log_obj.validate_log()
+
+        if log_errors := log_obj.errors:
+            self.errors = self.errors | log_errors

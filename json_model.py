@@ -55,7 +55,7 @@ class JsonRoot():
     def set_caracter_structure(cls, caracter: str) -> None:
         # print(cls.month_root, "BEFO")
         # cls.month_root["caracter"] = caracter
-        caracter_keys = caracteres.pop(caracter)
+        caracter_keys = caracteres.copy().pop(caracter)
         useless_keys = [value for values in caracteres.values() for value in values]
         useless_keys = list(set(useless_keys) - set(caracter_keys))
         for useless_key in useless_keys:
