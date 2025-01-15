@@ -1,5 +1,6 @@
 import re
 
+from condensed_gas_validator import CondensedGasValidator
 from constants import (SUBPRODUCTO_REGEX, petroleo_caracteres, products_keys,
                        subproducts_keys)
 from custom_exceptions import (CaracterError, ClaveProductoError,
@@ -251,18 +252,19 @@ class ProductValidator:
             month_report_obj.validate_report()
 
     def _validate_gasnatural_ocondensados(self) -> None:
-        if self.caracter in petroleo_caracteres and self.current_product["ClaveProducto"] in ["PR09", "PR10"]:
-            natural_gas = self.current_product.get("GasNaturalOCondensados")
-
-            if natural_gas is None:
+        if self.caracter in petroleo_caracteres and self.current_product.get("ClaveProducto") in ["PR09", "PR10"]:
+            if (natural_gas := self.current_product.get("GasNaturalOCondensados")) is None:
                 raise KeyError(
-                    f"""Error: 'GasNaturalOCondensados' debe expresarse si se manifiesta caracter {petroleo_caracteres} y Producto ['PR09', 'PR10']."""
+                    f"""Error: 'GasNaturalOCondensados' debe expresarse si se manifiesta caracter {petroleo_caracteres} y Producto 'PR09' o 'PR10'."""
                 )
             if not 2 <= len(natural_gas) <= 10:
                 raise LongitudError(
-                    "Error: 'GasNaturalOCondensados' no está en el rango min 2 o max 10."
+                    "Error: 'InstalacionAlmacenGasNatural' no cumple con los elementos min 2 o max 10."
                     )
 
+            gas_node = self.current_product.get("GasNaturalOCondensados")
+            condensed_obj = CondensedGasValidator(gas_node=gas_node)
+            condensed_obj.validate_gasnatural()
 
     def _current_product(self) -> dict:
         return self.products[self._gen_index]
