@@ -2,6 +2,7 @@ import re
 
 from constants import UTC_FORMAT_REGEX, cal_value_caracteres
 from custom_exceptions import EntregasError, RecepcionesError, ValorMinMaxError
+from decorators import exception_wrapper
 
 
 class MonthlyVolumeReportValidator:
@@ -10,12 +11,15 @@ class MonthlyVolumeReportValidator:
         self.monthly_report = monthly_volume_report
         self.product_key = product_key
         self.caracter = caracter
+        self._errors = {}
+        self._executed_functions = set()
 
     def validate_report(self) -> None:
         self._validate_control_existencias()
         self._validate_recepciones()
         self._validate_entregas()
 
+    @exception_wrapper
     def _validate_control_existencias(self) -> None:
         if not (inv_control := self.monthly_report.get("ControlDeExistencias")):
             return
@@ -36,6 +40,7 @@ class MonthlyVolumeReportValidator:
                 "Error: 'FechaYHoraEstaMedicionMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
                 )
 
+    @exception_wrapper
     def _validate_recepciones(self) -> None:
         if (receptions := self.monthly_report.get("Recepciones")) is None:
             raise RecepcionesError("Error: 'Recepciones' no fue declarada.")
@@ -76,6 +81,7 @@ class MonthlyVolumeReportValidator:
                 "Error: 'ImporteTotalRecepcionesMensual' no está en el rango min 0 o max 100000000000.0"
             )
 
+    @exception_wrapper
     def _validate_entregas(self) -> None:
         if (deliveries := self.monthly_report.get("Entregas")) is None:
             raise EntregasError("Error: 'Entregas' no fue declarada")
@@ -116,3 +122,23 @@ class MonthlyVolumeReportValidator:
             raise ValorMinMaxError(
                 "Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
                 )
+
+    @property
+    def errors(self) -> dict:
+        """Get errors from montly volume report validation obj."""
+        return self._errors
+
+    @errors.setter
+    def errors(self, errors: dict) -> None:
+        """set errors in montly volume report validation obj."""
+        self._errors[errors["func_error"]] = errors["error"]
+
+    @property
+    def exc_funcs(self) -> dict:
+        """Get excecuted function in montly volume report validation class."""
+        return self._executed_functions
+
+    @exc_funcs.setter
+    def exc_funcs(self, executed_function: str) -> None:
+        """set excecuted function in montly volume report validation class."""
+        self._executed_functions.add(executed_function)

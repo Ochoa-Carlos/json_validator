@@ -3,18 +3,22 @@ from typing import Union
 
 from constants import CONDENSEDGAS_REGEX, petroleo_caracteres
 from custom_exceptions import RegexError, ValorMinMaxError
+from decorators import exception_wrapper
 
 
 class CondensedGasValidator:
 
     def __init__(self, gas_node: Union[list, dict]):
         self.gas_natural  = gas_node
+        self._errors = {}
+        self._executed_functions = set()
 
     def validate_gasnatural(self) -> None:
         self._validate_condensado()
         self._validate_fraccion_molar()
         self._validate_poder_calorifico()
 
+    @exception_wrapper
     def _validate_condensado(self) -> None:
         compo_gas = self.gas_natural.get("ComposGasNaturalOCondensados")
 
@@ -28,6 +32,7 @@ class CondensedGasValidator:
             )
 
 # TODO EVALUAR CORRECTAMENTE COMO SE RECIBEN LAS FRACCIONES MOLARES
+    @exception_wrapper
     def _validate_fraccion_molar(self) -> None:
         molar_val = self.gas_natural.get("FraccionMolar")
 
@@ -41,6 +46,7 @@ class CondensedGasValidator:
             )
         # TODO VALIDAR SUMA MLAR DE TODOS LOS COMPONENTES = 1
 
+    @exception_wrapper
     def _validate_poder_calorifico(self) -> None:
         power_val = self.gas_natural.get("PoderCalorifico")
 
@@ -52,3 +58,23 @@ class CondensedGasValidator:
             raise ValorMinMaxError(
                 "Error: 'PoderCalorifico' no está en el rango min 0.001 o max 150000."
             )
+
+    @property
+    def errors(self) -> dict:
+        """Get errors from condensed gas validator obj."""
+        return self._errors
+
+    @errors.setter
+    def errors(self, errors: dict) -> None:
+        """set errors in condensed gas validator obj."""
+        self._errors[errors["func_error"]] = errors["error"]
+
+    @property
+    def exc_funcs(self) -> dict:
+        """Get excecuted function in condensed gas validator class."""
+        return self._executed_functions
+
+    @exc_funcs.setter
+    def exc_funcs(self, executed_function: str) -> None:
+        """set excecuted function in condensed gas validator class."""
+        self._executed_functions.add(executed_function)

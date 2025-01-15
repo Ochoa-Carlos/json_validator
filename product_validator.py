@@ -6,6 +6,7 @@ from constants import (SUBPRODUCTO_REGEX, petroleo_caracteres, products_keys,
 from custom_exceptions import (CaracterError, ClaveProductoError,
                                ClaveSubProductoError, LongitudError,
                                RegexError, RequiredError, ValorMinMaxError)
+from decorators import exception_wrapper
 from monthly_volume_report import MonthlyVolumeReportValidator
 
 
@@ -17,10 +18,11 @@ class ProductValidator:
         self.products = products
         self.products_len = len(products)
         self.current_product = self.products[self._gen_index]
+        self._errors = {}
+        self._executed_functions = set()
 
-    # @wrapper_generator
     def validate_products(self) -> None:
-        if next_product := self._next_product():
+        if self._next_product():
             self._validate_clave_producto()
             self._validate_clave_sub_producto()
             self._validate_octanaje_gasolina()
@@ -46,15 +48,18 @@ class ProductValidator:
         else:
             print("Ya no hay productos por validar")
 
+    @exception_wrapper
     def _validate_clave_producto(self) -> None:
         prod = self.current_product
 
         if prod.get("ClaveProducto") not in products_keys:
             raise RequiredError("Error: 'Clave producto' requerida no encontrada.")
 
+    @exception_wrapper
     def _validate_clave_sub_producto(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
         subproduct_key = self.current_product.get("ClaveSubProducto")
+
         if product_key not in subproducts_keys:
             raise ClaveSubProductoError(
                 f"Error: 'ClaveSubProducto {subproduct_key}' debe pertenecer a los productos {subproducts_keys}."
@@ -65,11 +70,12 @@ class ProductValidator:
                 )
 
 # TODO FORMAN PARTE DEL PRODUCTO PR07
+    @exception_wrapper
     def _validate_octanaje_gasolina(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
         if octanaje_gas := self.current_product.get("ComposOctanajeGasolina"):
-            if  product_key != "PR07":
+            if  product_key != "PR0":
                 raise ClaveProductoError(
                     "Error: 'ComposOctanajeGasolina' solo pertenece a ClaveProducto 'PR07'."
                 )
@@ -78,6 +84,7 @@ class ProductValidator:
                     "Error: 'ComposOctanajeGasolina' no está en el rango min 87 o max 130."
                 )
 
+    @exception_wrapper
     def _validate_combustible_nofosil(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
@@ -89,6 +96,7 @@ class ProductValidator:
             if nofossil_fuel not in ["Sí", "No"]:
                 raise ValueError("CombustibleNoFosil inválido.")
 
+    @exception_wrapper
     def _validate_combustible_nofosil_engasolina(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
@@ -103,6 +111,7 @@ class ProductValidator:
                     )
 
 # TODO FORMAN PARTE DEL PRODUCTO PRR03
+    @exception_wrapper
     def _validate_diesel_combustible_nofosil(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
@@ -114,6 +123,7 @@ class ProductValidator:
             if diesel_nofossil_fuel not in ["Sí", "No"]:
                 raise ValueError("DieseConCombustibleNoFosil inválido.")
 
+    @exception_wrapper
     def _validate_combustible_nofosil_endiesel(self) -> None:
         nofossil_fuel = self.current_product.get("DieselConCombustibleNoFosil")
 
@@ -125,6 +135,7 @@ class ProductValidator:
                         )
 
 # TODO FORMAN PARTE DEL PRODUCTO PR11
+    @exception_wrapper
     def _validate_combustible_turbosina_nofosil(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
@@ -136,6 +147,7 @@ class ProductValidator:
             if turbosine_nofossil_fuel not in ["Sí", "No"]:
                 raise ValueError("TurbosinaConCombustibleNoFosil inválido.")
 
+    @exception_wrapper
     def _validate_combustible_nofosil_enturbosina(self) -> None:
         if turbosine_nofossil_fuel := self.current_product.get("TurbosinaConCombustibleNoFosil"):
             if turbosine_nofossil_fuel == "Sí":
@@ -159,6 +171,7 @@ class ProductValidator:
                     "Error: 'ComposDePropanoEnGasLP' no está en el rango min 0.01 o max 99.99."
                 )
 
+    @exception_wrapper
     def _validate_compos_butano_gaslp(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
@@ -173,6 +186,7 @@ class ProductValidator:
                 )
 
 # TODO pertenece al productoo PR08 Y CARACTER CONTRATISTA O PERMISIONARIO
+    @exception_wrapper
     def _validate_densidad_petroleo(self) -> None:
         if oil_density := self.current_product.get("DensidadDePetroleo"):
             if self.caracter not in petroleo_caracteres:
@@ -184,6 +198,7 @@ class ProductValidator:
                     "Error: 'DensidadDePetroleo' no está en el rango min 0.1 o max 80."
                 )
 
+    @exception_wrapper
     def _validate_compos_azufre_petroleo(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
@@ -202,6 +217,7 @@ class ProductValidator:
                 )
 
 # TODO TERMINAN VALIDACIONES POR PRODUCTO
+    @exception_wrapper
     def _validate_otros(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
         subproduct_key = self.current_product.get("ClaveSubProducto")
@@ -213,6 +229,7 @@ class ProductValidator:
                     "Error: 'Otros' no cumple con la longitud min 1 o max 30."
                     )
 
+    @exception_wrapper
     def _validate_marca_comercial(self) -> None:
         if brand := self.current_product.get("MarcaComercial"):
             if not 2 <= len(brand) <= 200:
@@ -220,6 +237,7 @@ class ProductValidator:
                     "Error: 'MarcaComercial' no cumple con la longitud min 2 o max 200."
                 )
 
+    @exception_wrapper
     def _validate_marcaje(self) -> None:
         if marking := self.current_product.get("Marcaje"):
             if not 2 <= len(marking) <= 40:
@@ -227,6 +245,7 @@ class ProductValidator:
                     "Error: 'Marcaje' no cumple con la longitud min 2 o max 40."
                 )
 
+    @exception_wrapper
     def _validate_concentracion_sustancia_marcaje(self) -> None:
         if marking := self.current_product.get("Marcaje"):
             concentration = self.current_product.get("ConcentracionSustanciaMarcaje")
@@ -240,6 +259,7 @@ class ProductValidator:
                 )
 
 
+    @exception_wrapper
     def _validate_monthly_report(self) -> None:
         if month_report := self.current_product.get("ReporteDeVolumenMensual"):
             product_key = self.current_product.get("ClaveProducto")
@@ -249,6 +269,10 @@ class ProductValidator:
                 caracter=self.caracter)
             month_report_obj.validate_report()
 
+            if report_errors := month_report_obj.errors:
+                self._errors = self._errors | report_errors
+
+    @exception_wrapper
     def _validate_gasnatural_ocondensados(self) -> None:
         if self.caracter in petroleo_caracteres and self.current_product.get("ClaveProducto") in ["PR09", "PR10"]:
             if (natural_gas := self.current_product.get("GasNaturalOCondensados")) is None:
@@ -264,6 +288,9 @@ class ProductValidator:
             condensed_obj = CondensedGasValidator(gas_node=gas_node)
             condensed_obj.validate_gasnatural()
 
+            if report_errors := condensed_obj.errors:
+                self._errors = self._errors | report_errors
+
     def _current_product(self) -> dict:
         return self.products[self._gen_index]
 
@@ -274,3 +301,23 @@ class ProductValidator:
         self._gen_index += 1
         if self._next_product():
             self.current_product = self.products[self._gen_index]
+
+    @property
+    def errors(self) -> dict:
+        """Get errors from product validation obj."""
+        return self._errors
+
+    @errors.setter
+    def errors(self, errors: dict) -> None:
+        """set errors in product validation obj."""
+        self._errors[errors["func_error"]] = errors["error"]
+
+    @property
+    def exc_funcs(self) -> dict:
+        """Get excecuted function in product validation class."""
+        return self._executed_functions
+
+    @exc_funcs.setter
+    def exc_funcs(self, executed_function: str) -> None:
+        """set excecuted function in product validation class."""
+        self._executed_functions.add(executed_function)
