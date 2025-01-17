@@ -5,28 +5,44 @@ from constants import UTC_FORMAT_REGEX, component_alarm, event_type
 from custom_exceptions import (BitacoraMensualError, LongitudError,
                                ValorMinMaxError)
 from decorators import exception_wrapper
+from dict_type_validator import DictionaryTypeValidator
+from dict_types import log_dict
 
 
 # TODO VER EL TIPO DE OBJETO QUE ES EN REALIDAD MONTH LOG
 class MonthlyLogValidator:
 
     def __init__(self, month_log: Union[dict, list]) -> None:
-        self.month_log = month_log if isinstance(month_log, dict) else month_log[0]
+        self.month_log = month_log[0]
+        self.log = month_log
+        self.log_len = len(month_log)
         self._errors = {}
         self._executed_functions = set()
+        self._log_index = 0
 
     def validate_log(self) -> None:
-        self._validate_numero_registro()
-        self._validate_fecha_evento()
-        self._validate_usuario_responsable()
-        self._validate_tipo_evento()
-        self._validate_descripcion_evento()
-        self._validate_id_comp_alarma()
+        if self._next_log():
+            self._validate_bitacora_tipos()
+            self._validate_numero_registro()
+            self._validate_fecha_evento()
+            self._validate_usuario_responsable()
+            self._validate_tipo_evento()
+            self._validate_descripcion_evento()
+            self._validate_id_comp_alarma()
+
+            self._update_index()
+            del self.func_exc
+            self.validate_log()
+
+    @exception_wrapper
+    def _validate_bitacora_tipos(self) -> None:
+        DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.month_log, dict_type=log_dict)
 
     @exception_wrapper
     def _validate_numero_registro(self) -> None:
         if (rec_number := self.month_log.get("NumeroRegistro")) is None:
             raise BitacoraMensualError("Error: 'NumeroRegistro' no fue declarada.")
+
         if not 0 <= rec_number <= 1000000:
             raise ValorMinMaxError("Error: 'NumeroRegistro' no está en el rango min 0 o max 1000000.")
 
@@ -71,6 +87,19 @@ class MonthlyLogValidator:
         if not 2 <= len(component_id) <= 250:
             raise LongitudError("Error: 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")
 
+# TODO productos implementa el mismo comportamiento, averiguar por que ahi si funciona
+    @property
+    def func_exc(self) -> None:
+        """Clear executed functions cache."""
+        raise AttributeError("No es posible acceder al atributo.")
+
+
+    @func_exc.deleter
+    def func_exc(self) -> None:
+        """Clear executed functions cache."""
+        self._executed_functions.clear()
+        return
+
     @property
     def errors(self) -> dict:
         """Get errors from monthly log validation obj."""
@@ -90,3 +119,11 @@ class MonthlyLogValidator:
     def exc_funcs(self, executed_function: str) -> None:
         """set excecuted function in monthly log validation class."""
         self._executed_functions.add(executed_function)
+
+    def _next_log(self) -> bool:
+        return self._log_index < self.log_len
+
+    def _update_index(self) -> None:
+        self._log_index += 1
+        if self._next_log():
+            self.month_log = self.log[self._log_index]
