@@ -3,8 +3,11 @@ import re
 from constants import UTC_FORMAT_REGEX, cal_value_caracteres
 from custom_exceptions import EntregasError, RecepcionesError, ValorMinMaxError
 from decorators import exception_wrapper
+from dict_type_validator import DictionaryTypeValidator
+from dict_types import recepctions_dict, exists_control, deliveries_dict
 
 
+# TODO hacer validaciones de tipo al inicio de la ejecucion de validacion y no por funcion
 class MonthlyVolumeReportValidator:
 
     def __init__(self, monthly_volume_report: dict, product_key: str, caracter: str):
@@ -15,15 +18,22 @@ class MonthlyVolumeReportValidator:
         self._executed_functions = set()
 
     def validate_report(self) -> None:
+        # self._validate_reporte_tipado()
         self._validate_control_existencias()
         self._validate_recepciones()
         self._validate_entregas()
+
+    # @exception_wrapper
+    # def _validate_reporte_tipado(self) -> None:
+    #     self._validate_control_existencias()
+        # DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.monthly_report, dict_type=month_report_dict)
 
     @exception_wrapper
     def _validate_control_existencias(self) -> None:
         if not (inv_control := self.monthly_report.get("ControlDeExistencias")):
             return
 
+        DictionaryTypeValidator().validate_dict_type(dict_to_validate=inv_control, dict_type=exists_control)
         month_volume = inv_control.get("VolumenExistenciasMes")
         month_measure_date = inv_control.get("FechaYHoraEstaMedicionMes")
 
@@ -45,6 +55,7 @@ class MonthlyVolumeReportValidator:
         if (receptions := self.monthly_report.get("Recepciones")) is None:
             raise RecepcionesError("Error: 'Recepciones' no fue declarada.")
 
+        DictionaryTypeValidator().validate_dict_type(dict_to_validate=receptions, dict_type=recepctions_dict)
         total_receptions_month = receptions.get("TotalRecepcionesMes")
         amount_volume_reception_month = receptions.get("SumaVolumenRecepcionMes")
         month_documents = receptions.get("TotalDocumentosMes")
@@ -86,6 +97,7 @@ class MonthlyVolumeReportValidator:
         if (deliveries := self.monthly_report.get("Entregas")) is None:
             raise EntregasError("Error: 'Entregas' no fue declarada")
 
+        DictionaryTypeValidator().validate_dict_type(dict_to_validate=deliveries, dict_type=deliveries_dict)
         total_deliveries_month = deliveries.get("TotalEntregasMes")
         amount_volume_deliveries_month = deliveries.get("SumaVolumenEntregadoMes")
         month_documents = deliveries.get("TotalDocumentosMes")
