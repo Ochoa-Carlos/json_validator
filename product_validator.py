@@ -8,6 +8,8 @@ from custom_exceptions import (CaracterError, ClaveProductoError,
                                RegexError, RequiredError, ValorMinMaxError)
 from decorators import exception_wrapper
 from monthly_volume_report import MonthlyVolumeReportValidator
+from dict_types import product_dict
+from dict_type_validator import DictionaryTypeValidator
 
 
 class ProductValidator:
@@ -23,6 +25,7 @@ class ProductValidator:
 
     def validate_products(self) -> None:
         if self._next_product():
+            self._validate_producto_tipado()
             self._validate_clave_producto()
             self._validate_clave_sub_producto()
             self._validate_octanaje_gasolina()
@@ -47,6 +50,11 @@ class ProductValidator:
             self.validate_products()
         else:
             print("Ya no hay productos por validar")
+
+    @exception_wrapper
+    def _validate_producto_tipado(self) -> None:
+        prod = self.current_product
+        DictionaryTypeValidator().validate_dict_type(dict_to_validate=prod, dict_type=product_dict)
 
     @exception_wrapper
     def _validate_clave_producto(self) -> None:
@@ -75,7 +83,7 @@ class ProductValidator:
         product_key = self.current_product.get("ClaveProducto")
 
         if octanaje_gas := self.current_product.get("ComposOctanajeGasolina"):
-            if  product_key != "PR0":
+            if  product_key != "PR07":
                 raise ClaveProductoError(
                     "Error: 'ComposOctanajeGasolina' solo pertenece a ClaveProducto 'PR07'."
                 )
@@ -94,7 +102,7 @@ class ProductValidator:
                     "Error: 'GasolinaConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR07'"
                 )
             if nofossil_fuel not in ["Sí", "No"]:
-                raise ValueError("CombustibleNoFosil inválido.")
+                raise ValueError("Valor CombustibleNoFosil inválido.")
 
     @exception_wrapper
     def _validate_combustible_nofosil_engasolina(self) -> None:
