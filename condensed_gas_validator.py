@@ -4,6 +4,8 @@ from typing import Union
 from constants import CONDENSEDGAS_REGEX, petroleo_caracteres
 from custom_exceptions import RegexError, ValorMinMaxError
 from decorators import exception_wrapper
+from dict_type_validator import DictionaryTypeValidator
+from dict_types import gas_dict
 
 
 class CondensedGasValidator:
@@ -14,9 +16,14 @@ class CondensedGasValidator:
         self._executed_functions = set()
 
     def validate_gasnatural(self) -> None:
+        self._validate_condensado_tipos()
         self._validate_condensado()
         self._validate_fraccion_molar()
         self._validate_poder_calorifico()
+
+    @exception_wrapper
+    def _validate_condensado_tipos(self) -> None:
+        DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.gas_natural, dict_type=gas_dict)
 
     @exception_wrapper
     def _validate_condensado(self) -> None:
