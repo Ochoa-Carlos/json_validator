@@ -25,7 +25,8 @@ def exception_wrapper(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs) -> None:
         if hasattr(self, "_executed_functions") and func.__name__ in self.exc_funcs:
-            return
+            pass
+            # return
         try:
             result = func(self, *args, **kwargs)
             self.exc_funcs = func.__name__
