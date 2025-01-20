@@ -22,6 +22,80 @@ product_dict = {
     "GasNaturalOCondensados": list,
 }
 
+complement = {
+    "TipoComplemento": str,
+    # "Transporte": ,
+    # "Dictamen": ,
+    # "Certificado": ,
+    "Nacional": list,
+    "Extranjero": list,
+    "Aclararcion": str
+}
+
+complement_transport = {
+    "PermisoTransporte": str,
+    "ClaveVehiculo": str,
+    "TarifaDeTransporte": float,
+    "CargoPorCapacidadTransporte": float,
+    "CargoPorUsoTrans": float,
+    "CargoVolumetricoTransporte": float,
+}
+
+complement_dictamen = {
+    "RfcDictamen": str,
+    "LoteDictamen": str,
+    "NumeroFolioDictamen": str,
+    "FechaEmisionDictamen": str,
+    "ResultadoDictamen": str,
+}
+
+complement_certified = {
+    "RfcCertificado": str,
+    "NumeroFolioCertificado": str,
+    "FechaEmisionCertificado": str,
+    "ResultadoCertificado": str,
+}
+
+complement_national = {
+    "RfcClienteOProveedor": str,
+    "NombreClienteOProveedor": str,
+    "PermisoProveedor": str,
+    "CFDIs": list,
+}
+
+complement_cfdis = {
+    "Cfdi": str,
+    "TipoCfdi": str,
+    "PrecioCompra": float,
+    "Contraprestacion": float,
+    "TarifaDeAlmacenamiento": float,
+    "CargoPorCapacidadAlmac": float,
+    "CargoPorUsoAlmac": float,
+    "CargoVolumetricoAlmac": float,
+    "Descuento": float,
+    "FechaYHoraTransaccion": str,
+    # "VolumenDocumentado": ,
+}
+
+complement_foreign = {
+    "PermisoImportacion": str,
+    "Pedimentos": list,
+}
+
+compl_foreign_pedimentos = {
+    "PuntoDeInternacion": str,
+    "PaisOrigen": str,
+    "MedioDeTransEntraAduana": str,
+    "PedimentoAduanal": str,
+    "Incoterms": str,
+    "PrecioDeImportacion": float,
+    # "VolumenDocumentado": ,
+}
+
+compl_volumen = {
+    "ValorNumerico": float,
+    "UnidadDeMedida": str,
+}
 # month_report_dict = {
 #     "ControlDeExistencias": {
 #         "VolumenExistenciasMes": float,
@@ -82,3 +156,4 @@ log_dict = {
     "DescripcionEvento": str,
     "IdentificacionComponenteAlarma": str
 }
+
