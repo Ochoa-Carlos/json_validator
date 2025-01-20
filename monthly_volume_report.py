@@ -1,10 +1,15 @@
 import re
+from typing import TypeVar
 
+from complements import ComplementBuilder, StorageComplement
+from complements.helpers import complement_builder
 from constants import UTC_FORMAT_REGEX, cal_value_caracteres
 from custom_exceptions import EntregasError, RecepcionesError, ValorMinMaxError
 from decorators import exception_wrapper
 from dict_type_validator import DictionaryTypeValidator
-from dict_types import recepctions_dict, exists_control, deliveries_dict
+from dict_types import deliveries_dict, exists_control, recepctions_dict
+
+ComplementType = TypeVar("ComplementType", bound="ComplementBuilder")
 
 
 # TODO hacer validaciones de tipo al inicio de la ejecucion de validacion y no por funcion
@@ -71,9 +76,8 @@ class MonthlyVolumeReportValidator:
             raise RecepcionesError("Error: 'TotalDocumentosMes' no fue declarada.")
         if amount_receptions_month is None:
             raise RecepcionesError("Error: 'ImporteTotalRecepcionesMensual' no fue declarada.")
-        # TODO VERFICIAR SI COMPLEMENTO ES O NO REQUERIDA  SI SI ES 
-        # if complement is None:
-        #     raise RecepcionesError("Error: 'Complemento' no fue declarada.")
+        if complement is None:
+            raise RecepcionesError("Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'.")
 
         if not 0 <= total_receptions_month <= 100000000:
             raise ValorMinMaxError(
@@ -91,6 +95,12 @@ class MonthlyVolumeReportValidator:
             raise ValorMinMaxError(
                 "Error: 'ImporteTotalRecepcionesMensual' no está en el rango min 0 o max 100000000000.0"
             )
+
+        comp_type = complement[0].get("TipoComplemento")
+        complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
+        complement_obj.validate_complemento()
+        if complement_errors := complement_obj.errors:
+            self._errors = self._errors | complement_errors
 
     @exception_wrapper
     def _validate_entregas(self) -> None:
@@ -112,9 +122,8 @@ class MonthlyVolumeReportValidator:
             raise EntregasError("Error: 'TotalDocumentosMes' no fue declarada.")
         if amount_deliveries_month is None:
             raise EntregasError("Error: 'ImporteTotalEntregasMes' no fue declarada.")
-        # TODO VERFICIAR SI COMPLEMENTO ES O NO REQUERIDA  SI SI ES
-        # if complement is None:
-        #     raise EntregasError("Error: 'Complemento' no fue declarada.")
+        if complement is None:
+            raise EntregasError("Error: Valor 'Complemento' no fue declarada en clave 'Entregas'.")
 
         if not 0 <= total_deliveries_month <= 10000000:
             raise ValorMinMaxError(
@@ -134,6 +143,12 @@ class MonthlyVolumeReportValidator:
             raise ValorMinMaxError(
                 "Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
                 )
+
+        comp_type = complement[0].get("TipoComplemento")
+        complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
+        complement_obj.validate_complemento()
+        if complement_errors := complement_obj.errors:
+            self._errors = self._errors | complement_errors
 
     @property
     def errors(self) -> dict:
