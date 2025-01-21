@@ -146,7 +146,7 @@ class ComercializationComplement(ComplementBuilder):
                     )
             if custom_client_permission and not re.match(PERMISSION_PROOVE_CLIENT_REGEX, custom_client_permission):
                 raise RegexError(
-                    f"Error: clave 'PermisoProveedor' con valor {custom_client_permission} no cumple con el patron {PERMISSION_PROOVE_CLIENT_REGEX}"
+                    f"Error: clave 'PermisoClienteOProveedor' con valor {custom_client_permission} no cumple con el patron {PERMISSION_PROOVE_CLIENT_REGEX}"
                 )
 
             if cfdis:
