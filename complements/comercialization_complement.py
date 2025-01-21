@@ -18,6 +18,7 @@ class ComercializationComplement(ComplementBuilder):
         if self._next_complement():
             self._validate_complemento_tipado()
             self._validate_tipo_complemento()
+            self._validate_terminal_alm_dist()
             self._validate_dictamen()
             self._validate_nacional()
             self._validate_extranjero()
