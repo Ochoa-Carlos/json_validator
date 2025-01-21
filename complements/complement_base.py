@@ -1,12 +1,20 @@
-import re 
-from complements.enumerators import ComplementType, CfdiType
-from dict_types import complement_transport
-from dict_type_validator import DictionaryTypeValidator
+import re
+
+from complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX, DATE_REGEX,
+                                   FOLIO_CERTIFIED_REGEX, FOLIO_DICTAMEN_REGEX,
+                                   IMPORT_PERMISSION_REGEX, INTERN_SPOT_REGEX,
+                                   MEASURE_UNIT, PERMISSION_PROOVE_REGEX,
+                                   RFC_PERSONA_MORAL_REGEX, RFC_REGEX,
+                                   TRANSPORT_PERM_REGEX, UTC_FORMAT_REGEX)
+from complements.enumerators import (AduanaEntrance, CfdiType, ComplementType,
+                                     CountryCode, IncotermCode)
 from custom_exceptions import LongitudError, RegexError, ValorMinMaxError
-from complements.constants import TRANSPORT_PERM_REGEX, RFC_PERSONA_MORAL_REGEX, FOLIO_DICTAMEN_REGEX, DATE_REGEX, FOLIO_CERTIFIED_REGEX, RFC_REGEX, PERMISSION_PROOVE_REGEX, CFDI_REGEX, UTC_FORMAT_REGEX, MEASURE_UNIT
 from decorators import exception_wrapper
+from dict_type_validator import DictionaryTypeValidator
+from dict_types import complement_transport
 
 
+# TODO IMPORTANTISIMO< HICE LA BASE BAASADO EN EL COMPLEMENTO ALMACENAMIENTO
 # TODO los valores son Almacenamiento, CDLR, Comercializacion, Distribucion
 class ComplementBuilder:
     """Base class for complement types according type."""
@@ -19,7 +27,6 @@ class ComplementBuilder:
         self.exc_func = set()
         self._errors = {}
 
-# TODO implementar validar extranjero
     def validate_complemento(self) -> None:
         if self._next_complement():
             self._validate_complemento_tipado()
@@ -29,7 +36,7 @@ class ComplementBuilder:
             self._validate_certificado()
             self._validate_nacional()
             self._validate_aclaracion()
-            # self._validate_extranjero()
+            self._validate_extranjero()
 
             self._update_index()
             self.validate_complemento()
@@ -269,7 +276,84 @@ class ComplementBuilder:
 
     @exception_wrapper
     def _validate_extranjero(self) -> None:
-        raise NotImplementedError("No se ha implementado validar extranjero")
+        if (foreign := self.current_complement.get("Extranjero")) is None:
+            return
+
+        import_permission = foreign.get("PermisoImportacion")
+        pedimentos = foreign.get("Pedimentos")
+
+        if import_permission is None:
+            raise KeyError("Error: clave 'PermisoImportacion' no se encuentra.")
+
+        if not re.match(IMPORT_PERMISSION_REGEX, import_permission):
+            raise RegexError(
+                f"Error: clave 'PermisoImportacion' con valor {import_permission} no cumple con el regex {IMPORT_PERMISSION_REGEX}"
+            )
+
+        for pedimento in pedimentos:
+            self.__validate_pedimentos(pedimento=pedimento)
+
+    @exception_wrapper
+    def __validate_pedimentos(self, pedimento: dict) -> None:
+        intern_point = pedimento.get("PuntoDeInternacion")
+        origin_country = pedimento.get("PaisOrigen")
+        aduanal_transp = pedimento.get("MedioDeTransEntraAduana")
+        aduanal_pedimento = pedimento.get("PedimentoAduanal")
+        incoterm = pedimento.get("Incoterms")
+        import_price = pedimento.get("PrecioDeImportacion")
+        documented_volume = pedimento.get("VolumenDocumentado")
+        num_value = documented_volume.get("ValorNumerico")
+        measure_unit = documented_volume.get("UnidadDeMedida")
+
+        if intern_point is None:
+            raise KeyError("Error: clave 'PuntoDeInternacion' no se encuentra.")
+        if origin_country is None:
+            raise KeyError("Error: clave 'PaisOrigen' no se encuentra.")
+        if aduanal_pedimento is None:
+            raise KeyError("Error: clave 'PedimentoAduanal' no se encuentra.")
+        if incoterm is None:
+            raise KeyError("Error: clave 'Incoterms' no se encuentra.")
+        if import_price is None:
+            raise KeyError("Error: clave 'PrecioDeImportacion' no se encuentra.")
+        if documented_volume is None:
+            raise KeyError("Error: clave 'VolumenDocumentado' no se encuentra.")
+        if num_value is None:
+            raise KeyError("Error: valor 'ValorNumerico' no se encuentra en clave 'ValorDocumentado'.")
+        if measure_unit is None:
+            raise KeyError("Error: valor 'UnidadDeMedida' no se encuentra en clave 'ValorDocumentado'.")
+
+        if not re.match(INTERN_SPOT_REGEX, intern_point):
+            raise RegexError(f"Error: clave 'PuntoDeInternacion' con valor {intern_point} no cumple con el patron {INTERN_SPOT_REGEX}")
+        if not 2 <= intern_point <= 3:
+            raise ValorMinMaxError(
+                f"Error: clave 'PuntoDeInternacion' con valor {intern_point} no tiene la longitud min 2 o max 3."
+            )
+        if origin_country not in CountryCode:
+            raise ValueError(f"Error: valor '{origin_country}' en clave 'PaisOrigen' no válido.")
+        if aduanal_transp not in [item.value for item in AduanaEntrance]:
+            raise ValueError(f"Error: valor '{aduanal_transp}' en clave 'MedioDeTransporteAduana' no válido.")
+        if not re.match(ADUANAL_PEDIMENTO, aduanal_pedimento):
+            raise RegexError(
+                f"Error: clave 'PedimentoAduanal' con valor {aduanal_pedimento} no cumple con el patron {ADUANAL_PEDIMENTO}"
+            )
+        if len(aduanal_pedimento) != 21:
+            raise LongitudError(
+                f"Error: clave 'PedimentoAduanal' con valor '{aduanal_pedimento} no cumple con la longitud de 21.'"
+            )
+        if incoterm not in IncotermCode.__members__:
+            raise ValueError(f"Error: clave 'Incoterms' con valor {incoterm} no válido.")
+        if not 0 <= import_price <= 100000000000:
+            raise ValorMinMaxError(
+                f"Error: clave 'PrecioDeImportacion' con valor {import_price} no tiene el valor min 0 o max 100000000000."
+                )
+        if not 0 <= num_value <= 100000000000:
+            raise ValorMinMaxError(
+                f"Error: clave 'ValorNumerico' con valor {num_value} no está en el valor min 0 o max 100000000000."
+                )
+        if not re.match(MEASURE_UNIT, measure_unit):
+            raise RegexError(
+                f"Error: clave 'UnidadDeMedida' con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
+                )
 
     @exception_wrapper
     def _validate_aclaracion(self) -> None:
