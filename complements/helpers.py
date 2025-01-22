@@ -1,5 +1,5 @@
 from typing import TypeVar
-from complements import StorageComplement, ComplementBuilder, ComercializationComplement, DistributionComplement
+from complements import StorageComplement, ComplementBuilder, ComercializationComplement, DistributionComplement, CDLRGNComplement
 
 
 ComplementType = TypeVar("ComplementType", bound="ComplementBuilder")
@@ -11,7 +11,7 @@ def complement_builder(complement_data: dict, complement_type: str) -> Complemen
         "Almacenamiento": StorageComplement,
         "Comercializacion": ComercializationComplement,
         "Distribucion": DistributionComplement,
-        "CDLRGN": 
+        "CDLRGN": CDLRGNComplement
     }
 
     complement_class = complement_map.get(complement_type)

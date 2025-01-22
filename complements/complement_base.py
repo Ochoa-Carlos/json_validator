@@ -220,6 +220,8 @@ class ComplementBuilder:
 
         if cfdi_val is None:
             raise KeyError("Error: clave 'Cfdi' no se encuentra.")
+        if cfdi_type is None:
+            raise KeyError("Error: clave 'TipoCfdi' no se encuentra.")
         if cfdi_type not in [cfdi.value for cfdi in CfdiType]:
             raise KeyError(f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válido.")
         if transaction_date is None:
