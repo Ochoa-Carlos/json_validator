@@ -11,6 +11,7 @@ def complement_builder(complement_data: dict, complement_type: str) -> Complemen
         "Almacenamiento": StorageComplement,
         "Comercializacion": ComercializationComplement,
         "Distribucion": DistributionComplement,
+        "CDLRGN": 
     }
 
     complement_class = complement_map.get(complement_type)
