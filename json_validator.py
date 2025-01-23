@@ -106,7 +106,7 @@ class JsonValidator():
 
             if not re.match(MODALITY_PERMISSION_REGEX, mod_permission):
                 raise CaracterPermisionarioError(
-                    f"Error: El caracter '{caracter}' no cumple con el patron {MODALITY_PERMISSION_REGEX}"
+                    f"Error: ModalidadPermiso '{mod_permission}' no cumple con el patron {MODALITY_PERMISSION_REGEX}"
                     )
             if not 14 <= len(num_permission) <= 24:
                 raise LongitudError(
@@ -173,9 +173,11 @@ class JsonValidator():
 
     @wrapper_handler
     def _validate_geolocalizacion(self) -> None:
-        geolocalizacion = self.json_report.get("Geolocalizacion")[0]
-        geo_lat = geolocalizacion.get("GeolocalizacionLatitud")
-        geo_lon = geolocalizacion.get("GeolocalizacionLongitud")
+        if (geolocalizacion := self.json_report.get("Geolocalizacion")) is None:
+            return
+
+        geo_lat = geolocalizacion[0].get("GeolocalizacionLatitud")
+        geo_lon = geolocalizacion[0].get("GeolocalizacionLongitud")
 
         if abs(geo_lat) > 90:
             raise ValorMinMaxError("Error: 'GeolocalizacionLatitud' no está en el rango min -90 o max 90.")
@@ -258,3 +260,17 @@ class JsonValidator():
 
     def get_errors(self) -> dict:
         return self.errors
+
+
+# # HACER DISTINCION ENTRE LAS CLAVES Y VALORES
+# # VALIDAR TIPOS
+# # LO COMPLICADO SON LOS COMPLEMENTOS DEL MENSUAL
+#         log_obj = MonthlyLogValidator(month_log=month_log)
+#         log_obj.validate_log()
+
+#         if log_errors := log_obj.errors:
+#             self.errors = self.errors | log_errors
+
+# HACER DISTINCION ENTRE LAS CLAVES Y VALORES
+# VALIDAR TIPOS
+# LO COMPLICADO SON LOS COMPLEMENTOS DEL MENSUAL
