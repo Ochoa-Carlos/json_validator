@@ -255,3 +255,6 @@ class JsonValidator():
 
         if log_errors := log_obj.errors:
             self.errors = self.errors | log_errors
+
+    def get_errors(self) -> dict:
+        return self.errors
