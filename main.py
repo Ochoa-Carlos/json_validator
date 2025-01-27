@@ -19,8 +19,8 @@ class JsonValidatorApp:
 
         self.main_root.geometry(f"{self.win_width}x{self.win_height}+{self.x_axis}+{self.y_axis}")
         self.main_root.title("Validador JSON")
-        self.load_button = tk.Button(self.main_root, text="Cargar archivo JSON", command=self.load_file)
-        self.load_button.pack(pady=20)
+        # self.load_button = tk.Button(self.main_root, text="Cargar archivo JSON", command=self.load_file)
+        # self.load_button.pack(pady=20)
 
         # Botón para cargar un archivo JSON
         # self.load_button = tk.Button(self.main_root, text="Cargar archivo JSON", command=self.load_file)
@@ -59,9 +59,6 @@ class JsonValidatorApp:
         self.style.configure("Treeview.Item", foreground="red", background="white")
         self.style.map("Treeview", background=[('selected', 'lightblue')])
 
-        self.style.configure("key", foreground="blue", font=('Comic Sans MS', 10, 'bold'))
-        self.style.configure("value", foreground="blue", font=('Comic Sans MS', 20, 'bold'))
-
     def load_file(self):
         """Read and load JSON file"""
         # file_path = filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")])
@@ -71,6 +68,7 @@ class JsonValidatorApp:
             try:
                 # Limpiar errores anteriores
                 self.clear_errors()
+                print('asdasd')
                 for item in self.tree.get_children():
                     self.tree.delete(item)  # Limpiar el Treeview del JSON anterior
 
@@ -80,10 +78,23 @@ class JsonValidatorApp:
                     self.json_data = json_data
 
                 for item in self.tree.get_children():
-                    self.tree.delete(item)
+                    self.tree.delete(item)  # Limpiar el Treeview del JSON anterior
 
-                self.display_json(json_data)
+                # Leer el nuevo archivo
+                with open(file_path, "r", encoding="utf-8") as file:
+                    self.json_data = json.load(file)
+
+                # Mostrar el nuevo JSON en el Treeview
+                self.display_json(self.json_data)
                 self.message_label.config(text="JSON cargado exitosamente.", fg="green")
+
+                # Validar el nuevo JSON
+                validator = JsonValidator(json_report=self.json_data)
+                validator.set_json()
+                validator.validate_json()
+
+                # Obtener y mostrar los errores en el Treeview de errores
+                self.display_errors(validator.get_errors())
 
             except json.JSONDecodeError as e:
                 self.message_label.config(text=f"Error al cargar el archivo: {e}", fg="red")
@@ -127,8 +138,9 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = JsonValidatorApp(root)
     app.load_file()
-    validator = JsonValidator(json_report=app.get_json())
-    validator.validate_json()
-    err = validator.get_errors()
-    app.display_errors(err)
+    # validator = JsonValidator(json_report=app.get_json())
+    # validator.validate_json()
+    # err = validator.get_errors()
+    # print(err,  "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,,=")
+    # app.display_errors(err)
     root.mainloop()
