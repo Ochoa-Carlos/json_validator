@@ -21,6 +21,7 @@ class JsonValidator():
         self.json_model = JsonRoot
         self.error = []
         self.errors = {}
+        self._errors = []
         self.executed_functions = set()
 
 
@@ -42,6 +43,7 @@ class JsonValidator():
         except Exception as e:
             self.error.append(e)
 
+# TODO descomentar montly_log y adecuar los errores
     def validate_json(self) -> None:
         """Return True or False if JSON are validated according type and bound."""
         print("==================================== VALIDATE JSON ====================================")
@@ -60,7 +62,7 @@ class JsonValidator():
         self._validate_report_date()
         self._validate_rfc_proveedores()
         self._validate_products()
-        self._validate_monthly_log()
+        # self._validate_monthly_log()
 
     @wrapper_handler
     def _validate_version(self) -> bool:
@@ -68,7 +70,8 @@ class JsonValidator():
         if re.match(VERSION_REGEX, version):
             return True
         else:
-            raise RegexError(f"Error: La version {version} no cumple con el patron {VERSION_REGEX}")
+            self.catch_error(err_type=RegexError, err_message=f"Error: La version {version} no cumple con el patron {VERSION_REGEX}")
+            # raise RegexError(f"Error: La version {version} no cumple con el patron {VERSION_REGEX}")
 
 # TODO revisar mas detenidamente los casos para el regex de RFC contribuyente
 # TODO valiar y averiguar la diferencia entre el rfc de persona moral y contribuyente
@@ -77,9 +80,11 @@ class JsonValidator():
         rfc = self.json_report.get("RfcContribuyente")
 
         if not re.match(RFC_CONTR_REGEX, rfc):
-            raise RegexError(f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_CONTR_REGEX}")
+            self.catch_error(err_type=RegexError, err_message=f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_CONTR_REGEX}")
+            # raise RegexError(f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_CONTR_REGEX}")
         if not 12 <= len(rfc) <= 13:
-            raise LongitudError("Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13.")
+            self.catch_error(err_type=LongitudError, err_message="Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13.")
+            # raise LongitudError("Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13.")
 
 # TODO rfc representante legal
     @wrapper_handler
@@ -105,71 +110,82 @@ class JsonValidator():
             num_permission = self.json_report.get("NumPermiso")
 
             if not re.match(MODALITY_PERMISSION_REGEX, mod_permission):
-                raise CaracterPermisionarioError(
-                    f"Error: ModalidadPermiso '{mod_permission}' no cumple con el patron {MODALITY_PERMISSION_REGEX}"
-                    )
+                self.catch_error(err_type=CaracterPermisionarioError, err_message=f"Error: ModalidadPermiso '{mod_permission}' no cumple con el patron {MODALITY_PERMISSION_REGEX}")
+                # raise CaracterPermisionarioError(
+                #     f"Error: ModalidadPermiso '{mod_permission}' no cumple con el patron {MODALITY_PERMISSION_REGEX}"
+                #     )
             if not 14 <= len(num_permission) <= 24:
-                raise LongitudError(
-                    "Error: 'NumPermiso' no cumple con la longitud min 14 o max 24."
-                )
+                self.catch_error(err_type=LongitudError, err_message="Error: 'NumPermiso' no cumple con la longitud min 14 o max 24.")
+                # raise LongitudError(
+                #     "Error: 'NumPermiso' no cumple con la longitud min 14 o max 24."
+                # )
             if keys_prescence:
-                raise CaracterPermisionarioError(
-                    f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
-                    )
+                self.catch_error(err_type=CaracterPermisionarioError, err_message=f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON.")
+                # raise CaracterPermisionarioError(
+                #     f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
+                #     )
 
         if caracter == CaracterTypeEnum.CONTRATISTA.value and keys_prescence:
             num_contract = self.json_report.get("NumContratoOAsignacion")
 
             if not 14 <= len(num_contract) <= 24:
-                raise LongitudError(
-                    "Error: 'NumContratoOAsignacion' no cumple con la longitud min 14 o max 24."
-                )
+                self.catch_error(err_type=LongitudError, err_message="Error: 'NumContratoOAsignacion' no cumple con la longitud min 14 o max 24.")
+                # raise LongitudError(
+                #     "Error: 'NumContratoOAsignacion' no cumple con la longitud min 14 o max 24."
+                # )
             if keys_prescence:
-                raise CaracterContratistaError(
-                    f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
-                )
+                self.catch_error(err_type=CaracterContratistaError, err_message=f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON.")
+                # raise CaracterContratistaError(
+                #     f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
+                # )
 
         if caracter == CaracterTypeEnum.ASIGNATARIO.value and keys_prescence:
             num_asignation = self.json_report.get("NumContratoOAsignacion")
 
             if not 14 <= len(num_asignation) <= 24:
-                raise LongitudError(
-                    "Error: 'NumContratoOAsignacion' no cumple con la longitud min 14 o max 24."
-                )
+                self.catch_error(err_type=LongitudError, err_message="Error: 'NumContratoOAsignacion' no cumple con la longitud min 14 o max 24.")
+                # raise LongitudError(
+                #     "Error: 'NumContratoOAsignacion' no cumple con la longitud min 14 o max 24."
+                # )
             if keys_prescence:
-                raise CaracterAsignatarioError(
-                    f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
-                )
+                self.catch_error(err_type=CaracterAsignatarioError, err_message=f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON.")
+                # raise CaracterAsignatarioError(
+                #     f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
+                # )
 
         if caracter == CaracterTypeEnum.USUARIO.value and keys_prescence:
             alm_gas = self.json_report.get("InstalacionAlmacenGasNatural")
 
             if not 16 <= len(alm_gas) <= 250:
-                raise LongitudError(
-                    "Error: 'InstalacionAlmacenGasNatural' no cumple con la longitud min 14 o max 24."
-                )
+                self.catch_error(err_type=LongitudError, err_message="Error: 'InstalacionAlmacenGasNatural' no cumple con la longitud min 14 o max 24.")
+                # raise LongitudError(
+                #     "Error: 'InstalacionAlmacenGasNatural' no cumple con la longitud min 14 o max 24."
+                # )
             if keys_prescence:
-                raise CaracterUsuarioError(
-                    f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
-                )
+                self.catch_error(err_type=CaracterUsuarioError, err_message=f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON.")
+                # raise CaracterUsuarioError(
+                #     f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
+                # )
 
     @wrapper_handler
     def _validate_clave_instalacion(self) -> None:
         clave_instalacion = self.json_report.get("ClaveInstalacion")
 
         if not 8 <= len(clave_instalacion) <= 30:
-            raise LongitudError(
-                "Error: 'ClaveInstalacion' no cumple con la longitud min 8 o max 30."
-            )
+            self.catch_error(err_type=LongitudError, err_message="Error: 'ClaveInstalacion' no cumple con la longitud min 8 o max 30.")
+            # raise LongitudError(
+            #     "Error: 'ClaveInstalacion' no cumple con la longitud min 8 o max 30."
+            # )
 
     @wrapper_handler
     def _validate_descripcion_instalacion(self) -> None:
         desc_instllation = self.json_report.get("DescripcionInstalacion")
 
         if not 5 <= len(desc_instllation) <= 250:
-            raise LongitudError(
-                "Error: 'DescripcionInstalacion' no cumple con la longitud min 5 o max 250."
-            )
+            self.catch_error(err_type=LongitudError, err_message="Error: 'DescripcionInstalacion' no cumple con la longitud min 5 o max 250.")
+            # raise LongitudError(
+            #     "Error: 'DescripcionInstalacion' no cumple con la longitud min 5 o max 250."
+            # )
 
     @wrapper_handler
     def _validate_geolocalizacion(self) -> None:
@@ -180,45 +196,52 @@ class JsonValidator():
         geo_lon = geolocalizacion[0].get("GeolocalizacionLongitud")
 
         if abs(geo_lat) > 90:
-            raise ValorMinMaxError("Error: 'GeolocalizacionLatitud' no está en el rango min -90 o max 90.")
+            self.catch_error(err_type=ValorMinMaxError, err_message="Error: 'GeolocalizacionLatitud' no está en el rango min -90 o max 90.")
+            # raise ValorMinMaxError("Error: 'GeolocalizacionLatitud' no está en el rango min -90 o max 90.")
         if abs(geo_lon) > 180:
-            raise ValorMinMaxError("Error: 'GeolocalizacionLongitud' no está en el rango min -180 o max 180.")
+            self.catch_error(err_type=ValorMinMaxError, err_message="Error: 'GeolocalizacionLongitud' no está en el rango min -180 o max 180.")
+            # raise ValorMinMaxError("Error: 'GeolocalizacionLongitud' no está en el rango min -180 o max 180.")
 
 
     @wrapper_handler
     def _validate_numero_pozos(self) -> None:
         if "NumeroPozos" not in self.json_report:
-            raise KeyError(
-                "Error: 'NumeroPozos' no fue encontrada."
-                )
+            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroPozos' no fue encontrada.")
+            # raise KeyError(
+            #     "Error: 'NumeroPozos' no fue encontrada."
+            #     )
 
     @wrapper_handler
     def _validate_numero_tanques(self) -> None:
         if "NumeroTanques" not in self.json_report:
-            raise KeyError(
-                "Error: 'NumeroTanques' no fue encontrada."
-                )
+            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroTanques' no fue encontrada.")
+            # raise KeyError(
+            #     "Error: 'NumeroTanques' no fue encontrada."
+            #     )
 
     @wrapper_handler
     def _validate_ductos_io(self) -> None:
         if "NumeroDuctosEntradaSalida" not in self.json_report:
-            raise KeyError(
-                "Error: 'NumeroDuctosEntradaSalida' no fue encontrada."
-                )
+            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroDuctosEntradaSalida' no fue encontrada.")
+            # raise KeyError(
+            #     "Error: 'NumeroDuctosEntradaSalida' no fue encontrada."
+            #     )
 
     @wrapper_handler
     def _validate_ductos_distribucion(self) -> None:
         if "NumeroDuctosTransporteDistribucion" not in self.json_report:
-            raise KeyError(
-                "Error: 'NumeroDuctosTransporteDistribucion' no fue encontrada."
-                )
+            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroDuctosTransporteDistribucion' no fue encontrada.")
+            # raise KeyError(
+            #     "Error: 'NumeroDuctosTransporteDistribucion' no fue encontrada."
+            #     )
 
     @wrapper_handler
     def _validate_num_dispensarios(self) -> None:
         if "NumeroDispensarios" not in self.json_report:
-            raise KeyError(
-                "Error: 'NumeroDispensarios' no fue encontrada."
-                )
+            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroDispensarios' no fue encontrada.")
+            # raise KeyError(
+            #     "Error: 'NumeroDispensarios' no fue encontrada."
+            #     )
 
     # TODO adaptar para el JSON Diario
     @wrapper_handler
@@ -226,17 +249,19 @@ class JsonValidator():
         date = self.json_report.get("FechaYHoraReporteMes")
 
         if not re.match(UTC_FORMAT_REGEX, date):
-            raise TypeError(
-                "Error: 'FechaYHoraReporteMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
-            )
+            self.catch_error(err_type=TypeError, err_message="Error: 'FechaYHoraReporteMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'.")
+            # raise TypeError(
+            #     "Error: 'FechaYHoraReporteMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
+            # )
 
     @wrapper_handler
     def _validate_rfc_proveedores(self) -> None:
         if rfc := self.json_report.get("RfcProveedores"):
             if len(rfc) < 12:
-                raise LongitudError(
-                    "Error: 'RfcProveedores' no cumple con la longitud min 1."
-                    )
+                self.catch_error(err_type=LongitudError, err_message="Error: 'RfcProveedores' no cumple con la longitud min 1.")
+                # raise LongitudError(
+                #     "Error: 'RfcProveedores' no cumple con la longitud min 1."
+                #     )
 
     # @wrapper_handler
     def _validate_products(self) -> None:
@@ -246,7 +271,9 @@ class JsonValidator():
         product_obj.validate_products()
 
         if product_errors := product_obj.errors:
-            self.errors = self.errors | product_errors
+            self._errors.extend(product_errors)
+            # self.errors = self.errors | product_errors
+            # self._errors = self.errors | product_errors
 
     # @wrapper_handler
     def _validate_monthly_log(self) -> None:
@@ -258,8 +285,14 @@ class JsonValidator():
         if log_errors := log_obj.errors:
             self.errors = self.errors | log_errors
 
+    def catch_error(self, err_type: BaseException, err_message: str) -> dict:
+        """Catch error from validations."""
+        self._errors.append({"type_error": err_type.__name__,
+                             "error": err_message})
+        # self._errors[err_type.__name__] = err_message
+
     def get_errors(self) -> dict:
-        return self.errors
+        return self._errors
 
 
 # # HACER DISTINCION ENTRE LAS CLAVES Y VALORES
