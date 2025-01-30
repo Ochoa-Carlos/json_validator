@@ -1,4 +1,7 @@
 import functools
+import sys
+import traceback
+
 
 def wrapper_handler(func):
     """Error handler."""
@@ -32,11 +35,22 @@ def exception_wrapper(func):
             self.exc_funcs = func.__name__
             return result
         except Exception as err:
-            # print(f"Excepción atrapada en {func.__name__}: {err}")
+            # print(f"=========> Excepción atrapada en {func.__name__}: {err}")
+            class_name = self.__class__.__name__
+            func_name = func.__name__
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            tb_lines = traceback.format_exception(exc_type, exc_value, exc_tb)
+            last_tb = tb_lines[-2] if tb_lines else 'No traceback available'
+
             err_obj = {
-                "func_error": func.__name__,
-                "error": str(err)
+                "class_error": class_name,
+                "type_error": func_name,
+                "error": str(err),
+                "excepciones": err,
+                "traceback": f"{last_tb}"
+                # "error_message": type(err).__name__,
+                # "err_message": err,
             }
             self.errors = err_obj
-            return
+            # pass
     return wrapper
