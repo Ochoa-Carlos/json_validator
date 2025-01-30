@@ -8,6 +8,7 @@ from dict_type_validator import DictionaryTypeValidator
 from dict_types import gas_dict
 
 
+# TODO VALIDAR EL TIPADO Y AJUSTAR LA MANERA DE REGRESAR LOS ERRORES
 class CondensedGasValidator:
 
     def __init__(self, gas_node: Union[list, dict]):
@@ -74,7 +75,7 @@ class CondensedGasValidator:
     @errors.setter
     def errors(self, errors: dict) -> None:
         """set errors in condensed gas validator obj."""
-        self._errors[errors["func_error"]] = errors["error"]
+        self._errors[errors["type_error"]] = errors["error"]
 
     @property
     def exc_funcs(self) -> dict:
