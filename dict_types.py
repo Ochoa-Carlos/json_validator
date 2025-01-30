@@ -5,7 +5,7 @@ product_dict = {
     "ClaveSubProducto": str,
     # "ReporteDeVolumenMensual": dict,
     "ComposOctanajeGasolina": int,
-    "GasolinaConCombustibleNoFosil": int,
+    "GasolinaConCombustibleNoFosil": str,
     "ComposDeCombustibleNoFosilEnGasolina": int,
     "DieselConCombustibleNoFosil": str,
     "ComposDeCombustibleNoFosilEnDiesel": int,
