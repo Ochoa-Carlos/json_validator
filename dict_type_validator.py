@@ -10,6 +10,7 @@ class DictionaryTypeValidator:
             if key not in dict_type:
                 continue
             if not isinstance(value, dict_type[key]):
-                raise TypeError(
-                    f"Error: Clave {key} no es de tipo {dict_type[key]}"
-                    )
+                return {
+                    "type_err": TypeError, 
+                    "err_message": f"Error: Clave {key} no es de tipo {dict_type[key]}"
+                    }
