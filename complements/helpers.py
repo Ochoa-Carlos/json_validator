@@ -1,12 +1,13 @@
 from typing import TypeVar
-from complements import StorageComplement, ComplementBuilder, ComercializationComplement, DistributionComplement, CDLRGNComplement
 
+from complements import (CDLRGNComplement, ComercializationComplement,
+                         ComplementBuilder, DistributionComplement,
+                         StorageComplement)
 
 ComplementType = TypeVar("ComplementType", bound="ComplementBuilder")
 
 
 def complement_builder(complement_data: dict, complement_type: str) -> ComplementType:
-    print("INSTANCIANDO COMPLEMETNO")
     complement_map = {
         "Almacenamiento": StorageComplement,
         "Comercializacion": ComercializationComplement,
