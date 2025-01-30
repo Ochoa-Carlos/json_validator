@@ -34,60 +34,87 @@ class MonthlyLogValidator:
             del self.func_exc
             self.validate_log()
 
-    @exception_wrapper
+    # @exception_wrapper
     def _validate_bitacora_tipos(self) -> None:
         DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.month_log, dict_type=log_dict)
 
-    @exception_wrapper
+    # @exception_wrapper
     def _validate_numero_registro(self) -> None:
         if (rec_number := self.month_log.get("NumeroRegistro")) is None:
-            raise BitacoraMensualError("Error: 'NumeroRegistro' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'NumeroRegistro' no fue declarada.")
+            # raise BitacoraMensualError("Error: 'NumeroRegistro' no fue declarada.")
 
         if not 0 <= rec_number <= 1000000:
-            raise ValorMinMaxError("Error: 'NumeroRegistro' no está en el rango min 0 o max 1000000.")
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'NumeroRegistro' no está en el rango min 0 o max 1000000."
+                )
+            # raise ValorMinMaxError("Error: 'NumeroRegistro' no está en el rango min 0 o max 1000000.")
 
-    @exception_wrapper
+    # @exception_wrapper
     def _validate_fecha_evento(self) -> None:
         if (event_date := self.month_log.get("FechaYHoraEvento")) is None:
-            raise BitacoraMensualError("Error: 'FechaYHoraEvento' no fue declarada.")
+            # raise BitacoraMensualError("Error: 'FechaYHoraEvento' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'FechaYHoraEvento' no fue declarada.")
         if not re.match(UTC_FORMAT_REGEX, event_date):
-            raise TypeError(
-                "Error: 'FechaYHoraEvento' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
-            )
+            # raise TypeError(
+            #     "Error: 'FechaYHoraEvento' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
+            # )
+            self.catch_error(
+                err_type=TypeError,
+                err_message="Error: 'FechaYHoraEvento' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'.")
 
-    @exception_wrapper
+    # @exception_wrapper
     def _validate_usuario_responsable(self) -> None:
         if (resp_user := self.month_log.get("UsuarioResponsable")) is None:
             return
         if not 1 <= len(resp_user) <= 1000:
-            raise LongitudError("Error: 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
+            self.catch_error(
+                err_type=LongitudError,
+                err_message="Error: 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
+            # raise LongitudError("Error: 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
 
 # TODO validar correctamente el tipo de evento
-    @exception_wrapper
+    # @exception_wrapper
     def _validate_tipo_evento(self) -> None:
         if (event := self.month_log.get("TipoEvento")) is None:
-            raise BitacoraMensualError("Error: 'TipoEvento' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'TipoEvento' no fue declarada.")
+            # raise BitacoraMensualError("Error: 'TipoEvento' no fue declarada.")
         if event not in event_type:
-            raise ValorMinMaxError("Error: 'TipoEvento' no está en el rango min 1 o max 21.")
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'TipoEvento' no está en el rango min 1 o max 21.")
+            # raise ValorMinMaxError("Error: 'TipoEvento' no está en el rango min 1 o max 21.")
 
 
 # TODO averiguar el manifestacion de la dscripcion del evento exacto de la difff para evento tipo 7
-    @exception_wrapper
+    # @exception_wrapper
     def _validate_descripcion_evento(self) -> None:
         if (desc_event := self.month_log.get("DescripcionEvento")) is None:
-            raise BitacoraMensualError("Error: 'DescripcionEvento' no fue declarada.")
+            # raise BitacoraMensualError("Error: 'DescripcionEvento' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'DescripcionEvento' no fue declarada.")
         if not 2 <= len(desc_event) <= 250:
-            raise LongitudError("Error: 'DescripcionEvento' no cumple con la longitud min 2 o max 250.")
+            self.catch_error(
+                err_type=LongitudError,
+                err_message="Error: 'DescripcionEvento' no cumple con la longitud min 2 o max 250.")
+            # raise LongitudError("Error: 'DescripcionEvento' no cumple con la longitud min 2 o max 250.")
 
-    @exception_wrapper
+    # @exception_wrapper
     def _validate_id_comp_alarma(self) -> None:
         if self.month_log.get("TipoEvento") not in component_alarm:
             return
+
         component_id = self.month_log.get("IdentificacionComponenteAlarma")
         if not 2 <= len(component_id) <= 250:
-            raise LongitudError("Error: 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")
+            self.catch_error(
+                err_type=LongitudError,
+                err_message="Error: 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")
+            # raise LongitudError("Error: 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")
 
 # TODO productos implementa el mismo comportamiento, averiguar por que ahi si funciona
+    def catch_error(self, err_type: Exception, err_message: str) -> None:
+        self._errors[err_type.__name__] = err_message
+
     @property
     def func_exc(self) -> None:
         """Clear executed functions cache."""
@@ -108,7 +135,7 @@ class MonthlyLogValidator:
     @errors.setter
     def errors(self, errors: dict) -> None:
         """set errors in monthly log validation obj."""
-        self._errors[errors["func_error"]] = errors["error"]
+        self._errors[errors["type_error"]] = errors["error"]
 
     @property
     def exc_funcs(self) -> dict:
