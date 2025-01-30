@@ -1,6 +1,6 @@
 import json
 import tkinter as tk
-from tkinter import filedialog, ttk
+from tkinter import ttk, filedialog
 
 from json_validator import JsonValidator
 
@@ -19,56 +19,50 @@ class JsonValidatorApp:
 
         self.main_root.geometry(f"{self.win_width}x{self.win_height}+{self.x_axis}+{self.y_axis}")
         self.main_root.title("Validador JSON")
-        # self.load_button = tk.Button(self.main_root, text="Cargar archivo JSON", command=self.load_file)
-        # self.load_button.pack(pady=20)
+        self.load_button = tk.Button(self.main_root, text="Cargar archivo JSON", command=self.load_file)
+        self.load_button.pack(pady=20)
 
-        # Botón para cargar un archivo JSON
-        # self.load_button = tk.Button(self.main_root, text="Cargar archivo JSON", command=self.load_file)
-        # self.load_button.pack(pady=20)
+        # Sección para mostrar los errores de validación usando Treeview
+        self.error_section_frame = tk.Frame(self.main_root)
+        self.error_section_frame.pack(pady=20, fill=tk.BOTH, expand=True)
 
-        # Sección para mostrar el JSON cargado
+        # Crear un widget Treeview para mostrar los errores
+        self.error_tree = ttk.Treeview(self.error_section_frame, columns=("Tipo de Error", "Mensaje"), show="headings")
+        self.error_tree.pack(pady=10, fill=tk.BOTH, expand=True)
+
+        # Configuración de las columnas
+        # self.error_tree.heading("Función", text="Función", anchor="w")
+        self.error_tree.heading("Tipo de Error", text="Tipo de Error", anchor="w")
+        self.error_tree.heading("Mensaje", text="Mensaje", anchor="w")
+
+        # self.error_tree.column("Función", width=150)
+        self.error_tree.column("Tipo de Error", width=150)
+        self.error_tree.column("Mensaje", width=500, stretch=tk.YES)
+
+        self.style = ttk.Style()
+        self.style.configure("Treeview", font=('Comic Sans MS', 10), foreground="#FDFCFA", background="#2D2A2E") #2D2A2E f4f8ff
+        self.style.configure("Treeview.Heading", font=('Arial', 12, 'bold'), foreground="red", background="lightgray")
+        self.style.configure("Treeview.Item", foreground="red", background="#FDFCFA")
+        self.style.map("Treeview", background=[('selected', 'lightblue')])
+
+        # Crear el Treeview para el JSON (este es el que se usa para visualizar el JSON cargado)
         self.treeview_frame = tk.Frame(self.main_root)
         self.treeview_frame.pack(pady=10, fill=tk.BOTH, expand=True)
 
         self.tree = ttk.Treeview(self.treeview_frame, selectmode="browse")
         self.tree.pack(pady=10, fill=tk.BOTH, expand=True)
 
-        self.message_label = tk.Label(self.main_root, text="", fg="red")
-        self.message_label.pack(pady=10)
-
-        # Sección para mostrar errores de validación usando Treeview
-        self.error_section_frame = tk.Frame(self.main_root)
-        self.error_section_frame.pack(pady=20, fill=tk.BOTH, expand=True)
-
-        # Crear un widget Treeview para mostrar los errores
-        self.error_tree = ttk.Treeview(self.error_section_frame, columns=("Función", "Tipo de Error", "Mensaje"), show="headings")
-        self.error_tree.pack(pady=10, fill=tk.BOTH, expand=True)
-
-        # Configuración de las columnas
-        self.error_tree.heading("Función", text="Función", anchor="w")
-        self.error_tree.heading("Tipo de Error", text="Tipo de Error", anchor="w")
-        self.error_tree.heading("Mensaje", text="Mensaje", anchor="w")
-
-        self.error_tree.column("Función", width=150)
-        self.error_tree.column("Tipo de Error", width=150)
-        self.error_tree.column("Mensaje", width=500)
-
-        self.style = ttk.Style()
-        self.style.configure("Treeview", font=('Comic Sans MS', 10), foreground="white", background="#2D2A2E")
-        self.style.configure("Treeview.Heading", font=('Arial', 12, 'bold'), foreground="red", background="lightgray")
-        self.style.configure("Treeview.Item", foreground="red", background="white")
-        self.style.map("Treeview", background=[('selected', 'lightblue')])
+        self.json_data = None
 
     def load_file(self):
         """Read and load JSON file"""
-        # file_path = filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")])
-        # file_path = "/Users/carlos/Downloads/alveg_c.json"
-        file_path = "/Users/carlos/Downloads/demo 1.json"
+        # Aquí usas un archivo local de ejemplo, puedes reemplazar con filedialog si prefieres
+        # file_path = "/Users/carlos/Downloads/demo 1.json"
+        file_path = filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")])
         if file_path:  # Verifica que el archivo ha sido seleccionado
             try:
                 # Limpiar errores anteriores
                 self.clear_errors()
-                print('asdasd')
                 for item in self.tree.get_children():
                     self.tree.delete(item)  # Limpiar el Treeview del JSON anterior
 
@@ -77,16 +71,8 @@ class JsonValidatorApp:
                     json_data = json.load(file)
                     self.json_data = json_data
 
-                for item in self.tree.get_children():
-                    self.tree.delete(item)  # Limpiar el Treeview del JSON anterior
-
-                # Leer el nuevo archivo
-                with open(file_path, "r", encoding="utf-8") as file:
-                    self.json_data = json.load(file)
-
                 # Mostrar el nuevo JSON en el Treeview
                 self.display_json(self.json_data)
-                self.message_label.config(text="JSON cargado exitosamente.", fg="green")
 
                 # Validar el nuevo JSON
                 validator = JsonValidator(json_report=self.json_data)
@@ -94,6 +80,7 @@ class JsonValidatorApp:
                 validator.validate_json()
 
                 # Obtener y mostrar los errores en el Treeview de errores
+                print(len(validator.get_errors()))
                 self.display_errors(validator.get_errors())
 
             except json.JSONDecodeError as e:
@@ -120,10 +107,41 @@ class JsonValidatorApp:
         for item in self.error_tree.get_children():
             self.error_tree.delete(item)
 
-        # Agregar los nuevos errores al Treeview
-        for func, error in errors.items():
-            # Solo necesitamos el nombre de la función y el mensaje de error
-            self.error_tree.insert("", "end", values=(func, "Error", error))
+        # Función recursiva para manejar errores anidados
+        def process_error(error, parent=""):
+            if isinstance(error, dict):
+                # Solo mostramos el 'type_error' y 'error' que son los que quieres ver
+                type_error = error.get('type_error', 'Desconocido')
+                msg = error.get('error', 'Sin mensaje')
+                # Insertamos solo el tipo de error y el mensaje
+                self.error_tree.insert(parent, 'end', values=(type_error, msg))
+            elif isinstance(error, list):
+                # Si el error es una lista, recorremos cada item
+                for sub_error in error:
+                    process_error(sub_error, parent)
+            else:
+                # Si es un error simple (no diccionario ni lista), lo mostramos directamente
+                self.error_tree.insert(parent, 'end', values=("Error", str(error)))
+
+        # Procesamos la lista de errores
+        for error in errors:
+            process_error(error)
+
+    def adjust_text_in_treeview(self):
+        """Ajusta el texto largo en el Treeview utilizando un widget Text para el "Mensaje"""
+        for item in self.error_tree.get_children():
+            values = self.error_tree.item(item, "values")
+            if len(values) > 2:  # Aseguramos que la fila tenga valores (Función, Tipo de Error, Mensaje)
+                msg = values[2]  # Accedemos a "Mensaje"
+                if len(msg) > 50:  # Si el texto es muy largo
+                    # Crear un Text widget para el mensaje largo
+                    text_widget = tk.Text(self.main_root, wrap=tk.WORD, height=3, width=70)
+                    text_widget.insert(tk.END, msg)
+                    text_widget.config(state=tk.DISABLED)
+                    # Agregar el widget de texto debajo del Treeview en la interfaz
+                    text_widget.pack(pady=5)
+                    # Enlazamos el widget Text con el item
+                    self.error_tree.item(item, values=(values[0], values[1], ""))  # Limpiamos el valor actual
 
     def clear_errors(self):
         """Limpiar los errores del Treeview de errores"""
@@ -138,9 +156,12 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = JsonValidatorApp(root)
     app.load_file()
-    # validator = JsonValidator(json_report=app.get_json())
-    # validator.validate_json()
-    # err = validator.get_errors()
-    # print(err,  "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<,,=")
-    # app.display_errors(err)
     root.mainloop()
+
+# TODO
+# Lineas a descomentar para cargar un archivo instantaneamente
+        # file_path = "/Users/carlos/Downloads/demo 1.json"
+        # app.load_file()
+
+# Lineas a cdomentar para cargar un archivo instantaneamente
+        # file_path = filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")])
