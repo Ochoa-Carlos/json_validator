@@ -35,14 +35,18 @@ class MonthlyVolumeReportValidator:
     # @exception_wrapper
     # def _validate_reporte_tipado(self) -> None:
     #     self._validate_control_existencias()
-        # DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.monthly_report, dict_type=month_report_dict)
+    #     DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.monthly_report, dict_type=month_report_dict)
 
     @exception_wrapper
     def _validate_control_existencias(self) -> None:
         if not (inv_control := self.monthly_report.get("ControlDeExistencias")):
             return
 
-        DictionaryTypeValidator().validate_dict_type(dict_to_validate=inv_control, dict_type=exists_control)
+        if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=inv_control, dict_type=exists_control):
+            type_err = err.get("type_err")
+            err_message = err.get("err_message")
+            self.catch_error(err_type=type_err, err_message=err_message)
+
         month_volume = inv_control.get("VolumenExistenciasMes")
         month_measure_date = inv_control.get("FechaYHoraEstaMedicionMes")
 
@@ -73,7 +77,11 @@ class MonthlyVolumeReportValidator:
             self.catch_error(err_type=RecepcionesError, err_message="Error: 'Recepciones' no fue declarada.")
             # raise RecepcionesError("Error: 'Recepciones' no fue declarada.")
 
-        DictionaryTypeValidator().validate_dict_type(dict_to_validate=receptions, dict_type=recepctions_dict)
+        if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=receptions, dict_type=recepctions_dict):
+            type_err = err.get("type_err")
+            err_message = err.get("err_message")
+            self.catch_error(err_type=type_err, err_message=err_message)
+
         total_receptions_month = receptions.get("TotalRecepcionesMes")
         amount_volume_reception_month = receptions.get("SumaVolumenRecepcionMes")
         month_documents = receptions.get("TotalDocumentosMes")
@@ -123,7 +131,7 @@ class MonthlyVolumeReportValidator:
         receives = self.monthly_report.get("Recepciones")
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
-# TODO FALTA EL COMPLEMENTO TRANSPORTE
+        # TODO FALTA EL COMPLEMENTO TRANSPORTE
         if comp_type == "Transporte":
             return
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
