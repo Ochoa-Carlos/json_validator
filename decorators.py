@@ -46,7 +46,7 @@ def exception_wrapper(func):
                 "class_error": class_name,
                 "type_error": func_name,
                 "error": str(err),
-                "excepciones": err,
+                # "excepciones": err,
                 "traceback": f"{last_tb}"
                 # "error_message": type(err).__name__,
                 # "err_message": err,
