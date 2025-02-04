@@ -47,7 +47,7 @@ class ProductValidator:
             self._validate_marcaje()
             self._validate_concentracion_sustancia_marcaje()
             self._validate_monthly_report()
-            # self._validate_gasnatural_ocondensados()
+            self._validate_gasnatural_ocondensados()
 
             self._update_index()
             self.validate_products()
@@ -306,6 +306,7 @@ class ProductValidator:
     # @exception_wrapper
     def _validate_monthly_report(self) -> None:
         if month_report := self.current_product.get("ReporteDeVolumenMensual"):
+
             product_key = self.current_product.get("ClaveProducto")
             month_report_obj = MonthlyVolumeReportValidator(
                 monthly_volume_report=month_report,
