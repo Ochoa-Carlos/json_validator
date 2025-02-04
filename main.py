@@ -13,7 +13,7 @@ class JsonValidatorApp:
         self.sc_height = self.main_root.winfo_screenheight()
 
         self.win_width = int(self.sc_width * 0.6)
-        self.win_height = int(self.sc_height * 0.6)
+        self.win_height = int(self.sc_height * 0.8)
         self.x_axis = (self.sc_width // 2) - (self.win_width // 2)
         self.y_axis = (self.sc_height // 2) - (self.win_height // 2)
 
@@ -24,11 +24,11 @@ class JsonValidatorApp:
 
         # Sección para mostrar los errores de validación usando Treeview
         self.error_section_frame = tk.Frame(self.main_root)
-        self.error_section_frame.pack(pady=20, fill=tk.BOTH, expand=True)
+        self.error_section_frame.pack(pady=0, fill=tk.BOTH, expand=True)
 
         # Crear un widget Treeview para mostrar los errores
         self.error_tree = ttk.Treeview(self.error_section_frame, columns=("Tipo de Error", "Mensaje"), show="headings")
-        self.error_tree.pack(pady=10, fill=tk.BOTH, expand=True)
+        self.error_tree.pack(pady=0, fill=tk.BOTH, expand=True)
 
         # Configuración de las columnas
         # self.error_tree.heading("Función", text="Función", anchor="w")
@@ -36,21 +36,21 @@ class JsonValidatorApp:
         self.error_tree.heading("Mensaje", text="Mensaje", anchor="w")
 
         # self.error_tree.column("Función", width=150)
-        self.error_tree.column("Tipo de Error", width=150)
+        self.error_tree.column("Tipo de Error", width=10)
         self.error_tree.column("Mensaje", width=500, stretch=tk.YES)
 
         self.style = ttk.Style()
         self.style.configure("Treeview", font=('Comic Sans MS', 10), foreground="#FDFCFA", background="#2D2A2E") #2D2A2E f4f8ff
-        self.style.configure("Treeview.Heading", font=('Arial', 12, 'bold'), foreground="red", background="lightgray")
+        self.style.configure("Treeview.Heading", font=('Arial', 12, 'bold'), foreground="#009de8", background="lightgray")
         self.style.configure("Treeview.Item", foreground="red", background="#FDFCFA")
         self.style.map("Treeview", background=[('selected', 'lightblue')])
 
         # Crear el Treeview para el JSON (este es el que se usa para visualizar el JSON cargado)
         self.treeview_frame = tk.Frame(self.main_root)
-        self.treeview_frame.pack(pady=10, fill=tk.BOTH, expand=True)
+        self.treeview_frame.pack(pady=0, fill=tk.BOTH, expand=True)
 
         self.tree = ttk.Treeview(self.treeview_frame, selectmode="browse")
-        self.tree.pack(pady=10, fill=tk.BOTH, expand=True)
+        self.tree.pack(pady=0, fill=tk.BOTH, expand=True)
 
         self.json_data = None
 
@@ -80,7 +80,6 @@ class JsonValidatorApp:
                 validator.validate_json()
 
                 # Obtener y mostrar los errores en el Treeview de errores
-                print(len(validator.get_errors()))
                 self.display_errors(validator.get_errors())
 
             except json.JSONDecodeError as e:
