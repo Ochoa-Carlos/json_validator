@@ -96,6 +96,7 @@ compl_volumen = {
     "ValorNumerico": float,
     "UnidadDeMedida": str,
 }
+
 # month_report_dict = {
 #     "ControlDeExistencias": {
 #         "VolumenExistenciasMes": float,
@@ -128,7 +129,7 @@ recepctions_dict = {
     "TotalRecepcionesMes": int,
     # "SumaVolumenRecepcionMes": dict,
     "TotalDocumentosMes": int,
-    "PoderCalorifico": Any,
+    "PoderCalorifico": dict,
     "ImporteTotalRecepcionesMensual": float,
     "Complemento": list
 }
