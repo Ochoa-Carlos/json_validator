@@ -13,8 +13,8 @@ from decorators import exception_wrapper
 from dict_type_validator import DictionaryTypeValidator
 from dict_types import (compl_foreign_pedimentos, complement,
                         complement_certified, complement_cfdis,
-                        complement_dictamen, complement_national,
-                        complement_transport)
+                        complement_dictamen, complement_foreign,
+                        complement_national, complement_transport)
 
 
 # TODO IMPORTANTISIMO< HICE LA BASE BAASADO EN EL COMPLEMENTO ALMACENAMIENTO
@@ -49,7 +49,6 @@ class ComplementBuilder:
 
     @exception_wrapper
     def _validate_complemento_tipado(self) -> None:
-        # DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.current_complement, dict_type=complement_transport)
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=self.current_complement, dict_type=complement):
             type_err = err.get("type_err")
             err_message = err.get("err_message")
@@ -289,13 +288,18 @@ class ComplementBuilder:
                     transaction_date = cfdi.get("FechaYHoraTransaccion")
                     documented_volum = cfdi.get("VolumenDocumentado")
 
-                    num_value = documented_volum.get("ValorNumerico")
-                    measure_unit = documented_volum.get("UnidadDeMedida")
                     if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=cfdi,
                                                                         dict_type=complement_cfdis):
                         type_err = err.get("type_err")
                         err_message = err.get("err_message")
                         self.catch_error(err_type=type_err, err_message=err_message)
+                    if documented_volum:
+                        num_value = documented_volum.get("ValorNumerico")
+                        measure_unit = documented_volum.get("UnidadDeMedida")
+                        if num_value is None:
+                            self.catch_error(KeyError, "Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'.")
+                        if measure_unit is None:
+                            self.catch_error(KeyError, "Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'.")
                     if cfdi_val is None:
                         self.catch_error(KeyError, "Error: clave 'Cfdi' no se encuentra.")
                         # raise KeyError("Error: clave 'Cfdi' no se encuentra.")
@@ -311,13 +315,6 @@ class ComplementBuilder:
                     if documented_volum is None:
                         self.catch_error(KeyError, "Error: clave 'VolumenDocumentado' no se encuentra.")
                         # raise KeyError("Error: clave 'VolumenDocumentado' no se encuentra.")
-                    if num_value is None:
-                        self.catch_error(KeyError, "Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'.")
-                        # raise KeyError("Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'.")
-                    if measure_unit is None:
-                        self.catch_error(KeyError, "Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'.")
-                        # raise KeyError("Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'.")
-
                     if not re.match(CFDI_REGEX, cfdi_val):
                         self.catch_error(RegexError, f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}")
                         # raise RegexError(f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}")
@@ -376,10 +373,13 @@ class ComplementBuilder:
     def _validate_extranjero(self) -> None:
         if (foreign := self.current_complement.get("Extranjero")) is None:
             return
-
         import_permission = foreign.get("PermisoImportacion")
         pedimentos = foreign.get("Pedimentos")
 
+        if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=foreign, dict_type=complement_foreign):
+            type_err = err.get("type_err")
+            err_message = err.get("err_message")
+            self.catch_error(err_type=type_err, err_message=err_message)
         if import_permission is None:
             self.catch_error(KeyError, "Error: clave 'PermisoImportacion' no se encuentra.")
             # raise KeyError("Error: clave 'PermisoImportacion' no se encuentra.")
@@ -408,9 +408,14 @@ class ComplementBuilder:
             incoterm = pedimento.get("Incoterms")
             import_price = pedimento.get("PrecioDeImportacion")
             documented_volume = pedimento.get("VolumenDocumentado")
-            num_value = documented_volume.get("ValorNumerico")
-            measure_unit = documented_volume.get("UnidadDeMedida")
 
+            if documented_volume:
+                num_value = documented_volume.get("ValorNumerico")
+                measure_unit = documented_volume.get("UnidadDeMedida")
+                if num_value is None:
+                    self.catch_error(KeyError, "Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'.")
+                if measure_unit is None:
+                    self.catch_error(KeyError, "Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'.")
             if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=pedimento,
                                                                 dict_type=compl_foreign_pedimentos):
                 type_err = err.get("type_err")
@@ -434,12 +439,6 @@ class ComplementBuilder:
             if documented_volume is None:
                 self.catch_error(KeyError, "Error: clave 'VolumenDocumentado' no se encuentra.")
                 # raise KeyError("Error: clave 'VolumenDocumentado' no se encuentra.")
-            if num_value is None:
-                self.catch_error(KeyError, "Error: valor 'ValorNumerico' no se encuentra en clave 'ValorDocumentado'.")
-                # raise KeyError("Error: valor 'ValorNumerico' no se encuentra en clave 'ValorDocumentado'.")
-            if measure_unit is None:
-                self.catch_error(KeyError, "Error: valor 'UnidadDeMedida' no se encuentra en clave 'ValorDocumentado'.")
-                # raise KeyError("Error: valor 'UnidadDeMedida' no se encuentra en clave 'ValorDocumentado'.")
 
             if not re.match(INTERN_SPOT_REGEX, intern_point):
                 self.catch_error(RegexError, f"Error: clave 'PuntoDeInternacion' con valor {intern_point} no cumple con el patron {INTERN_SPOT_REGEX}")

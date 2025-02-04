@@ -174,6 +174,13 @@ class DistributionComplement(ComplementBuilder):
         num_value = documented_volum.get("ValorNumerico")
         measure_unit = documented_volum.get("UnidadDeMedida")
 
+        # if documented_volum:
+        #     num_value = documented_volum.get("ValorNumerico")
+        #     measure_unit = documented_volum.get("UnidadDeMedida")
+        #     if num_value is None:
+        #         self.catch_error(KeyError, "Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'.")
+        #     if measure_unit is None:
+        #         self.catch_error(KeyError, "Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'.")
         if cfdi_val is None:
             raise KeyError("Error: clave 'Cfdi' no se encuentra.")
         if cfdi_type not in [cfdi.value for cfdi in CfdiType]:
