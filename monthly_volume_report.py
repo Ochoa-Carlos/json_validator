@@ -30,7 +30,7 @@ class MonthlyVolumeReportValidator:
         self._validate_recepciones()
         self.__validate_recepciones_complemento()
         self._validate_entregas()
-        # self.__validate_entregas_complemento()
+        self.__validate_entregas_complemento()
 
     # @exception_wrapper
     # def _validate_reporte_tipado(self) -> None:
@@ -123,7 +123,6 @@ class MonthlyVolumeReportValidator:
         receives = self.monthly_report.get("Recepciones")
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
-
 # TODO FALTA EL COMPLEMENTO TRANSPORTE
         if comp_type == "Transporte":
             return
@@ -141,13 +140,16 @@ class MonthlyVolumeReportValidator:
             self.catch_error(err_type=EntregasError, err_message="Error: 'Entregas' no fue declarada")
             # raise EntregasError("Error: 'Entregas' no fue declarada")
 
-        DictionaryTypeValidator().validate_dict_type(dict_to_validate=deliveries, dict_type=deliveries_dict)
         total_deliveries_month = deliveries.get("TotalEntregasMes")
         amount_volume_deliveries_month = deliveries.get("SumaVolumenEntregadoMes")
         month_documents = deliveries.get("TotalDocumentosMes")
         amount_deliveries_month = deliveries.get("ImporteTotalEntregasMes")
         complement = deliveries.get("Complemento")
 
+        if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=deliveries, dict_type=deliveries_dict):
+            type_err = err.get("type_err")
+            err_message = err.get("err_message")
+            self.catch_error(err_type=type_err, err_message=err_message)
         if total_deliveries_month is None:
             self.catch_error(err_type=EntregasError, err_message="Error: 'TotalEntregasMes' no fue declarada.")
             # raise EntregasError("Error: 'TotalEntregasMes' no fue declarada.")
@@ -191,17 +193,32 @@ class MonthlyVolumeReportValidator:
             #     "Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
             #     )
 
-        comp_type = complement[0].get("TipoComplemento")
+#         comp_type = complement[0].get("TipoComplemento")
 
-# TODO FALTA EL COMPLEMENTO TRANSPORTE
+# # TODO FALTA EL COMPLEMENTO TRANSPORTE
+#         if comp_type == "Transporte":
+#             return
+#         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
+#         complement_obj.validate_complemento()
+
+#         if complement_errors := complement_obj.errors:
+#             err = complement_obj.get_error_list()
+#             self._report_errors.extend(err)
+#             self._errors = self._errors | complement_errors
+
+    # @exception_wrapper
+    def __validate_entregas_complemento(self) -> None:
+        receives = self.monthly_report.get("Entregas")
+        complement = receives.get("Complemento")
+        comp_type = complement[0].get("TipoComplemento")
+        # TODO FALTA EL COMPLEMENTO TRANSPORTE
         if comp_type == "Transporte":
             return
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
 
         if complement_errors := complement_obj.errors:
-            err = complement_obj.get_error_list()
-            self._report_errors.extend(err)
+            self._report_errors.extend(complement_obj.get_error_list())
             self._errors = self._errors | complement_errors
 
     def catch_error(self, err_type: str | Exception, err_message: str) -> dict:
