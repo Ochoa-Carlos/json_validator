@@ -1,7 +1,6 @@
 import json
 import tkinter as tk
-from tkinter import ttk, filedialog
-
+from tkinter import ttk, filedialog, PhotoImage
 from json_validator import JsonValidator
 
 
@@ -19,8 +18,25 @@ class JsonValidatorApp:
 
         self.main_root.geometry(f"{self.win_width}x{self.win_height}+{self.x_axis}+{self.y_axis}")
         self.main_root.title("Validador JSON")
-        self.load_button = tk.Button(self.main_root, text="Cargar archivo JSON", command=self.load_file)
-        self.load_button.pack(pady=20)
+
+        # Cargar la imagen en formato .gif (sin necesidad de instalar Pillow)
+        try:
+            self.image = PhotoImage(file="logo_digamma-3.gif")  # Asegúrate de que sea un archivo .gif
+            self.image = self.image.subsample(4, 4)
+        except Exception as e:
+            print(f"Error al cargar la imagen: {e}")
+            self.image = None
+
+        self.button_frame = tk.Frame(self.main_root)
+        self.button_frame.pack(pady=20, )
+
+        if self.image:
+            self.image_label = tk.Label(self.button_frame, image=self.image)
+            self.image_label.pack(side=tk.LEFT)
+
+        # Botón
+        self.load_button = tk.Button(self.button_frame, text="Cargar archivo JSON", command=self.load_file)
+        self.load_button.pack(side=tk.RIGHT, padx=int(self.win_width * 0.2))  # Puedes ajustar el espacio entre la imagen y el botón
 
         # Sección para mostrar los errores de validación usando Treeview
         self.error_section_frame = tk.Frame(self.main_root)
