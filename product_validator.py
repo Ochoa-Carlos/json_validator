@@ -13,6 +13,7 @@ from monthly_volume_report import MonthlyVolumeReportValidator
 
 
 class ProductValidator:
+    """Product validator class."""
 
     def __init__(self, products: list, caracter: str):
         self._gen_index = 0
