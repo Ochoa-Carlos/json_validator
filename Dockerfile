@@ -19,6 +19,6 @@ ENV NAME .env
 
 RUN pwd
 
-COPY  . .
+COPY . .
 
 CMD ["uvicorn", "src.fast_app:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "3001"]
