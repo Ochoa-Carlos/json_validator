@@ -1,6 +1,9 @@
 import json
+import os
+import sys
 import tkinter as tk
-from tkinter import ttk, filedialog, PhotoImage
+from tkinter import PhotoImage, filedialog, ttk
+
 from json_validator import JsonValidator
 
 
@@ -21,7 +24,7 @@ class JsonValidatorApp:
 
         # Cargar la imagen en formato .gif (sin necesidad de instalar Pillow)
         try:
-            self.image = PhotoImage(file="assets/logo_digamma.gif")  # Asegúrate de que sea un archivo .gif
+            self.image = self.load_image()
             self.image = self.image.subsample(4, 4)
         except Exception as e:
             print(f"Error al cargar la imagen: {e}")
@@ -68,13 +71,28 @@ class JsonValidatorApp:
         self.tree = ttk.Treeview(self.treeview_frame, selectmode="browse")
         self.tree.pack(pady=0, fill=tk.BOTH, expand=True)
 
+        # ✅ Label para mostrar mensajes
+        self.message_label = tk.Label(self.main_root, text="", fg="red", font=("Arial", 12))
+        self.message_label.pack(pady=10)  # Agrega margen inferior
+
         self.json_data = None
+
+    def load_image(self):
+        if getattr(sys, "frozen", False):
+            image_path = os.path.join(sys._MEIPASS, "src/assets", "logo_digamma.gif")
+        else:
+            image_path = os.path.join("src/assets", "logo_digamma.gif")
+        try:
+            return PhotoImage(file=image_path)
+        except Exception as exc:
+            print(f"Error al cargar imagen {exc}")
+            return None
 
     def load_file(self):
         """Read and load JSON file"""
         # Aquí usas un archivo local de ejemplo, puedes reemplazar con filedialog si prefieres
-        file_path = "src/jotason.json"
-        # file_path = filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")])
+        # file_path = "src/jotason.json"
+        file_path = filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")])
         if file_path:  # Verifica que el archivo ha sido seleccionado
             try:
                 # Limpiar errores anteriores
