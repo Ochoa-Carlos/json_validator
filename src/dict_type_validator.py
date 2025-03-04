@@ -1,3 +1,4 @@
+from src.custom_exceptions import TipadoError
 
 
 class DictionaryTypeValidator:
@@ -13,6 +14,6 @@ class DictionaryTypeValidator:
                 key_type = str(dict_type[key])
                 type_extracted = key_type.split("'")[1]
                 return {
-                    "type_err": TypeError, 
+                    "type_err": TipadoError,
                     "err_message": f"Error: Clave {key} no es de tipo {type_extracted}"
                     }

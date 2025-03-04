@@ -1,11 +1,11 @@
 import re
 
 from src.condensed_gas_validator import CondensedGasValidator
-from src.constants import (SUBPRODUCTO_REGEX, petroleo_caracteres, products_keys,
-                       subproducts_keys)
-from src.custom_exceptions import (CaracterError, ClaveProductoError,
-                               ClaveSubProductoError, LongitudError,
-                               RegexError, ValorMinMaxError)
+from src.constants import (SUBPRODUCTO_REGEX, petroleo_caracteres,
+                           products_keys, subproducts_keys)
+from src.custom_exceptions import (CaracterError, ClaveError,
+                                   ClaveProductoError, ClaveSubProductoError,
+                                   LongitudError, RegexError, ValorMinMaxError)
 from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import product_dict
@@ -69,7 +69,7 @@ class ProductValidator:
         prod = self.current_product
 
         if prod.get("ClaveProducto") not in products_keys:
-            self.catch_error(err_type=KeyError, err_message="Error: 'Clave producto' requerida no encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'Clave producto' requerida no encontrada.")
             # raise RequiredError("Error: 'Clave producto' requerida no encontrada.")
 
     @exception_wrapper
@@ -293,7 +293,7 @@ class ProductValidator:
         if marking := self.current_product.get("Marcaje"):
             concentration = self.current_product.get("ConcentracionSustanciaMarcaje")
             if not concentration:
-                self.catch_error(err_type=KeyError, err_message="Error: 'ConcentracionSustanciaMarcaje' debe expresarse si se manifiesta 'Marcaje'.")
+                self.catch_error(err_type=ClaveError, err_message="Error: 'ConcentracionSustanciaMarcaje' debe expresarse si se manifiesta 'Marcaje'.")
                 # raise KeyError(
                 #     "Error: 'ConcentracionSustanciaMarcaje' debe expresarse si se manifiesta 'Marcaje'."
                 # )
@@ -325,7 +325,7 @@ class ProductValidator:
         if self.caracter in petroleo_caracteres and self.current_product.get("ClaveProducto") in ["PR09", "PR10"]:
             if (natural_gas := self.current_product.get("GasNaturalOCondensados")) is None:
                 self.catch_error(
-                    err_type=KeyError,
+                    err_type=ClaveError,
                     err_message=f"Error: 'GasNaturalOCondensados' debe expresarse si se manifiesta caracter {petroleo_caracteres} y Producto 'PR09' o 'PR10'."
                     )
                 # raise KeyError(

@@ -4,7 +4,8 @@ from typing import TypeVar
 from src.complements import ComplementBuilder, StorageComplement
 from src.complements.helpers import complement_builder
 from src.constants import UTC_FORMAT_REGEX, cal_value_caracteres
-from src.custom_exceptions import EntregasError, RecepcionesError, ValorMinMaxError
+from src.custom_exceptions import (ClaveError, EntregasError, RecepcionesError,
+                                   ValorMinMaxError)
 from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import deliveries_dict, exists_control, recepctions_dict
@@ -51,10 +52,10 @@ class MonthlyVolumeReportValidator:
         month_measure_date = inv_control.get("FechaYHoraEstaMedicionMes")
 
         if month_volume is None:
-            self.catch_error(err_type=KeyError, err_message="Error: 'VolumenExistenciasMes' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'VolumenExistenciasMes' no fue encontrada.")
             # raise KeyError("Error: 'VolumenExistenciasMes' no fue encontrada.")
         if month_measure_date is None:
-            self.catch_error(err_type=KeyError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
             # raise KeyError("Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
         if not -100000000000.0 <= month_volume <= 100000000000.0:
             self.catch_error(

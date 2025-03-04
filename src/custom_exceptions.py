@@ -52,3 +52,6 @@ class EntregasError(BaseError):
 
 class BitacoraMensualError(BaseError):
     """Custom reception error."""
+
+class TipadoError(BaseError):
+    """Custom tipado error."""
