@@ -1,17 +1,17 @@
 import re
 
-from constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
+from src.constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
                        UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
-from custom_exceptions import (CaracterAsignatarioError,
+from src.custom_exceptions import (CaracterAsignatarioError,
                                CaracterContratistaError,
                                CaracterPermisionarioError,
                                CaracterUsuarioError, LongitudError, RegexError,
                                ValorMinMaxError)
-from decorators import wrapper_handler
-from enumerators import CaracterTypeEnum
-from json_model import JsonRoot
-from monthly_log import MonthlyLogValidator
-from product_validator import ProductValidator
+from src.decorators import wrapper_handler
+from src.enumerators import CaracterTypeEnum
+from src.json_model import JsonRoot
+from src.monthly_log import MonthlyLogValidator
+from src.product_validator import ProductValidator
 
 
 class JsonValidator():

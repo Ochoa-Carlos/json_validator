@@ -1,17 +1,17 @@
 import re
 
-from complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX, DATE_REGEX,
+from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX, DATE_REGEX,
                                    FOLIO_CERTIFIED_REGEX, FOLIO_DICTAMEN_REGEX,
                                    IMPORT_PERMISSION_REGEX, INTERN_SPOT_REGEX,
                                    MEASURE_UNIT, PERMISSION_PROOVE_REGEX,
                                    RFC_PERSONA_MORAL_REGEX, RFC_REGEX,
                                    TRANSPORT_PERM_REGEX, UTC_FORMAT_REGEX)
-from complements.enumerators import (AduanaEntrance, CfdiType, ComplementType,
+from src.complements.enumerators import (AduanaEntrance, CfdiType, ComplementType,
                                      CountryCode, IncotermCode)
-from custom_exceptions import LongitudError, RegexError, ValorMinMaxError
-from decorators import exception_wrapper
-from dict_type_validator import DictionaryTypeValidator
-from dict_types import (compl_foreign_pedimentos, complement,
+from src.custom_exceptions import LongitudError, RegexError, ValorMinMaxError
+from src.decorators import exception_wrapper
+from src.dict_type_validator import DictionaryTypeValidator
+from src.dict_types import (compl_foreign_pedimentos, complement,
                         complement_certified, complement_cfdis,
                         complement_dictamen, complement_foreign,
                         complement_national, complement_transport)

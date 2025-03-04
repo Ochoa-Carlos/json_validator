@@ -1,15 +1,15 @@
 import re
 
-from complements.complement_base import ComplementBuilder
-from complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX, PERMISSION_ALM_CDLRGN_REGEX, TRANSP_PERM_CDLRGN_REGEX,
+from src.complements.complement_base import ComplementBuilder
+from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX, PERMISSION_ALM_CDLRGN_REGEX, TRANSP_PERM_CDLRGN_REGEX,
                                    IMPORT_PERMISSION_REGEX, INTERN_SPOT_REGEX,
                                    MEASURE_UNIT, PERMISSION_ALM_DIST_REGEX,
                                    PERMISSION_PROOVE_CLIENT_REGEX, RFC_REGEX,
                                    TRANSPORT_PERM_REGEX, UTC_FORMAT_REGEX)
-from complements.enumerators import (AduanaEntrance, CfdiType, CountryCode,
+from src.complements.enumerators import (AduanaEntrance, CfdiType, CountryCode,
                                      IncotermCode)
-from custom_exceptions import LongitudError, RegexError, ValorMinMaxError
-from decorators import exception_wrapper
+from src.custom_exceptions import LongitudError, RegexError, ValorMinMaxError
+from src.decorators import exception_wrapper
 
 # TODO claves de CDLRNG => TIPOCOMPLEMENTO TERMINALAMYTRANS CERTIFICADO NACIONAL EXTRANJERO ACLARACION
 class CDLRGNComplement(ComplementBuilder):

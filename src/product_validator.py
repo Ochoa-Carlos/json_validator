@@ -1,15 +1,15 @@
 import re
 
-from condensed_gas_validator import CondensedGasValidator
-from constants import (SUBPRODUCTO_REGEX, petroleo_caracteres, products_keys,
+from src.condensed_gas_validator import CondensedGasValidator
+from src.constants import (SUBPRODUCTO_REGEX, petroleo_caracteres, products_keys,
                        subproducts_keys)
-from custom_exceptions import (CaracterError, ClaveProductoError,
+from src.custom_exceptions import (CaracterError, ClaveProductoError,
                                ClaveSubProductoError, LongitudError,
                                RegexError, ValorMinMaxError)
-from decorators import exception_wrapper
-from dict_type_validator import DictionaryTypeValidator
-from dict_types import product_dict
-from monthly_volume_report import MonthlyVolumeReportValidator
+from src.decorators import exception_wrapper
+from src.dict_type_validator import DictionaryTypeValidator
+from src.dict_types import product_dict
+from src.monthly_volume_report import MonthlyVolumeReportValidator
 
 
 class ProductValidator:

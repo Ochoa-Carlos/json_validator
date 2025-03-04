@@ -1,12 +1,12 @@
 import re
 from typing import Union
 
-from constants import UTC_FORMAT_REGEX, component_alarm, event_type
-from custom_exceptions import (BitacoraMensualError, LongitudError,
+from src.constants import UTC_FORMAT_REGEX, component_alarm, event_type
+from src.custom_exceptions import (BitacoraMensualError, LongitudError,
                                ValorMinMaxError)
-from decorators import exception_wrapper
-from dict_type_validator import DictionaryTypeValidator
-from dict_types import log_dict
+from src.decorators import exception_wrapper
+from src.dict_type_validator import DictionaryTypeValidator
+from src.dict_types import log_dict
 
 
 # TODO VER EL TIPO DE OBJETO QUE ES EN REALIDAD MONTH LOG

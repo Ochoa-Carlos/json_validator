@@ -1,11 +1,11 @@
 import re
 from typing import Union
 
-from constants import CONDENSEDGAS_REGEX, petroleo_caracteres
-from custom_exceptions import RegexError, ValorMinMaxError
-from decorators import exception_wrapper
-from dict_type_validator import DictionaryTypeValidator
-from dict_types import gas_dict
+from src.constants import CONDENSEDGAS_REGEX, petroleo_caracteres
+from src.custom_exceptions import RegexError, ValorMinMaxError
+from src.decorators import exception_wrapper
+from src.dict_type_validator import DictionaryTypeValidator
+from src.dict_types import gas_dict
 
 
 # TODO VALIDAR EL TIPADO Y AJUSTAR LA MANERA DE REGRESAR LOS ERRORES
