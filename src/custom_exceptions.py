@@ -32,6 +32,9 @@ class ValorMinMaxError(BaseError):
 class RequiredError(BaseError):
     """Custom length error."""
 
+class ClaveError(BaseError):
+    """Custom clave sub producto error."""
+
 class ClaveSubProductoError(BaseError):
     """Custom clave sub producto error."""
 

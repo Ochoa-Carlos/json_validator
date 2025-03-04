@@ -1,12 +1,12 @@
 import re
 
 from src.constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
-                       UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
+                           UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
 from src.custom_exceptions import (CaracterAsignatarioError,
-                               CaracterContratistaError,
-                               CaracterPermisionarioError,
-                               CaracterUsuarioError, LongitudError, RegexError,
-                               ValorMinMaxError)
+                                   CaracterContratistaError,
+                                   CaracterPermisionarioError,
+                                   CaracterUsuarioError, ClaveError,
+                                   LongitudError, RegexError, ValorMinMaxError)
 from src.decorators import wrapper_handler
 from src.enumerators import CaracterTypeEnum
 from src.json_model import JsonRoot
@@ -206,7 +206,7 @@ class JsonValidator():
     @wrapper_handler
     def _validate_numero_pozos(self) -> None:
         if "NumeroPozos" not in self.json_report:
-            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroPozos' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroPozos' no fue encontrada.")
             # raise KeyError(
             #     "Error: 'NumeroPozos' no fue encontrada."
             #     )
@@ -214,7 +214,7 @@ class JsonValidator():
     @wrapper_handler
     def _validate_numero_tanques(self) -> None:
         if "NumeroTanques" not in self.json_report:
-            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroTanques' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroTanques' no fue encontrada.")
             # raise KeyError(
             #     "Error: 'NumeroTanques' no fue encontrada."
             #     )
@@ -222,7 +222,7 @@ class JsonValidator():
     @wrapper_handler
     def _validate_ductos_io(self) -> None:
         if "NumeroDuctosEntradaSalida" not in self.json_report:
-            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroDuctosEntradaSalida' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroDuctosEntradaSalida' no fue encontrada.")
             # raise KeyError(
             #     "Error: 'NumeroDuctosEntradaSalida' no fue encontrada."
             #     )
@@ -230,7 +230,7 @@ class JsonValidator():
     @wrapper_handler
     def _validate_ductos_distribucion(self) -> None:
         if "NumeroDuctosTransporteDistribucion" not in self.json_report:
-            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroDuctosTransporteDistribucion' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroDuctosTransporteDistribucion' no fue encontrada.")
             # raise KeyError(
             #     "Error: 'NumeroDuctosTransporteDistribucion' no fue encontrada."
             #     )
@@ -238,7 +238,7 @@ class JsonValidator():
     @wrapper_handler
     def _validate_num_dispensarios(self) -> None:
         if "NumeroDispensarios" not in self.json_report:
-            self.catch_error(err_type=KeyError, err_message="Error: 'NumeroDispensarios' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroDispensarios' no fue encontrada.")
             # raise KeyError(
             #     "Error: 'NumeroDispensarios' no fue encontrada."
             #     )
@@ -265,15 +265,18 @@ class JsonValidator():
 
     # @wrapper_handler
     def _validate_products(self) -> None:
-        products = self.json_report.get("Producto")
-        caracter = self.json_report.get("Caracter")
-        product_obj = ProductValidator(products=products, caracter=caracter)
-        product_obj.validate_products()
+        if products := self.json_report.get("Producto"):
+            caracter = self.json_report.get("Caracter")
 
-        if product_errors := product_obj.errors:
-            self._errors.extend(product_errors)
-            # self.errors = self.errors | product_errors
-            # self._errors = self.errors | product_errors
+            product_obj = ProductValidator(products=products, caracter=caracter)
+            product_obj.validate_products()
+
+            if product_errors := product_obj.errors:
+                self._errors.extend(product_errors)
+                # self.errors = self.errors | product_errors
+                # self._errors = self.errors | product_errors
+        else:
+            self.catch_error(err_type=ClaveError, err_message="Error: clave 'Producto' no encontrada.")
 
     # @wrapper_handler
     def _validate_monthly_log(self) -> None:
