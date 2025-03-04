@@ -62,7 +62,7 @@ class JsonValidator():
         self._validate_report_date()
         self._validate_rfc_proveedores()
         self._validate_products()
-        # self._validate_monthly_log()
+        self._validate_monthly_log()
 
     @wrapper_handler
     def _validate_version(self) -> bool:
@@ -281,6 +281,7 @@ class JsonValidator():
     # @wrapper_handler
     def _validate_monthly_log(self) -> None:
         if (month_log := self.json_report.get("BitacoraMensual")) is None:
+            self.catch_error(err_type=ClaveError, err_message="Error: clave 'Bitácora' no encontrada.")
             return
         log_obj = MonthlyLogValidator(month_log=month_log)
         log_obj.validate_log()
