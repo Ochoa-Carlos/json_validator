@@ -44,12 +44,10 @@
             display: none;
             max-height: 500px;
             overflow: auto;
-            /* font-family: monospace; */
             font-family: "Courier Prime", monospace;
-  font-weight: 400;
-  font-style: normal;
+            font-style: normal;
+            font-weight: 400;
             font-size: 15px;
-            max-width: 100%;
         }
 
         .error {
@@ -76,10 +74,10 @@
             margin: 0;
         }
 
-        input[type="file"] {
+        /* input[type="file"] {
             display: block;
             margin: 20px auto;
-        }
+        } */
 
         /* Personaliza los colores de las claves y valores del JSON */
         .hljs-keyword {
@@ -99,9 +97,112 @@
 
         .hljs-literal {
             color: #d4d4d4;
-            /* Color neutro para literales como true/false/null */
         }
-    </style>
+
+            /* Estilo de los botones (más pequeños) */
+        button[type="submit"] {
+            background-color: #4CAF50; /* Color de fondo verde */
+            color: white;
+            padding: 8px 15px; /* Menos padding para hacerlo más pequeño */
+            font-size: 14px; /* Tamaño de fuente más pequeño */
+            border: none;
+            border-radius: 6px; /* Bordes un poco más pequeños */
+            cursor: pointer;
+            width: auto;
+            text-align: center;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Efecto hover para el botón */
+        button[type="submit"]:hover {
+            background-color: #45a049; /* Color verde más oscuro */
+            transform: translateY(-2px); /* Sube un poco el botón */
+        }
+
+        /* Efecto focus para el botón */
+        button[type="submit"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 128, 0, 0.7); /* Resaltado verde */
+        }
+
+        /* Estilo para el input de archivo */
+        input[type="file"] {
+            position: absolute;
+            opacity: 0; /* Lo hace invisible pero sigue siendo interactivo */
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+        }
+
+        /* Estilo para el label que actúa como botón */
+        label[for="jsonFile"] {
+            display: inline-block;
+            background-color: #008CBA;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Efecto hover en el label */
+        label[for="jsonFile"]:hover {
+            background-color: #005f73;
+            transform: translateY(-2px);
+        }
+
+        /* Efecto focus para el label */
+        label[for="jsonFile"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 128, 0, 0.7);
+        }
+
+        /* Mostrar el nombre del archivo cargado */
+        #file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Botón de carga de archivo (más pequeño) */
+        .file-upload-btn {
+            display: inline-block;
+            background-color: #008CBA; /* Color de fondo azul */
+            color: white;
+            padding: 8px 15px; /* Menos padding */
+            font-size: 14px; /* Fuente más pequeña */
+            border: none;
+            border-radius: 6px; /* Bordes más pequeños */
+            cursor: pointer;
+            width: auto;
+            text-align: center;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Efecto hover para el botón de carga */
+        .file-upload-btn:hover {
+            background-color: #005f73; /* Azul más oscuro */
+            transform: translateY(-2px);
+        }
+
+        /* Efecto focus para el botón de carga */
+        .file-upload-btn:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 128, 0, 0.7); /* Sombra verde */
+        }
+
+        /* Estilo para pantallas pequeñas */
+        @media (max-width: 600px) {
+            button[type="submit"], .file-upload-btn {
+                width: 100%; /* Hace el botón responsivo */
+            }
+        }
+</style>
+
 </head>
 
 <body>
@@ -109,8 +210,17 @@
     <div class="container">
         <!-- Formulario para cargar el archivo JSON -->
         <form id="jsonForm" enctype="multipart/form-data">
+            <!-- Input de archivo (invisible pero funcional) -->
             <input type="file" id="jsonFile" accept=".json" required />
-            <button type="submit">Cargar JSON</button>
+        
+            <!-- Label usado como botón visible -->
+            <label for="jsonFile" class="file-upload-btn">Cargar archivo JSON</label>
+        
+            <!-- Aquí se mostrará el nombre del archivo una vez cargado -->
+            <div id="file-name"></div>
+        
+            <!-- Botón para enviar el formulario -->
+            <button type="submit">Enviar JSON</button>
         </form>
 
         <!-- Muestra el JSON formateado -->
@@ -142,6 +252,14 @@
                 return '<span class="' + cls + '">' + match + '</span>';
             });
         }
+
+        document.getElementById("jsonFile").addEventListener("change", function (event) {
+                // Obtener el nombre del archivo seleccionado
+                const fileName = event.target.files[0] ? event.target.files[0].name : "No se ha seleccionado ningún archivo";
+
+                // Mostrar el nombre del archivo en el div con id "file-name"
+                document.getElementById("file-name").textContent = "Archivo: " + fileName;
+            });
 
         document.getElementById("jsonForm").addEventListener("submit", async function (event) {
             event.preventDefault();
