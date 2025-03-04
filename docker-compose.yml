@@ -1,0 +1,23 @@
+networks:
+  validator_network:
+    driver: bridge
+
+services:
+  validator_service:
+    container_name: validator_service
+    image: json_validator
+    ports:
+      - '3001:3001'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn src.fast_app:app --proxy-headers --host 0.0.0.0 --port 3001 --reload
+    networks:
+      - validator_network
+    volumes:
+      - .:/usr/src/src
+    env_file:
+      - .env
+    # depends_on:
+      # db:
+        # condition: service_started
