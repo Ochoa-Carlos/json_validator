@@ -101,7 +101,7 @@
 
             /* Estilo de los botones (más pequeños) */
         button[type="submit"] {
-            background-color: #4CAF50; /* Color de fondo verde */
+            background-color: #0A5D99; /* Color de fondo verde #0ABCEE #0A5D99*/
             color: white;
             padding: 8px 15px; /* Menos padding para hacerlo más pequeño */
             font-size: 14px; /* Tamaño de fuente más pequeño */
@@ -116,14 +116,14 @@
 
         /* Efecto hover para el botón */
         button[type="submit"]:hover {
-            background-color: #45a049; /* Color verde más oscuro */
+            background-color: #0ABCEE; /* Color verde más oscuro */
             transform: translateY(-2px); /* Sube un poco el botón */
         }
 
         /* Efecto focus para el botón */
         button[type="submit"]:focus {
             outline: none;
-            box-shadow: 0 0 5px rgba(0, 128, 0, 0.7); /* Resaltado verde */
+            box-shadow: 0 0 5px rgba(0, 140, 186, 1); /* Resaltado verde */
         }
 
         /* Estilo para el input de archivo */
@@ -157,7 +157,7 @@
         /* Efecto focus para el label */
         label[for="jsonFile"]:focus {
             outline: none;
-            box-shadow: 0 0 5px rgba(0, 128, 0, 0.7);
+            box-shadow: 0 0 5px rgba(0, 140, 186, 1);
         }
 
         /* Mostrar el nombre del archivo cargado */
@@ -192,7 +192,7 @@
         /* Efecto focus para el botón de carga */
         .file-upload-btn:focus {
             outline: none;
-            box-shadow: 0 0 5px rgba(0, 128, 0, 0.7); /* Sombra verde */
+            box-shadow: 0 0 5px rgba(0, 140, 186, 1); /* Sombra verde */
         }
 
         /* Estilo para pantallas pequeñas */
@@ -220,7 +220,7 @@
             <div id="file-name"></div>
         
             <!-- Botón para enviar el formulario -->
-            <button type="submit">Enviar JSON</button>
+            <button type="submit">Validar JSON</button>
         </form>
 
         <!-- Muestra el JSON formateado -->
@@ -285,8 +285,10 @@
                     document.getElementById("jsonDisplay").style.display = "block";
                     document.getElementById("errorDisplay").style.display = "none";
 
+                    let errorList = document.getElementById("errorList");
+
                     if (result.errors && result.errors.length > 0) {
-                        let errorList = document.getElementById("errorList");
+                        // Si hay errores, mostramos la lista de errores
                         errorList.style.display = "block";
                         errorList.innerHTML = "";
                         result.errors.forEach(error => {
@@ -296,8 +298,11 @@
                             errorList.appendChild(errorItem);
                         });
                     } else {
-                        document.getElementById("errorList").style.display = "none";
+                        // Si no hay errores, mostramos un mensaje verde
+                        errorList.style.display = "block";
+                        errorList.innerHTML = '<p style="color: green;">No se encontraron errores</p>';
                     }
+
                 }
             } catch (error) {
                 console.error("Error al procesar el archivo:", error);
