@@ -17,7 +17,7 @@ async def read_root():
 
 @app.post("/upload/")
 async def upload_json(file: UploadFile = File(...)):
-    """Upload json file endp."""
+    """Upload json file endppoint."""
     try:
         # Leemos el archivo JSON subido
         content = await file.read()
