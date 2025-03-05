@@ -12,7 +12,7 @@ from src.complements.enumerators import (AduanaEntrance, CfdiType,
                                          ComplementType, CountryCode,
                                          IncotermCode)
 from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
-                                   TipadoError, ValorMinMaxError)
+                                   TipadoError, ValorError, ValorMinMaxError)
 from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import (compl_foreign_pedimentos, complement,
@@ -347,15 +347,15 @@ class ComplementBuilder:
             if not 2 <= intern_point <= 3:
                 self.catch_error(ValorMinMaxError, f"Error: clave 'PuntoDeInternacion' con valor {intern_point} no tiene la longitud min 2 o max 3.")
             if origin_country not in CountryCode:
-                self.catch_error(ValueError, f"Error: valor '{origin_country}' en clave 'PaisOrigen' no válido.")
+                self.catch_error(ValorError, f"Error: valor '{origin_country}' en clave 'PaisOrigen' no válido.")
             if aduanal_transp not in [item.value for item in AduanaEntrance]:
-                self.catch_error(ValueError, f"Error: valor '{aduanal_transp}' en clave 'MedioDeTransporteAduana' no válido.")
+                self.catch_error(ValorError, f"Error: valor '{aduanal_transp}' en clave 'MedioDeTransporteAduana' no válido.")
             if not re.match(ADUANAL_PEDIMENTO, aduanal_pedimento):
                 self.catch_error(RegexError, f"Error: clave 'PedimentoAduanal' con valor {aduanal_pedimento} no cumple con el patron {ADUANAL_PEDIMENTO}")
             if len(aduanal_pedimento) != 21:
                 self.catch_error(LongitudError, f"Error: clave 'PedimentoAduanal' con valor '{aduanal_pedimento} no cumple con la longitud de 21.'")
             if incoterm not in IncotermCode.__members__:
-                self.catch_error(ValueError, f"Error: clave 'Incoterms' con valor {incoterm} no válido.")
+                self.catch_error(ValorError, f"Error: clave 'Incoterms' con valor {incoterm} no válido.")
             if not 0 <= import_price <= 100000000000:
                 self.catch_error(ValorMinMaxError, f"Error: clave 'PrecioDeImportacion' con valor {import_price} no tiene el valor min 0 o max 100000000000.")
             if not 0 <= num_value <= 100000000000:
