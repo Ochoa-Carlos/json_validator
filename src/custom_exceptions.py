@@ -55,3 +55,6 @@ class BitacoraMensualError(BaseError):
 
 class TipadoError(BaseError):
     """Custom tipado error."""
+
+class ValorError(BaseError):
+    """Custom Valor error."""
