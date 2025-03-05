@@ -1,4 +1,5 @@
 import re
+import traceback
 
 from src.constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
                            UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
@@ -12,6 +13,9 @@ from src.enumerators import CaracterTypeEnum
 from src.json_model import JsonRoot
 from src.monthly_log import MonthlyLogValidator
 from src.product_validator import ProductValidator
+from src.utils.logger import logger
+
+logging = logger()
 
 
 class JsonValidator():
@@ -46,23 +50,29 @@ class JsonValidator():
 # TODO descomentar montly_log y adecuar los errores
     def validate_json(self) -> None:
         """Return True or False if JSON are validated according type and bound."""
-        print("==================================== VALIDATE JSON ====================================")
-        self._validate_version()
-        self._validate_rfc_contribuyente()
-        self._validate_rfc_representante_legal()
-        self._validate_info_according_caracter()
-        self._validate_clave_instalacion()
-        self._validate_descripcion_instalacion()
-        self._validate_geolocalizacion()
-        self._validate_numero_pozos()
-        self._validate_numero_tanques()
-        self._validate_ductos_io()
-        self._validate_ductos_distribucion()
-        self._validate_num_dispensarios()
-        self._validate_report_date()
-        self._validate_rfc_proveedores()
-        self._validate_products()
-        self._validate_monthly_log()
+        try:
+            print("==================================== VALIDATE JSON ====================================")
+            self._validate_version()
+            self._validate_rfc_contribuyente()
+            self._validate_rfc_representante_legal()
+            self._validate_info_according_caracter()
+            self._validate_clave_instalacion()
+            self._validate_descripcion_instalacion()
+            self._validate_geolocalizacion()
+            self._validate_numero_pozos()
+            self._validate_numero_tanques()
+            self._validate_ductos_io()
+            self._validate_ductos_distribucion()
+            self._validate_num_dispensarios()
+            self._validate_report_date()
+            self._validate_rfc_proveedores()
+            self._validate_products()
+            self._validate_monthly_log()
+            print("=ERRORSOTE AQUI ALVASDASD")
+        except Exception as exc:
+            self.catch_error(err_type=SystemError, err_message=f"Error al validar JSON {exc}")
+            logging.error(f"Error al validar JSON: {exc}")
+            logging.error(f": {traceback.format_exc()}")
 
     @wrapper_handler
     def _validate_version(self) -> bool:
