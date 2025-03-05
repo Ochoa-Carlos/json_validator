@@ -11,7 +11,7 @@ from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX,
 from src.complements.enumerators import (AduanaEntrance, CfdiType, CountryCode,
                                          IncotermCode)
 from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
-                                   ValorMinMaxError)
+                                   ValorError, ValorMinMaxError)
 from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import compl_foreign_pedimentos
@@ -352,12 +352,12 @@ class ExpenditureComplement(ComplementBuilder):
                 )
         if origin_country not in CountryCode:
             self.catch_error(
-                err_type=ValueError,
+                err_type=ValorError,
                 err_message=f"Error: valor '{origin_country}' en clave 'PaisOrigen' no válido."
                 )
         if aduanal_transp not in [item.value for item in AduanaEntrance]:
             self.catch_error(
-                err_type=ValueError,
+                err_type=ValorError,
                 err_message=f"Error: valor '{aduanal_transp}' en clave 'MedioDeTransporteAduana' no válido."
                 )
         if not re.match(ADUANAL_PEDIMENTO, aduanal_pedimento):
@@ -372,7 +372,7 @@ class ExpenditureComplement(ComplementBuilder):
                 )
         if incoterm not in IncotermCode.__members__:
             self.catch_error(
-                err_type=ValueError,
+                err_type=ValorError,
                 err_message=f"Error: clave 'Incoterms' con valor {incoterm} no válido."
                 )
         if not 0 <= import_price <= 100000000000:
