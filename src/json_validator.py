@@ -68,7 +68,6 @@ class JsonValidator():
             self._validate_rfc_proveedores()
             self._validate_products()
             self._validate_monthly_log()
-            print("=ERRORSOTE AQUI ALVASDASD")
         except Exception as exc:
             self.catch_error(err_type=SystemError, err_message=f"Error al validar JSON {exc}")
             logging.warning(f"Error al validar JSON: {exc}")
