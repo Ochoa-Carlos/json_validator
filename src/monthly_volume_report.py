@@ -1,7 +1,7 @@
 import re
 from typing import TypeVar
 
-from src.complements import ComplementBuilder, StorageComplement
+from src.complements import ComplementBuilder
 from src.complements.helpers import complement_builder
 from src.constants import UTC_FORMAT_REGEX, cal_value_caracteres
 from src.custom_exceptions import (ClaveError, EntregasError, RecepcionesError,
@@ -133,7 +133,8 @@ class MonthlyVolumeReportValidator:
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
         # TODO FALTA EL COMPLEMENTO TRANSPORTE
-        if comp_type == "Transporte":
+        if comp_type in ["Transporte"]:
+            self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
             return
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
@@ -221,7 +222,8 @@ class MonthlyVolumeReportValidator:
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
         # TODO FALTA EL COMPLEMENTO TRANSPORTE
-        if comp_type == "Transporte":
+        if comp_type in ["Transporte"]:
+            self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
             return
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
