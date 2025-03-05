@@ -83,7 +83,7 @@ class ComercializationComplement(ComplementBuilder):
         if transp is None:
             return
 
-        perm_transp = transp.get("Permisotransporte")
+        perm_transp = transp.get("PermisoTransporte")
         vehicle_key = transp.get("ClaveDeVehiculo")
         transp_fee = transp.get("TarifaDeTransporte")
         transp_cap_fee = transp.get("CargoPorCapacidadTrans")

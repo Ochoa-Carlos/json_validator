@@ -65,7 +65,7 @@ class CDLRGNComplement(ComplementBuilder):
         if transp is None:
             return
 
-        perm_transp = transp.get("Permisotransporte")
+        perm_transp = transp.get("PermisoTransporte")
         vehicle_key = transp.get("ClaveDeVehiculo")
 
         if perm_transp is None:
