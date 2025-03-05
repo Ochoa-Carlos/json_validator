@@ -71,8 +71,8 @@ class JsonValidator():
             print("=ERRORSOTE AQUI ALVASDASD")
         except Exception as exc:
             self.catch_error(err_type=SystemError, err_message=f"Error al validar JSON {exc}")
-            logging.error(f"Error al validar JSON: {exc}")
-            logging.error(f": {traceback.format_exc()}")
+            logging.warning(f"Error al validar JSON: {exc}")
+            logging.warning(f": {traceback.format_exc()}")
 
     @wrapper_handler
     def _validate_version(self) -> bool:

@@ -22,4 +22,4 @@ def complement_builder(complement_data: dict, complement_type: str) -> Complemen
         complement_class = complement_map.get(complement_type)
         return complement_class(complement_dict=complement_data, complement_type=complement_type)
     except Exception as exc:
-        logging.error(f"Error al crear el complemento: {exc}")
+        logging.warning(f"Error al crear el complemento: {exc}")
