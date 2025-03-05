@@ -241,7 +241,9 @@ class ExpenditureComplement(ComplementBuilder):
                     )
 
         if not re.match(CFDI_REGEX, cfdi_val):
-            raise RegexError(f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el patron {CFDI_REGEX}")
+            self.catch_error(
+                err_type=RegexError,
+                err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el patron {CFDI_REGEX}")
         if cfdi_type and cfdi_type == "Ingreso":
             if public_sale_price is None:
                 self.catch_error(
