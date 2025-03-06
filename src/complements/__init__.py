@@ -4,3 +4,4 @@ from .complement_base import ComplementBuilder
 from .distribution_complement import DistributionComplement
 from .expenditure_complement import ExpenditureComplement
 from .storage_complement import StorageComplement
+from .transport_complement import TransportComplement

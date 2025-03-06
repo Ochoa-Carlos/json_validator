@@ -2,7 +2,8 @@ from typing import TypeVar
 
 from src.complements import (CDLRGNComplement, ComercializationComplement,
                              ComplementBuilder, DistributionComplement,
-                             ExpenditureComplement, StorageComplement)
+                             ExpenditureComplement, StorageComplement,
+                             TransportComplement)
 from src.utils.logger import logger
 
 ComplementType = TypeVar("ComplementType", bound="ComplementBuilder")
@@ -12,13 +13,15 @@ logging = logger()
 
 
 def complement_builder(complement_data: dict, complement_type: str) -> ComplementType:
+    """Complement builder objects."""
     try:
         complement_map = {
             "Almacenamiento": StorageComplement,
             "Comercializacion": ComercializationComplement,
+            "CDLRGN": CDLRGNComplement,
             "Distribucion": DistributionComplement,
             "Expendio": ExpenditureComplement,
-            "CDLRGN": CDLRGNComplement,
+            "Transporte": TransportComplement,
         }
 
         complement_class = complement_map.get(complement_type)
