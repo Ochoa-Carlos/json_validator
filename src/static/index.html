@@ -49,6 +49,19 @@
             font-weight: 400;
             font-size: 15px;
         }
+        
+        .file-name-display {
+            background-color: #2D2A2E; /* Azul intenso */
+            color: #FFD866;;
+            font-weight: bold;
+            text-align: center;
+            font-family: "Courier Prime", monospace;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
         .error {
             color: red;
@@ -206,7 +219,7 @@
 </head>
 
 <body>
-    <h1>Sube tu archivo JSON para validarlo</h1>
+    <h1>Sube tu archivo JSON mensual para validarlo</h1>
     <div class="container">
         <!-- Formulario para cargar el archivo JSON -->
         <form id="jsonForm" enctype="multipart/form-data">
@@ -222,6 +235,9 @@
             <!-- Botón para enviar el formulario -->
             <button type="submit">Validar JSON</button>
         </form>
+
+        <!-- Muestra nombre del JSON cargado -->
+        <div id="jsonFileName" class="file-name-display" style="display: none;"></div>
 
         <!-- Muestra el JSON formateado -->
         <div id="jsonDisplay"></div>
@@ -281,6 +297,8 @@
                     document.getElementById("errorList").style.display = "none";
                 } else {
                     let formattedJson = JSON.stringify(JSON.parse(result.json_data), null, 4);
+                    document.getElementById("jsonFileName").textContent = document.getElementById("jsonFile").files[0].name;
+                    document.getElementById("jsonFileName").style.display = "block";
                     document.getElementById("jsonDisplay").innerHTML = '<pre>' + syntaxHighlight(formattedJson) + '</pre>';
                     document.getElementById("jsonDisplay").style.display = "block";
                     document.getElementById("errorDisplay").style.display = "none";
