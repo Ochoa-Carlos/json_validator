@@ -28,6 +28,7 @@ class ProductValidator:
 
 # TODO DESCOMENTAR VALIDATE GASNATURAL Y AJUSTAR
     def validate_products(self) -> None:
+        """Validate product JSON body."""
         if self._next_product():
             self._validate_producto_tipado()
             self._validate_clave_producto()
