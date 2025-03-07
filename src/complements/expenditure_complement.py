@@ -166,11 +166,7 @@ class ExpenditureComplement(ComplementBuilder):
                     err_type=ClaveError,
                     err_message="Error: clave 'NombreClienteOProveedor' no encontrada."
                     )
-            if deliv_permission is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'PermisoProveedor' no encontrada."
-                    )
+
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
                 self.catch_error(
                     err_type=RegexError,
