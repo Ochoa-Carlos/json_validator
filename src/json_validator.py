@@ -7,7 +7,8 @@ from src.custom_exceptions import (CaracterAsignatarioError,
                                    CaracterContratistaError,
                                    CaracterPermisionarioError,
                                    CaracterUsuarioError, ClaveError,
-                                   LongitudError, RegexError, ValorMinMaxError, TipadoError)
+                                   LongitudError, RegexError, TipadoError,
+                                   ValorError, ValorMinMaxError)
 from src.decorators import wrapper_handler
 from src.enumerators import CaracterTypeEnum
 from src.json_model import JsonRoot
@@ -75,10 +76,13 @@ class JsonValidator():
 
     @wrapper_handler
     def _validate_version(self) -> bool:
-        version = self.json_report.get("Version")
-        if re.match(VERSION_REGEX, version):
-            return True
-        else:
+        if (version := self.json_report.get("Version")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'Version' no fue encontrada."
+                )
+            return
+        if not re.match(VERSION_REGEX, version):
             self.catch_error(
                 err_type=RegexError,
                 err_message=f"Error: La version {version} no cumple con el patron {VERSION_REGEX}"
@@ -88,14 +92,19 @@ class JsonValidator():
 # TODO valiar y averiguar la diferencia entre el rfc de persona moral y contribuyente
     @wrapper_handler
     def _validate_rfc_contribuyente(self) -> None:
-        rfc = self.json_report.get("RfcContribuyente")
+        if (rfc_cont := self.json_report.get("RfcContribuyente")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'RfcContribuyente' no fue encontrada."
+                )
+            return
 
-        if not re.match(RFC_CONTR_REGEX, rfc):
+        if not re.match(RFC_CONTR_REGEX, rfc_cont):
             self.catch_error(
                 err_type=RegexError,
-                err_message=f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_CONTR_REGEX}"
+                err_message=f"Error: RfcContribuyente {rfc_cont} no cumple con el patron {RFC_CONTR_REGEX}"
                 )
-        if not 12 <= len(rfc) <= 13:
+        if not 12 <= len(rfc_cont) <= 13:
             self.catch_error(
                 err_type=LongitudError,
                 err_message="Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13."
@@ -119,7 +128,13 @@ class JsonValidator():
 
     @wrapper_handler
     def _validate_info_according_caracter(self) -> bool:
-        caracter = self.json_report.get("Caracter")
+        if (caracter := self.json_report.get("Caracter")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'Caracter' no fue encontrada."
+            )
+            return
+
         useless_caracter_keys = {key: val for key, val in caracteres.items() if key != caracter}
         useless_caracter_keys = list({key for key in useless_caracter_keys.values() for key in key})
         # TODO quitar cond key presence, ya existe la validacion al formar el json en json_model
@@ -189,9 +204,14 @@ class JsonValidator():
 
     @wrapper_handler
     def _validate_clave_instalacion(self) -> None:
-        clave_instalacion = self.json_report.get("ClaveInstalacion")
+        if (clave_instalacion := self.json_report.get("ClaveInstalacion")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'ClaveInstalacion' no fue encontrada."
+                )
+            return
 
-        if clave_instalacion and not 8 <= len(clave_instalacion) <= 30:
+        if not 8 <= len(clave_instalacion) <= 30:
             self.catch_error(
                 err_type=LongitudError,
                 err_message="Error: 'ClaveInstalacion' no cumple con la longitud min 8 o max 30."
@@ -199,9 +219,14 @@ class JsonValidator():
 
     @wrapper_handler
     def _validate_descripcion_instalacion(self) -> None:
-        desc_instllation = self.json_report.get("DescripcionInstalacion")
+        if (desc_instllation := self.json_report.get("DescripcionInstalacion")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'DescripcionInstalacion' no no fue encontrada."
+                )
+            return
 
-        if desc_instllation and not 5 <= len(desc_instllation) <= 250:
+        if not 5 <= len(desc_instllation) <= 250:
             self.catch_error(
                 err_type=LongitudError,
                 err_message="Error: 'DescripcionInstalacion' no cumple con la longitud min 5 o max 250."
@@ -230,41 +255,87 @@ class JsonValidator():
     @wrapper_handler
     def _validate_numero_pozos(self) -> None:
         if "NumeroPozos" not in self.json_report:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroPozos' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: clave 'NumeroPozos' no fue encontrada.")
+            return
+        if not isinstance(self.json_report.get("NumeroPozos"), int) or self.json_report.get("NumeroPozos") < 0:
+            self.catch_error(err_type=ValorError, err_message="Error: valor 'NumeroPozos' no válido.")
+
 
     @wrapper_handler
     def _validate_numero_tanques(self) -> None:
         if "NumeroTanques" not in self.json_report:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroTanques' no fue encontrada.")
+            self.catch_error(err_type=ClaveError, err_message="Error: clave 'NumeroTanques' no fue encontrada.")
+            return
+        if not isinstance(self.json_report.get("NumeroTanques"), int) or self.json_report.get("NumeroTanques") < 0:
+            self.catch_error(err_type=ValorError, err_message="Error: valor 'NumeroTanques' no válido.")
 
     @wrapper_handler
     def _validate_ductos_io(self) -> None:
         if "NumeroDuctosEntradaSalida" not in self.json_report:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroDuctosEntradaSalida' no fue encontrada.")
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'NumeroDuctosEntradaSalida' no fue encontrada."
+                )
+            return
+        if not isinstance(
+            self.json_report.get("NumeroDuctosEntradaSalida"),
+            int) or self.json_report.get("NumeroDuctosEntradaSalida") < 0:
+            self.catch_error(err_type=ValorError, err_message="Error: valor 'NumeroDuctosEntradaSalida' no válido.")
 
     @wrapper_handler
     def _validate_ductos_distribucion(self) -> None:
         if "NumeroDuctosTransporteDistribucion" not in self.json_report:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroDuctosTransporteDistribucion' no fue encontrada.")
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'NumeroDuctosTransporteDistribucion' no fue encontrada."
+                )
+            return
+        if not isinstance(self.json_report.get("NumeroDuctosTransporteDistribucion"),
+                          int) or self.json_report.get("NumeroDuctosTransporteDistribucion") < 0:
+            self.catch_error(
+                err_type=ValorError,
+                err_message="Error: valor 'NumeroDuctosTransporteDistribucion' no válido."
+                )
 
     @wrapper_handler
     def _validate_num_dispensarios(self) -> None:
         if "NumeroDispensarios" not in self.json_report:
             self.catch_error(err_type=ClaveError, err_message="Error: 'NumeroDispensarios' no fue encontrada.")
+            return
+        if not isinstance(self.json_report.get("NumeroDispensarios"),
+                          int) or self.json_report.get("NumeroDispensarios") < 0:
+            self.catch_error(err_type=ValorError, err_message="Error: valor 'NumeroDispensarios' no válido.")
 
     # TODO adaptar para el JSON Diario
     @wrapper_handler
     def _validate_report_date(self) -> None:
-        date = self.json_report.get("FechaYHoraReporteMes")
+        if (date := self.json_report.get("FechaYHoraReporteMes")) is None:
+            self.catch_error(
+                err_type=TipadoError,
+                err_message="Error: clave 'FechaYHoraReporteMes' no fue encontrada."
+                )
+            return
 
         if not re.match(UTC_FORMAT_REGEX, date):
-            self.catch_error(err_type=TipadoError, err_message="Error: 'FechaYHoraReporteMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'.")
+            self.catch_error(
+                err_type=TipadoError,
+                err_message="Error: 'FechaYHoraReporteMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
+                )
 
     @wrapper_handler
     def _validate_rfc_proveedores(self) -> None:
-        if rfc := self.json_report.get("RfcProveedores"):
-            if len(rfc) < 12:
-                self.catch_error(err_type=LongitudError, err_message="Error: 'RfcProveedores' no cumple con la longitud min 1.")
+        if (rfc := self.json_report.get("RfcProveedor")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'RfcProveedor' no fue encontrada."
+                )
+            return
+
+        if len(rfc) < 12:
+            self.catch_error(
+                err_type=LongitudError,
+                err_message="Error: clave 'RfcProveedor' no cumple con la longitud min 12 o max 13."
+                )
 
     # @wrapper_handler
     def _validate_products(self) -> None:
