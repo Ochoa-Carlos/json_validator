@@ -299,7 +299,7 @@ class ComplementBuilder:
                             err_type=ClaveError,
                             err_message="Error: clave 'TipoCfdi' no se encuentra."
                             )
-                    if cfdi_type not in [cfdi.value for cfdi in CfdiType]:
+                    if cfdi_type and cfdi_type not in [cfdi.value for cfdi in CfdiType]:
                         self.catch_error(
                             err_type=ClaveError,
                             err_message=f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válido."
