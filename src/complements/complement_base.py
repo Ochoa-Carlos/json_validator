@@ -288,13 +288,7 @@ class ComplementBuilder:
                         type_err = err.get("type_err")
                         err_message = err.get("err_message")
                         self.catch_error(err_type=type_err, err_message=err_message)
-                    if documented_volum:
-                        num_value = documented_volum.get("ValorNumerico")
-                        measure_unit = documented_volum.get("UnidadDeMedida")
-                        if num_value is None:
-                            self.catch_error(ClaveError, "Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'.")
-                        if measure_unit is None:
-                            self.catch_error(ClaveError, "Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'.")
+
                     if cfdi_val is None:
                         self.catch_error(
                             err_type=ClaveError,
@@ -320,6 +314,30 @@ class ComplementBuilder:
                             err_type=ClaveError,
                             err_message="Error: clave 'VolumenDocumentado' no se encuentra."
                             )
+                    if documented_volum:
+                        num_value = documented_volum.get("ValorNumerico")
+                        measure_unit = documented_volum.get("UnidadDeMedida")
+                        if num_value is None:
+                            self.catch_error(
+                                err_type=ClaveError,
+                                err_message="Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'."
+                                )
+                        if measure_unit is None:
+                            self.catch_error(
+                                err_type=ClaveError,
+                                err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
+                                )
+                        if num_value and not 0 <= num_value <= 100000000000:
+                            self.catch_error(
+                                err_type=ValorMinMaxError,
+                                err_message=f"Error: clave 'ValorNumerico' con valor {num_value} no tiene el valor min 0 o max 100000000000."
+                                )
+                        if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
+                            self.catch_error(
+                                err_type=RegexError,
+                                err_message=f"Error: clave 'UnidadDeMedida' con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
+                                )
+
                     if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
                         self.catch_error(
                             err_type=RegexError,
@@ -364,16 +382,6 @@ class ComplementBuilder:
                         self.catch_error(
                             err_type=RegexError,
                             err_message=f"Error: clave 'FechaYHoraTransaccion' con valor {transaction_date} no se expresa en formato yyyy-mm-ddThh:mm:ss+-hh:mm"
-                            )
-                    if num_value and not 0 <= num_value <= 100000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: clave 'ValorNumerico' con valor {num_value} no tiene el valor min 0 o max 100000000000."
-                            )
-                    if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
-                        self.catch_error(
-                            err_type=RegexError,
-                            err_message=f"Error: clave 'UnidadDeMedida' con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
                             )
 
     @exception_wrapper
