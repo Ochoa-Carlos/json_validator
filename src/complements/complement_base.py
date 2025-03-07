@@ -36,6 +36,7 @@ class ComplementBuilder:
         self._errors_list = []
 
     def validate_complemento(self) -> None:
+        """Base complement validations"""
         if self._next_complement():
             self._validate_complemento_tipado()
             self._validate_tipo_complemento()

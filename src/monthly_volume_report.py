@@ -5,7 +5,7 @@ from src.complements import ComplementBuilder
 from src.complements.helpers import complement_builder
 from src.constants import UTC_FORMAT_REGEX, cal_value_caracteres
 from src.custom_exceptions import (ClaveError, EntregasError, RecepcionesError,
-                                   ValorMinMaxError)
+                                   TipadoError, ValorMinMaxError)
 from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import deliveries_dict, exists_control, recepctions_dict
@@ -15,6 +15,7 @@ ComplementType = TypeVar("ComplementType", bound="ComplementBuilder")
 
 # TODO hacer validaciones de tipo al inicio de la ejecucion de validacion y no por funcion
 class MonthlyVolumeReportValidator:
+    """Validation of VolumenMensualReporte."""
 
     def __init__(self, monthly_volume_report: dict, product_key: str, caracter: str):
         self.monthly_report = monthly_volume_report
@@ -53,24 +54,18 @@ class MonthlyVolumeReportValidator:
 
         if month_volume is None:
             self.catch_error(err_type=ClaveError, err_message="Error: 'VolumenExistenciasMes' no fue encontrada.")
-            # raise KeyError("Error: 'VolumenExistenciasMes' no fue encontrada.")
         if month_measure_date is None:
             self.catch_error(err_type=ClaveError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
-            # raise KeyError("Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
-        if not -100000000000.0 <= month_volume <= 100000000000.0:
+        if month_volume and not -100000000000.0 <= month_volume <= 100000000000.0:
             self.catch_error(
                 err_type=ValorMinMaxError,
-                err_message="Error: 'VolumenExistenciasMes' no está en el rango min -100000000000.0 o max 100000000000.0.")
-            # raise ValorMinMaxError(
-            #     "Error: 'VolumenExistenciasMes' no está en el rango min -100000000000.0 o max 100000000000.0."
-            # )
-        if not re.match(UTC_FORMAT_REGEX, month_measure_date):
+                err_message="Error: 'VolumenExistenciasMes' no está en el rango min -100000000000.0 o max 100000000000.0."
+                )
+        if month_measure_date and not re.match(UTC_FORMAT_REGEX, month_measure_date):
             self.catch_error(
-                err_type=TypeError,
-                err_message="Error: 'FechaYHoraEstaMedicionMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'.")
-            # raise TypeError(
-            #     "Error: 'FechaYHoraEstaMedicionMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
-            #     )
+                err_type=TipadoError,
+                err_message="Error: 'FechaYHoraEstaMedicionMes' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
+                )
 
     @exception_wrapper
     def _validate_recepciones(self) -> None:
@@ -91,41 +86,51 @@ class MonthlyVolumeReportValidator:
         complement = receptions.get("Complemento")
 
         if total_receptions_month is None:
-            self.catch_error(err_type=RecepcionesError, err_message="Error: 'TotalRecepcionesMes' no fue declarada.")
-            # raise RecepcionesError("Error: 'TotalRecepcionesMes' no fue declarada.")
+            self.catch_error(
+                err_type=RecepcionesError,
+                err_message="Error: 'TotalRecepcionesMes' no fue declarada."
+                )
         if amount_volume_reception_month is None:
-            self.catch_error(err_type=RecepcionesError, err_message="Error: 'SumaVolumenRecepcionMes' no fue declarada.")
-            # raise RecepcionesError("Error: 'SumaVolumenRecepcionMes' no fue declarada.")
+            self.catch_error(
+                err_type=RecepcionesError,
+                err_message="Error: 'SumaVolumenRecepcionMes' no fue declarada."
+                )
         if month_documents is None:
-            self.catch_error(err_type=RecepcionesError, err_message="Error: 'TotalDocumentosMes' no fue declarada.")
-            # raise RecepcionesError("Error: 'TotalDocumentosMes' no fue declarada.")
+            self.catch_error(
+                err_type=RecepcionesError,
+                err_message="Error: 'TotalDocumentosMes' no fue declarada."
+                )
         if amount_receptions_month is None:
-            self.catch_error(err_type=RecepcionesError, err_message="Error: 'ImporteTotalRecepcionesMensual' no fue declarada.")
-            # raise RecepcionesError("Error: 'ImporteTotalRecepcionesMensual' no fue declarada.")
+            self.catch_error(
+                err_type=RecepcionesError,
+                err_message="Error: 'ImporteTotalRecepcionesMensual' no fue declarada."
+                )
         if complement is None:
-            self.catch_error(err_type=RecepcionesError, err_message="Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'.")
-            # raise RecepcionesError("Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'.")
+            self.catch_error(
+                err_type=RecepcionesError,
+                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'."
+                )
 
-        if not 0 <= total_receptions_month <= 100000000:
-            self.catch_error(err_type=ValorMinMaxError, err_message="Error: 'TotalRecepcionesMes' no está en el rango min 0 o max 100000000.")
-            # raise ValorMinMaxError(
-            #     "Error: 'TotalRecepcionesMes' no está en el rango min 0 o max 100000000."
-            # )
+        if total_receptions_month and not 0 <= total_receptions_month <= 100000000:
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'TotalRecepcionesMes' no está en el rango min 0 o max 100000000."
+                )
         if self.product_key == "PR09" and self.caracter in cal_value_caracteres and cal_value is None:
-            self.catch_error(err_type=RecepcionesError, err_message=f"""Error: 'PoderCalorifico' es requerido para caracteres {cal_value_caracteres} y Producto 'PR09'.""")
-            # raise RecepcionesError(
-            #     f"""Error: 'PoderCalorifico' es requerido para caracteres {cal_value_caracteres} y Producto 'PR09'."""
-            #     )
-        if month_documents > 1000000:
-            self.catch_error(err_type=ValorMinMaxError, err_message="Error: 'TotalDocumentosMes' no está en el rango max 1000000.")
-            # raise ValorMinMaxError(
-            #     "Error: 'TotalDocumentosMes' no está en el rango max 1000000."
-            # )
-        if not 0 <= amount_receptions_month <= 100000000000.0:
-            self.catch_error(err_type=ValorMinMaxError, err_message="Error: 'ImporteTotalRecepcionesMensual' no está en el rango min 0 o max 100000000000.0")
-            # raise ValorMinMaxError(
-            #     "Error: 'ImporteTotalRecepcionesMensual' no está en el rango min 0 o max 100000000000.0"
-            # )
+            self.catch_error(
+                err_type=RecepcionesError,
+                err_message=f"""Error: 'PoderCalorifico' es requerido para caracteres {cal_value_caracteres} y Producto 'PR09'."""
+                )
+        if month_documents and month_documents > 1000000:
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'TotalDocumentosMes' no está en el rango max 1000000."
+                )
+        if amount_receptions_month and not 0 <= amount_receptions_month <= 100000000000.0:
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'ImporteTotalRecepcionesMensual' no está en el rango min 0 o max 100000000000.0"
+                )
 
     # @exception_wrapper
     def __validate_recepciones_complemento(self) -> None:
@@ -133,9 +138,9 @@ class MonthlyVolumeReportValidator:
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
         # TODO FALTA EL COMPLEMENTO TRANSPORTE
-        if comp_type in ["Transporte"]:
-            self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
-            return
+        # if comp_type in ["Transporte"]:
+            # self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
+            # return
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
 
@@ -162,46 +167,40 @@ class MonthlyVolumeReportValidator:
             self.catch_error(err_type=type_err, err_message=err_message)
         if total_deliveries_month is None:
             self.catch_error(err_type=EntregasError, err_message="Error: 'TotalEntregasMes' no fue declarada.")
-            # raise EntregasError("Error: 'TotalEntregasMes' no fue declarada.")
         if amount_volume_deliveries_month is None:
             self.catch_error(err_type=EntregasError, err_message="Error: 'SumaVolumenEntregadoMes' no fue declarada.")
-            # raise EntregasError("Error: 'SumaVolumenEntregadoMes' no fue declarada.")
         if month_documents is None:
             self.catch_error(err_type=EntregasError, err_message="Error: 'TotalDocumentosMes' no fue declarada.")
-            # raise EntregasError("Error: 'TotalDocumentosMes' no fue declarada.")
         if amount_deliveries_month is None:
             self.catch_error(err_type=EntregasError, err_message="Error: 'ImporteTotalEntregasMes' no fue declarada.")
-            # raise EntregasError("Error: 'ImporteTotalEntregasMes' no fue declarada.")
         if complement is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: Valor 'Complemento' no fue declarada en clave 'Entregas'.")
-            # raise EntregasError("Error: Valor 'Complemento' no fue declarada en clave 'Entregas'.")
+            self.catch_error(
+                err_type=EntregasError,
+                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Entregas'."
+                )
 
-        if not 0 <= total_deliveries_month <= 10000000:
-            self.catch_error(err_type=ValorMinMaxError,
-                             err_message="Error: 'TotalEntregasMes' no está en el rango min 0 o max 10000000.")
-            # raise ValorMinMaxError(
-            #     "Error: 'TotalEntregasMes' no está en el rango min 0 o max 10000000."
-            #     )
+        if total_deliveries_month and not 0 <= total_deliveries_month <= 10000000:
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'TotalEntregasMes' no está en el rango min 0 o max 10000000."
+                )
         if self.product_key == "PR09":
             if (deliveries.get("PoderCalorifico")) is None:
-                self.catch_error(err_type=EntregasError,
-                                 err_message="Error: 'PoderCalorifico' es requerido para caracteres Producto 'PR09'.")
-                # raise EntregasError(
-                #     "Error: 'PoderCalorifico' es requerido para caracteres Producto 'PR09'."
-                # )
-        if not 0 <= month_documents <= 100000000:
-            self.catch_error(err_type=ValorMinMaxError,
-                             err_message="Error: 'TotalDocumentosMes' no está en el rango min 0 o max 100000000.")
-            # raise ValorMinMaxError(
-            #     "Error: 'TotalDocumentosMes' no está en el rango min 0 o max 100000000."
-            #     )
-        amount_deliveries_month = 1.222222
-        if not 0 <= round(amount_deliveries_month, 3) <= 100000000000.0:
-            self.catch_error(err_type=ValorMinMaxError,
-                             err_message="Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0")
-            # raise ValorMinMaxError(
-            #     "Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
-            #     )
+                self.catch_error(
+                    err_type=EntregasError,
+                    err_message="Error: 'PoderCalorifico' es requerido para caracteres Producto 'PR09'."
+                    )
+        if month_documents and not 0 <= month_documents <= 100000000:
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'TotalDocumentosMes' no está en el rango min 0 o max 100000000."
+                )
+        # amount_deliveries_month = 1.222222
+        if amount_deliveries_month and not 0 <= round(amount_deliveries_month, 3) <= 100000000000.0:
+            self.catch_error(
+                err_type=ValorMinMaxError,
+                err_message="Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
+                )
 
 #         comp_type = complement[0].get("TipoComplemento")
 
@@ -222,9 +221,9 @@ class MonthlyVolumeReportValidator:
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
         # TODO FALTA EL COMPLEMENTO TRANSPORTE
-        if comp_type in ["Transporte"]:
-            self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
-            return
+        # if comp_type in ["Transporte"]:
+        #     self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
+        #     return
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
 

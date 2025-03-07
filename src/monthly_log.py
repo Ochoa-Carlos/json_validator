@@ -44,7 +44,7 @@ class MonthlyLogValidator:
             self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'NumeroRegistro' no fue declarada.")
             # raise BitacoraMensualError("Error: 'NumeroRegistro' no fue declarada.")
 
-        if not 0 <= rec_number <= 1000000:
+        if rec_number and not 0 <= rec_number <= 1000000:
             self.catch_error(
                 err_type=ValorMinMaxError,
                 err_message="Error: 'NumeroRegistro' no está en el rango min 0 o max 1000000."
@@ -56,7 +56,7 @@ class MonthlyLogValidator:
         if (event_date := self.month_log.get("FechaYHoraEvento")) is None:
             # raise BitacoraMensualError("Error: 'FechaYHoraEvento' no fue declarada.")
             self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'FechaYHoraEvento' no fue declarada.")
-        if not re.match(UTC_FORMAT_REGEX, event_date):
+        if event_date and not re.match(UTC_FORMAT_REGEX, event_date):
             # raise TypeError(
             #     "Error: 'FechaYHoraEvento' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
             # )
@@ -68,7 +68,7 @@ class MonthlyLogValidator:
     def _validate_usuario_responsable(self) -> None:
         if (resp_user := self.month_log.get("UsuarioResponsable")) is None:
             return
-        if not 1 <= len(resp_user) <= 1000:
+        if resp_user and not 1 <= len(resp_user) <= 1000:
             self.catch_error(
                 err_type=LongitudError,
                 err_message="Error: 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
@@ -80,7 +80,7 @@ class MonthlyLogValidator:
         if (event := self.month_log.get("TipoEvento")) is None:
             self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'TipoEvento' no fue declarada.")
             # raise BitacoraMensualError("Error: 'TipoEvento' no fue declarada.")
-        if event not in event_type:
+        if event and event not in event_type:
             self.catch_error(
                 err_type=ValorMinMaxError,
                 err_message="Error: 'TipoEvento' no está en el rango min 1 o max 21.")
@@ -93,7 +93,7 @@ class MonthlyLogValidator:
         if (desc_event := self.month_log.get("DescripcionEvento")) is None:
             # raise BitacoraMensualError("Error: 'DescripcionEvento' no fue declarada.")
             self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'DescripcionEvento' no fue declarada.")
-        if not 2 <= len(desc_event) <= 250:
+        if desc_event and not 2 <= len(desc_event) <= 250:
             self.catch_error(
                 err_type=LongitudError,
                 err_message="Error: 'DescripcionEvento' no cumple con la longitud min 2 o max 250.")
@@ -105,7 +105,7 @@ class MonthlyLogValidator:
             return
 
         component_id = self.month_log.get("IdentificacionComponenteAlarma")
-        if not 2 <= len(component_id) <= 250:
+        if component_id and not 2 <= len(component_id) <= 250:
             self.catch_error(
                 err_type=LongitudError,
                 err_message="Error: 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")

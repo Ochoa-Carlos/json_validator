@@ -37,7 +37,7 @@ class CondensedGasValidator:
                 err_type=ClaveError,
                 err_message=f"""Error: 'ComposGasNaturalOCondensados' debe expresarse si se manifiesta caracter {petroleo_caracteres} y Producto 'PR09' o 'PR10'."""
                 )
-        if not re.match(CONDENSEDGAS_REGEX, compo_gas):
+        if compo_gas and not re.match(CONDENSEDGAS_REGEX, compo_gas):
             self.catch_error(
                 err_type=RegexError,
                 err_message=f"Error: 'ComposGasNaturalOCondensados {compo_gas}' no cumple con el patron {CONDENSEDGAS_REGEX}"
@@ -53,7 +53,7 @@ class CondensedGasValidator:
                 err_type=ClaveError,
                 err_message="Error: 'FraccionMolar' por cada componente expresado en 'ComposGasNaturalOCondensados'."
                 )
-        if not 0 <= molar_val <= 0.999:
+        if molar_val and not 0 <= molar_val <= 0.999:
             self.catch_error(
                 err_type=ValorMinMaxError,
                 err_message="Error: 'FraccionMolar' no está en el rango min 0 o max 0.999"
@@ -69,7 +69,7 @@ class CondensedGasValidator:
                 err_type=ClaveError,
                 err_message="Error: 'PoderCalorifico' por cada componente expresado en 'ComposGasNaturalOCondensados'."
                 )
-        if not 0.001 <= power_val <= 150000:
+        if power_val and not 0.001 <= power_val <= 150000:
             self.catch_error(
                 err_type=ValorMinMaxError,
                 err_message="Error: 'PoderCalorifico' no está en el rango min 0.001 o max 150000."
