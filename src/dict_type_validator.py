@@ -12,7 +12,21 @@ class DictionaryTypeValidator:
                 continue
             if not isinstance(value, dict_type[key]):
                 key_type = str(dict_type[key])
+                expected_type = dict_type[key]
                 type_extracted = key_type.split("'")[1]
+
+                if hasattr(expected_type, 'min_val') and hasattr(expected_type, 'max_val'):
+                    try:
+                        value = expected_type(value)
+                        return
+                    except (TypeError, ValueError) as e:
+                        return {
+                            "type_err": TipadoError,
+                            "err_message": f"Error: Clave {key} no usa la definición {expected_type.__name__}{e}"
+                        }
+                if "." in type_extracted:
+                    print("TYP EXPECTED HAY UN PUNTO VER SI ESTE I SIRVE A FUTURO.")
+                    type_extracted = type_extracted.split(".")[-1]
                 return {
                     "type_err": TipadoError,
                     "err_message": f"Error: Clave {key} no es de tipo {type_extracted}"

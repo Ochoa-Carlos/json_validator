@@ -1,4 +1,6 @@
 from typing import Any
+from src.utils.definitions import CantidadMonetaria, ValorNumerico, PositiveNumber, PositiveNegativeNumber
+
 
 product_dict = {
     "ClaveProducto": str,
@@ -35,10 +37,10 @@ complement = {
 complement_transport = {
     "PermisoTransporte": str,
     "ClaveVehiculo": str,
-    "TarifaDeTransporte": float,
-    "CargoPorCapacidadTransporte": float,
-    "CargoPorUsoTrans": float,
-    "CargoVolumetricoTransporte": float,
+    "TarifaDeTransporte": CantidadMonetaria,
+    "CargoPorCapacidadTransporte": CantidadMonetaria,
+    "CargoPorUsoTrans": CantidadMonetaria,
+    "CargoVolumetricoTransporte": CantidadMonetaria,
 }
 
 complement_dictamen = {
@@ -66,13 +68,13 @@ complement_national = {
 complement_cfdis = {
     "Cfdi": str,
     "TipoCfdi": str,
-    "PrecioCompra": float,
-    "Contraprestacion": float,
-    "TarifaDeAlmacenamiento": float,
-    "CargoPorCapacidadAlmac": float,
-    "CargoPorUsoAlmac": float,
-    "CargoVolumetricoAlmac": float,
-    "Descuento": float,
+    "PrecioCompra": CantidadMonetaria,
+    "Contraprestacion": CantidadMonetaria,
+    "TarifaDeAlmacenamiento": CantidadMonetaria,
+    "CargoPorCapacidadAlmac": CantidadMonetaria,
+    "CargoPorUsoAlmac": CantidadMonetaria,
+    "CargoVolumetricoAlmac": CantidadMonetaria,
+    "Descuento": CantidadMonetaria,
     "FechaYHoraTransaccion": str,
     # "VolumenDocumentado": ,
 }
@@ -88,12 +90,12 @@ compl_foreign_pedimentos = {
     "MedioDeTransEntraAduana": str,
     "PedimentoAduanal": str,
     "Incoterms": str,
-    "PrecioDeImportacion": float,
+    "PrecioDeImportacion": CantidadMonetaria,
     # "VolumenDocumentado": ,
 }
 
 compl_volumen = {
-    "ValorNumerico": float,
+    "ValorNumerico": ValorNumerico,
     "UnidadDeMedida": str,
 }
 
@@ -121,7 +123,7 @@ compl_volumen = {
 # }
 
 exists_control = {
-    "VolumenExistenciasMes": float,
+    "VolumenExistenciasMes": PositiveNegativeNumber,
     "FechaYHoraEstaMedicionMes": str
 }
 
@@ -130,7 +132,7 @@ recepctions_dict = {
     # "SumaVolumenRecepcionMes": dict,
     "TotalDocumentosMes": int,
     "PoderCalorifico": dict,
-    "ImporteTotalRecepcionesMensual": float,
+    "ImporteTotalRecepcionesMensual": PositiveNumber,
     "Complemento": list
 }
 
@@ -139,7 +141,7 @@ deliveries_dict = {
     # "SumaVolumenEntregadoMes": ,
     # "PoderCalorifico": ,
     "TotalDocumentosMes": int,
-    "ImporteTotalEntregasMes": float,
+    "ImporteTotalEntregasMes": PositiveNumber,
     "Complemento": list
 }
 
@@ -157,4 +159,3 @@ log_dict = {
     "DescripcionEvento": str,
     "IdentificacionComponenteAlarma": str
 }
-
