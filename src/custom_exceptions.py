@@ -32,6 +32,9 @@ class ValorMinMaxError(BaseError):
 class RequiredError(BaseError):
     """Custom length error."""
 
+class ClaveError(BaseError):
+    """Custom clave sub producto error."""
+
 class ClaveSubProductoError(BaseError):
     """Custom clave sub producto error."""
 
@@ -49,3 +52,9 @@ class EntregasError(BaseError):
 
 class BitacoraMensualError(BaseError):
     """Custom reception error."""
+
+class TipadoError(BaseError):
+    """Custom tipado error."""
+
+class ValorError(BaseError):
+    """Custom Valor error."""

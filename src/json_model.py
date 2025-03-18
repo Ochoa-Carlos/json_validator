@@ -1,5 +1,5 @@
 import re 
-from constants import caracteres
+from src.constants import caracteres
 
 class JsonRoot():
     """Json class for Month and Daily structure."""

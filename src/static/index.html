@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador JSON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:ital,wght@0,100..900;1,100..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #jsonDisplay {
+            background-color: #2D2A2E;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 20px;
+            display: none;
+            max-height: 500px;
+            overflow: auto;
+            font-family: "Courier Prime", monospace;
+            font-style: normal;
+            font-weight: 400;
+            font-size: 15px;
+        }
+        
+        .file-name-display {
+            background-color: #2D2A2E; /* Azul intenso */
+            color: #FFD866;;
+            font-weight: bold;
+            text-align: center;
+            font-family: "Courier Prime", monospace;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .error {
+            color: red;
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .error-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .error-item {
+            background-color: #f8d7da;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .error-item p {
+            margin: 0;
+        }
+
+        /* input[type="file"] {
+            display: block;
+            margin: 20px auto;
+        } */
+
+        /* Personaliza los colores de las claves y valores del JSON */
+        .hljs-keyword {
+             color: #F8FBF8; /*#F4F8FF */
+            /* Color para las claves */
+        }
+
+        .hljs-string {
+            color: #FFD866;
+            /* Color para los strings */
+        }
+
+        .hljs-number {
+            color: #A295E5;
+            /* Color neutro para los números */
+        }
+
+        .hljs-literal {
+            color: #d4d4d4;
+        }
+
+            /* Estilo de los botones (más pequeños) */
+        button[type="submit"] {
+            background-color: #0A5D99; /* Color de fondo verde #0ABCEE #0A5D99*/
+            color: white;
+            padding: 8px 15px; /* Menos padding para hacerlo más pequeño */
+            font-size: 14px; /* Tamaño de fuente más pequeño */
+            border: none;
+            border-radius: 6px; /* Bordes un poco más pequeños */
+            cursor: pointer;
+            width: auto;
+            text-align: center;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Efecto hover para el botón */
+        button[type="submit"]:hover {
+            background-color: #0ABCEE; /* Color verde más oscuro */
+            transform: translateY(-2px); /* Sube un poco el botón */
+        }
+
+        /* Efecto focus para el botón */
+        button[type="submit"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 140, 186, 1); /* Resaltado verde */
+        }
+
+        /* Estilo para el input de archivo */
+        input[type="file"] {
+            position: absolute;
+            opacity: 0; /* Lo hace invisible pero sigue siendo interactivo */
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+        }
+
+        /* Estilo para el label que actúa como botón */
+        label[for="jsonFile"] {
+            display: inline-block;
+            background-color: #008CBA;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Efecto hover en el label */
+        label[for="jsonFile"]:hover {
+            background-color: #005f73;
+            transform: translateY(-2px);
+        }
+
+        /* Efecto focus para el label */
+        label[for="jsonFile"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 140, 186, 1);
+        }
+
+        /* Mostrar el nombre del archivo cargado */
+        #file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Botón de carga de archivo (más pequeño) */
+        .file-upload-btn {
+            display: inline-block;
+            background-color: #008CBA; /* Color de fondo azul */
+            color: white;
+            padding: 8px 15px; /* Menos padding */
+            font-size: 14px; /* Fuente más pequeña */
+            border: none;
+            border-radius: 6px; /* Bordes más pequeños */
+            cursor: pointer;
+            width: auto;
+            text-align: center;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Efecto hover para el botón de carga */
+        .file-upload-btn:hover {
+            background-color: #005f73; /* Azul más oscuro */
+            transform: translateY(-2px);
+        }
+
+        /* Efecto focus para el botón de carga */
+        .file-upload-btn:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 140, 186, 1); /* Sombra verde */
+        }
+
+        /* Estilo para pantallas pequeñas */
+        @media (max-width: 600px) {
+            button[type="submit"], .file-upload-btn {
+                width: 100%; /* Hace el botón responsivo */
+            }
+        }
+</style>
+
+</head>
+
+<body>
+    <h1>Sube tu archivo JSON mensual para validarlo</h1>
+    <div class="container">
+        <!-- Formulario para cargar el archivo JSON -->
+        <form id="jsonForm" enctype="multipart/form-data">
+            <!-- Input de archivo (invisible pero funcional) -->
+            <input type="file" id="jsonFile" accept=".json" required />
+        
+            <!-- Label usado como botón visible -->
+            <label for="jsonFile" class="file-upload-btn">Cargar archivo JSON</label>
+        
+            <!-- Aquí se mostrará el nombre del archivo una vez cargado -->
+            <div id="file-name"></div>
+        
+            <!-- Botón para enviar el formulario -->
+            <button type="submit">Validar JSON</button>
+        </form>
+
+        <!-- Muestra nombre del JSON cargado -->
+        <div id="jsonFileName" class="file-name-display" style="display: none;"></div>
+
+        <!-- Muestra el JSON formateado -->
+        <div id="jsonDisplay"></div>
+
+        <!-- Muestra los errores si los hay -->
+        <div id="errorDisplay" class="error" style="display: none;"></div>
+
+        <!-- Lista de errores -->
+        <ul id="errorList" class="error-list" style="display: none;"></ul>
+    </div>
+
+    <script>
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"\n])*"(:)?|\b(true|false|null)\b|\b\d+\b)/g, function (match) {
+                let cls = 'hljs-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'hljs-keyword'; /* Claves en azul */
+                    } else {
+                        cls = 'hljs-string'; /* Strings en naranja */
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'hljs-literal'; /* Literales en gris */
+                } else if (/null/.test(match)) {
+                    cls = 'hljs-literal';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        document.getElementById("jsonFile").addEventListener("change", function (event) {
+                // Obtener el nombre del archivo seleccionado
+                const fileName = event.target.files[0] ? event.target.files[0].name : "No se ha seleccionado ningún archivo";
+
+                // Mostrar el nombre del archivo en el div con id "file-name"
+                document.getElementById("file-name").textContent = "Archivo: " + fileName;
+            });
+
+        document.getElementById("jsonForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            let formData = new FormData();
+            formData.append("file", document.getElementById("jsonFile").files[0]);
+
+            try {
+                let response = await fetch("/upload/", {
+                    method: "POST",
+                    body: formData
+                });
+                let result = await response.json();
+
+                if (result.error) {
+                    document.getElementById("errorDisplay").style.display = "block";
+                    document.getElementById("errorDisplay").textContent = result.error;
+                    document.getElementById("jsonDisplay").style.display = "none";
+                    document.getElementById("errorList").style.display = "none";
+                } else {
+                    let formattedJson = JSON.stringify(JSON.parse(result.json_data), null, 4);
+                    document.getElementById("jsonFileName").textContent = document.getElementById("jsonFile").files[0].name;
+                    document.getElementById("jsonFileName").style.display = "block";
+                    document.getElementById("jsonDisplay").innerHTML = '<pre>' + syntaxHighlight(formattedJson) + '</pre>';
+                    document.getElementById("jsonDisplay").style.display = "block";
+                    document.getElementById("errorDisplay").style.display = "none";
+
+                    let errorList = document.getElementById("errorList");
+
+                    if (result.errors && result.errors.length > 0) {
+                        // Si hay errores, mostramos la lista de errores
+                        errorList.style.display = "block";
+                        errorList.innerHTML = "";
+                        result.errors.forEach(error => {
+                            let errorItem = document.createElement("li");
+                            errorItem.classList.add("error-item");
+                            errorItem.innerHTML = `<p><strong>Tipo de Error:</strong> ${error.type_error}</p><p><strong>Mensaje:</strong> ${error.error}</p>`;
+                            errorList.appendChild(errorItem);
+                        });
+                    } else {
+                        // Si no hay errores, mostramos un mensaje verde
+                        errorList.style.display = "block";
+                        errorList.innerHTML = '<p style="color: green;">No se encontraron errores</p>';
+                    }
+
+                }
+            } catch (error) {
+                console.error("Error al procesar el archivo:", error);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

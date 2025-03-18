@@ -1,6 +1,6 @@
-from complements.complement_base import ComplementBuilder
-from dict_types import complement_transport
-from dict_type_validator import DictionaryTypeValidator
+from src.complements.complement_base import ComplementBuilder
+from src.dict_types import complement_transport
+from src.dict_type_validator import DictionaryTypeValidator
 
 
 class StorageComplement(ComplementBuilder):
