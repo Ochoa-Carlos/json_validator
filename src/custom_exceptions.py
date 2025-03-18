@@ -58,3 +58,6 @@ class TipadoError(BaseError):
 
 class ValorError(BaseError):
     """Custom Valor error."""
+
+class ProductoError(BaseError):
+    """Custom Producto and SubProducto error."""

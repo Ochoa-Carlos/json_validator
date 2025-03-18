@@ -3,7 +3,7 @@ import re
 from src.condensed_gas_validator import CondensedGasValidator
 from src.constants import (SUBPRODUCTO_REGEX, petroleo_caracteres,
                            products_keys, subproducts_keys)
-from src.custom_exceptions import (CaracterError, ClaveError,
+from src.custom_exceptions import (CaracterError, ClaveError, ProductoError,
                                    ClaveProductoError, ClaveSubProductoError,
                                    LongitudError, RegexError, ValorError,
                                    ValorMinMaxError)
@@ -11,6 +11,7 @@ from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import product_dict
 from src.monthly_volume_report import MonthlyVolumeReportValidator
+from src.enumerators import ProductEnum, SubProductEnum, SiNoEnum
 
 
 class ProductValidator:
@@ -51,6 +52,7 @@ class ProductValidator:
             self._validate_concentracion_sustancia_marcaje()
             self._validate_monthly_report()
             self._validate_gasnatural_ocondensados()
+            self._additionals_validations()
 
             self._update_index()
             self.validate_products()
@@ -347,6 +349,165 @@ class ProductValidator:
 
             if report_errors := condensed_obj.errors:
                 self._errors = self._errors | report_errors
+
+    def _additionals_validations(self) -> None:
+        """Extra validations according product and subproduct"""
+        product_key = self.current_product.get("ClaveProducto")
+        subp_key = self.current_product.get("ClaveSubProducto")
+
+        if product_key == ProductEnum.PR07.value and subp_key not in {
+            SubProductEnum.SP16.value, SubProductEnum.SP17.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {SubProductEnum.SP16.value} ó {SubProductEnum.SP17.value}."
+                )
+        if product_key == ProductEnum.PR03.value and subp_key not in {
+            SubProductEnum.SP18.value, SubProductEnum.SP19.value,
+            SubProductEnum.SP22.value, SubProductEnum.SP23.value,
+            SubProductEnum.SP24.value, SubProductEnum.SP25.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {SubProductEnum.SP18.value}, {SubProductEnum.SP19.value}, {SubProductEnum.SP22.value}, {SubProductEnum.SP23.value}, {SubProductEnum.SP24.value}, {SubProductEnum.SP25.value}."
+                )
+        if product_key == ProductEnum.PR07.value:
+            nofosil_gas = self.current_product.get("GasolinaConCombustibleNoFosil")
+            if (self.current_product.get("ComposicionOctanajeDeGasolina")
+                    or nofosil_gas) is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message=f"Error: para ClaveProducto {product_key} deben existir los elementos 'ComposicionOctanajeDeGasolina' y 'GasolinaConCombustibleNoFosil'."
+                    )
+            if nofosil_gas and nofosil_gas == SiNoEnum.SI.value and self.current_product.get("ComposicionOctanajeDeGasolina") is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message="Error: para valor 'Sí' en clave 'GasolinaConCombustibleNoFosil' debe existir elemento 'ComposDeCombustibleNoFosilEnGasolina'."
+                    )
+        if product_key == ProductEnum.PR03.value:
+            nofosil_diesel = self.current_product.get("DieselConCombustibleNoFosil")
+            if nofosil_diesel is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message=f"Error: para ClaveProducto {product_key} debe existir el elemento 'DieselConCombustibleNoFosil'."
+                    )
+            if nofosil_diesel == SiNoEnum.SI.value and self.current_product.get("ComposDeCombustibleNoFosilEnDiesel") is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message="Error: para valor 'Sí' en clave 'DieselConCombustibleNoFosil' debe existir elemento 'ComposDeCombustibleNoFosilEnDiesel'."
+                    )
+        if product_key == ProductEnum.PR11.value:
+            nofosil_turbosine = self.current_product.get("TurbosinaConCombustibleNoFosil")
+            if nofosil_turbosine is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message=f"Error: para ClaveProducto {product_key} debe existir el elemento 'TurbosinaConCombustibleNoFosil'."
+                    )
+            if nofosil_turbosine == SiNoEnum.SI.value and self.current_product.get("ComposDeCombustibleNoFosilEnTurbosina") is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message="Error: para valor 'Sí' en clave 'TurbosinaConCombustibleNoFosil' debe existir elemento 'ComposDeCombustibleNoFosilEnTurbosina'."
+                    )
+        if product_key == ProductEnum.PR15.value and subp_key not in {
+            SubProductEnum.SP20.value, SubProductEnum.SP21.value,
+            SubProductEnum.SP36.value, SubProductEnum.SP39.value,
+            SubProductEnum.SP40.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {SubProductEnum.SP20.value}, {SubProductEnum.SP21.value}, {SubProductEnum.SP36.value}, {SubProductEnum.SP39.value}, {SubProductEnum.SP40.value}."
+                )
+        if product_key == ProductEnum.PR08.value:
+            pr08_subp = {
+                SubProductEnum.SP1.value, SubProductEnum.SP2.value,
+                SubProductEnum.SP3.value, SubProductEnum.SP4.value,
+                SubProductEnum.SP5.value, SubProductEnum.SP6.value,
+                SubProductEnum.SP7.value, SubProductEnum.SP8.value,
+                SubProductEnum.SP9.value, SubProductEnum.SP10.value,
+                SubProductEnum.SP11.value, SubProductEnum.SP12.value,
+                SubProductEnum.SP13.value, SubProductEnum.SP14.value,
+                SubProductEnum.SP15.value
+                }
+            if subp_key not in pr08_subp:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {pr08_subp}."
+                    )
+            if (self.current_product.get("DensidadDePetroleo")
+                or self.current_product.get("ComposDeAzufreEnPetroleo")) is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message=f"Error: para ClaveProducto {product_key} deben existir los elementos 'DensidadDePetroleo' y 'ComposDeAzufreEnPetroleo'."
+                    )
+        if product_key == ProductEnum.PR09.value:
+            pr09_subp = {
+                SubProductEnum.SP27.value, SubProductEnum.SP28.value,
+                SubProductEnum.SP29.value, SubProductEnum.SP37.value,
+                SubProductEnum.SP38.value, SubProductEnum.SP41.value,
+                SubProductEnum.SP42.value, SubProductEnum.SP43.value,
+                SubProductEnum.SP44.value, SubProductEnum.SP17.value,
+                }
+            if subp_key not in pr09_subp:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {pr09_subp}."
+                    )
+        if product_key in {
+            ProductEnum.PR09.value,
+            ProductEnum.PR10.value} and self.current_product.get("GasNaturalOCondensados") is None:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {ProductEnum.PR09.value, ProductEnum.PR10.value} debe existir el elemento 'GasNaturalOCondensados'."
+                )
+        if product_key in {
+            ProductEnum.PR10.value,
+            ProductEnum.PR14.value} and subp_key:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: ClaveProducto {ProductEnum.PR10.value, ProductEnum.PR14.value} no cuenta con ClaveSubProducto."
+                )
+        if product_key == ProductEnum.PR11.value and subp_key not in {
+            SubProductEnum.SP34.value, SubProductEnum.SP35.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {SubProductEnum.SP34.value}, {SubProductEnum.SP35.value}."
+                )
+        if product_key == ProductEnum.PR12.value and (
+            self.current_product.get("ComposDePropanoEnGasLP") or
+            self.current_product.get("ComposDeButanoEnGasLP")
+        ) is None:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} deben existir los elementos 'ComposDePropanoEnGasLP' y 'ComposDeButanoEnGasLP'."
+                )
+        if product_key == ProductEnum.PR13.value and subp_key not in {
+            SubProductEnum.SP30.value, SubProductEnum.SP31.value,
+            SubProductEnum.SP32.value, SubProductEnum.SP33.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {SubProductEnum.SP30.value}, {SubProductEnum.SP31.value}, {SubProductEnum.SP32.value}, {SubProductEnum.SP33.value}."
+                )
+        if product_key == ProductEnum.PR16.value and subp_key not in {
+            SubProductEnum.SP48.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} el valore en ClaveSubProducto debe ser {SubProductEnum.SP48.value}."
+                )
+        if product_key == ProductEnum.PR17.value and subp_key not in {
+            SubProductEnum.SP45.value, SubProductEnum.SP46.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} los valores en ClaveSubProducto deben ser {SubProductEnum.SP45.value}, {SubProductEnum.SP46.value}."
+                )
+        if product_key == ProductEnum.PR18.value and subp_key not in {
+            SubProductEnum.SP26.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} el valore en ClaveSubProducto debe ser {SubProductEnum.SP26.value}."
+                )
+        if product_key == ProductEnum.PR19.value and subp_key not in {
+            SubProductEnum.SP42.value}:
+            self.catch_error(
+                err_type=ProductoError,
+                err_message=f"Error: para ClaveProducto {product_key} el valore en ClaveSubProducto debe ser {SubProductEnum.SP42.value}."
+                )
 
     def _current_product(self) -> dict:
         return self.products[self._gen_index]
