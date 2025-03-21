@@ -451,7 +451,7 @@ class ProductValidator:
                     )
         if product_key in {
             ProductEnum.PR09.value,
-            ProductEnum.PR10.value} and self.caracter not in petroleo_caracteres and self.current_product.get("GasNaturalOCondensados") is None:
+            ProductEnum.PR10.value} and self.caracter in petroleo_caracteres and self.current_product.get("GasNaturalOCondensados") is None:
             self.catch_error(
                 err_type=ProductoError,
                 err_message=f"Error: para ClaveProducto {ProductEnum.PR09.value, ProductEnum.PR10.value} debe existir el elemento 'GasNaturalOCondensados'."
