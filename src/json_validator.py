@@ -110,23 +110,28 @@ class JsonValidator():
                 err_message="Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13."
                 )
 
-# TODO RfcRepresentanteLegal FALTA SABER CUANDO SE PONE
     @wrapper_handler
     def _validate_rfc_representante_legal(self) -> None:
         """Rfc Representante loca"""
-        if (rfc := self.json_report.get("RfcRepresentanteLegal")) is None:
-            return
+        if len(self.json_report.get("RfcContribuyente")) == 12:
+            rfc_rep_leg = self.json_report.get("RfcRepresentanteLegal")
 
-        if not re.match(RFC_PERSONA_FISICA, rfc):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_PERSONA_FISICA}"
-                )
-        if not 12 <= len(rfc) <= 13:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message="Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13."
-                )
+            if rfc_rep_leg is None:
+                self.catch_error(
+                    err_type=ClaveError,
+                    err_message="Error: clave 'RfcRepresentanteLegal' es requerida en caso que el elemento 'RfcContribuyente' se manifieste de una persona moral (12 caracteres)"
+                    )
+                return
+            if not re.match(RFC_PERSONA_FISICA, rfc_rep_leg):
+                self.catch_error(
+                    err_type=RegexError,
+                    err_message=f"Error: clave 'RfcRepresentanteLegal' {rfc_rep_leg} no cumple con el patron {RFC_PERSONA_FISICA}"
+                    )
+            if len(rfc_rep_leg) != 13:
+                self.catch_error(
+                    err_type=LongitudError,
+                    err_message="Error: clave 'RfcRepresentanteLegal' no cumple con la longitud min 13 o max 13."
+                    )
 
     @wrapper_handler
     def _validate_info_according_caracter(self) -> bool:
