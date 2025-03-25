@@ -2,7 +2,7 @@ import re
 import traceback
 
 from src.constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
-                           UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
+                           UTC_FORMAT_REGEX, VERSION_REGEX, RFC_PERSONA_FISICA, caracteres)
 from src.custom_exceptions import (CaracterAsignatarioError,
                                    CaracterContratistaError,
                                    CaracterPermisionarioError,
@@ -110,21 +110,23 @@ class JsonValidator():
                 err_message="Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13."
                 )
 
-# TODO rfc representante legal
+# TODO RfcRepresentanteLegal FALTA SABER CUANDO SE PONE
     @wrapper_handler
     def _validate_rfc_representante_legal(self) -> None:
-        rfc = self.json_report.get("RfcRepresentanteLegal")
+        """Rfc Representante loca"""
+        if (rfc := self.json_report.get("RfcRepresentanteLegal")) is None:
+            return
 
-        # if rfc not re.match(RFC_CONTR_REGEX, rfc):
-        #     self.catch_error(
-        #         err_type=RegexError,
-        #         err_messsage=f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_CONTR_REGEX}"
-        #         )
-        # if rfc not 12 <= len(rfc) <= 13:
-        #     self.catch_error(
-        #         err_type=LongitudError,
-        #         err_messsage="Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13."
-        #         )
+        if not re.match(RFC_PERSONA_FISICA, rfc):
+            self.catch_error(
+                err_type=RegexError,
+                err_message=f"Error: RfcContribuyente {rfc} no cumple con el patron {RFC_PERSONA_FISICA}"
+                )
+        if not 12 <= len(rfc) <= 13:
+            self.catch_error(
+                err_type=LongitudError,
+                err_message="Error: 'RfcContribuyente' no cumple con la longitud min 12 o max 13."
+                )
 
     @wrapper_handler
     def _validate_info_according_caracter(self) -> bool:
