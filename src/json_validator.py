@@ -2,7 +2,8 @@ import re
 import traceback
 
 from src.constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
-                           UTC_FORMAT_REGEX, VERSION_REGEX, RFC_PERSONA_FISICA, caracteres)
+                           RFC_PERSONA_FISICA, UTC_FORMAT_REGEX, VERSION_REGEX,
+                           caracteres)
 from src.custom_exceptions import (CaracterAsignatarioError,
                                    CaracterContratistaError,
                                    CaracterPermisionarioError,
@@ -10,7 +11,7 @@ from src.custom_exceptions import (CaracterAsignatarioError,
                                    LongitudError, RegexError, TipadoError,
                                    ValorError, ValorMinMaxError)
 from src.decorators import wrapper_handler
-from src.enumerators import CaracterTypeEnum
+from src.enumerators import CaracterTypeEnum, PermisoEnum
 from src.json_model import JsonRoot
 from src.monthly_log import MonthlyLogValidator
 from src.product_validator import ProductValidator
@@ -133,6 +134,7 @@ class JsonValidator():
 
     @wrapper_handler
     def _validate_info_according_caracter(self) -> bool:
+        """Validate caracter info."""
         if (caracter := self.json_report.get("Caracter")) is None:
             self.catch_error(
                 err_type=ClaveError,
@@ -147,6 +149,9 @@ class JsonValidator():
         if caracter == CaracterTypeEnum.PERMISIONARIO.value:
             mod_permission = self.json_report.get("ModalidadPermiso")
             num_permission = self.json_report.get("NumPermiso")
+            perm_pattern = PermisoEnum[mod_permission].value
+            pattern_parts = perm_pattern.split("/")
+            perm_parts = num_permission.split("/")
 
             if mod_permission and not re.match(MODALITY_PERMISSION_REGEX, mod_permission):
                 self.catch_error(
@@ -163,6 +168,27 @@ class JsonValidator():
                     err_type=CaracterPermisionarioError,
                     err_message=f"Error: El caracter '{caracter}' no puede tener las claves {useless_caracter_keys} en el JSON."
                     )
+
+            if len(pattern_parts) != len(perm_parts):
+                self.catch_error(
+                    err_type=CaracterPermisionarioError,
+                    err_message=f"Error: el NumPermiso {num_permission} no coincide con el patrón {perm_pattern}."
+                    )
+            for patt, perm in zip(pattern_parts, perm_parts):
+                err = None
+                if patt == "XXXXX":
+                    if not (perm.isdigit() and len(perm) == 5):
+                        err = True
+                elif patt == "AAAA":
+                    if not (perm.isdigit() and len(perm) == 4):
+                        err = True
+                elif patt != perm:
+                    err = True
+                if err:
+                    self.catch_error(
+                        err_type=CaracterPermisionarioError,
+                        err_message=f"Error: el NumPermiso {num_permission} no coincide con el patrón {perm_pattern}."
+                        )
 
         if caracter == CaracterTypeEnum.CONTRATISTA.value and keys_prescence:
             num_contract = self.json_report.get("NumContratoOAsignacion")
