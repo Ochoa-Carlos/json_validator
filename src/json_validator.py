@@ -48,7 +48,7 @@ class JsonValidator():
         except Exception as e:
             self.error.append(e)
 
-# TODO descomentar montly_log y adecuar los errores
+# TODO Validar JSON diario
     def validate_json(self) -> None:
         """Return True or False if JSON are validated according type and bound."""
         try:
@@ -88,8 +88,6 @@ class JsonValidator():
                 err_message=f"Error: La version {version} no cumple con el patron {VERSION_REGEX}"
                 )
 
-# TODO revisar mas detenidamente los casos para el regex de RFC contribuyente
-# TODO valiar y averiguar la diferencia entre el rfc de persona moral y contribuyente
     @wrapper_handler
     def _validate_rfc_contribuyente(self) -> None:
         if (rfc_cont := self.json_report.get("RfcContribuyente")) is None:
@@ -144,7 +142,6 @@ class JsonValidator():
 
         useless_caracter_keys = {key: val for key, val in caracteres.items() if key != caracter}
         useless_caracter_keys = list({key for key in useless_caracter_keys.values() for key in key})
-        # TODO quitar cond key presence, ya existe la validacion al formar el json en json_model
         keys_prescence: bool = any(key in self.json_report for key in useless_caracter_keys)
 
         if caracter == CaracterTypeEnum.PERMISIONARIO.value:
@@ -313,7 +310,6 @@ class JsonValidator():
                           int) or self.json_report.get("NumeroDispensarios") < 0:
             self.catch_error(err_type=ValorError, err_message="Error: valor 'NumeroDispensarios' no válido.")
 
-    # TODO adaptar para el JSON Diario
     @wrapper_handler
     def _validate_report_date(self) -> None:
         if (date := self.json_report.get("FechaYHoraReporteMes")) is None:
@@ -368,7 +364,7 @@ class JsonValidator():
         log_obj.validate_log()
 
         if log_errors := log_obj.errors:
-            self.errors = self.errors | log_errors
+            self._errors.extend(log_errors)
 
     def catch_error(self, err_type: BaseException, err_message: str) -> dict:
         """Catch error from validations."""
@@ -377,18 +373,5 @@ class JsonValidator():
         # self._errors[err_type.__name__] = err_message
 
     def get_errors(self) -> dict:
+        """Return list of object errors."""
         return self._errors
-
-
-# # HACER DISTINCION ENTRE LAS CLAVES Y VALORES
-# # VALIDAR TIPOS
-# # LO COMPLICADO SON LOS COMPLEMENTOS DEL MENSUAL
-#         log_obj = MonthlyLogValidator(month_log=month_log)
-#         log_obj.validate_log()
-
-#         if log_errors := log_obj.errors:
-#             self.errors = self.errors | log_errors
-
-# HACER DISTINCION ENTRE LAS CLAVES Y VALORES
-# VALIDAR TIPOS
-# LO COMPLICADO SON LOS COMPLEMENTOS DEL MENSUAL

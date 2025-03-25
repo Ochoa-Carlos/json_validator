@@ -1,22 +1,20 @@
 import re
-from typing import Union
 
 from src.constants import UTC_FORMAT_REGEX, component_alarm, event_type
 from src.custom_exceptions import (BitacoraMensualError, LongitudError,
-                               ValorMinMaxError)
-from src.decorators import exception_wrapper
+                                   ValorMinMaxError)
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import log_dict
 
 
-# TODO VER EL TIPO DE OBJETO QUE ES EN REALIDAD MONTH LOG
 class MonthlyLogValidator:
+    """Bitacora Mensual validator"""
 
-    def __init__(self, month_log: Union[dict, list]) -> None:
+    def __init__(self, month_log: list) -> None:
         self.month_log = month_log[0]
         self.log = month_log
         self.log_len = len(month_log)
-        self._errors = {}
+        self._logs_errors = []
         self._executed_functions = set()
         self._log_index = 0
 
@@ -41,28 +39,22 @@ class MonthlyLogValidator:
     # @exception_wrapper
     def _validate_numero_registro(self) -> None:
         if (rec_number := self.month_log.get("NumeroRegistro")) is None:
-            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'NumeroRegistro' no fue declarada.")
-            # raise BitacoraMensualError("Error: 'NumeroRegistro' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: clave 'NumeroRegistro' no fue declarada.")
 
         if rec_number and not 0 <= rec_number <= 1000000:
             self.catch_error(
                 err_type=ValorMinMaxError,
-                err_message="Error: 'NumeroRegistro' no está en el rango min 0 o max 1000000."
+                err_message="Error: clave 'NumeroRegistro' no está en el rango min 0 o max 1000000."
                 )
-            # raise ValorMinMaxError("Error: 'NumeroRegistro' no está en el rango min 0 o max 1000000.")
 
     # @exception_wrapper
     def _validate_fecha_evento(self) -> None:
         if (event_date := self.month_log.get("FechaYHoraEvento")) is None:
-            # raise BitacoraMensualError("Error: 'FechaYHoraEvento' no fue declarada.")
-            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'FechaYHoraEvento' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: clave 'FechaYHoraEvento' no fue declarada.")
         if event_date and not re.match(UTC_FORMAT_REGEX, event_date):
-            # raise TypeError(
-            #     "Error: 'FechaYHoraEvento' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'."
-            # )
             self.catch_error(
                 err_type=TypeError,
-                err_message="Error: 'FechaYHoraEvento' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'.")
+                err_message="Error: clave 'FechaYHoraEvento' no se expresa en UTC 'yyyy-mm-ddThh:mm:ss+-hh:mm'.")
 
     # @exception_wrapper
     def _validate_usuario_responsable(self) -> None:
@@ -71,33 +63,26 @@ class MonthlyLogValidator:
         if resp_user and not 1 <= len(resp_user) <= 1000:
             self.catch_error(
                 err_type=LongitudError,
-                err_message="Error: 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
-            # raise LongitudError("Error: 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
+                err_message="Error: clave 'UsuarioResponsable' no cumple con la longitud min 1 o max 1000.")
 
-# TODO validar correctamente el tipo de evento
     # @exception_wrapper
     def _validate_tipo_evento(self) -> None:
         if (event := self.month_log.get("TipoEvento")) is None:
-            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'TipoEvento' no fue declarada.")
-            # raise BitacoraMensualError("Error: 'TipoEvento' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: clave 'TipoEvento' no fue declarada.")
         if event and event not in event_type:
             self.catch_error(
                 err_type=ValorMinMaxError,
-                err_message="Error: 'TipoEvento' no está en el rango min 1 o max 21.")
-            # raise ValorMinMaxError("Error: 'TipoEvento' no está en el rango min 1 o max 21.")
+                err_message="Error: clave 'TipoEvento' no está en el rango min 1 o max 21.")
 
 
-# TODO averiguar el manifestacion de la dscripcion del evento exacto de la difff para evento tipo 7
     # @exception_wrapper
     def _validate_descripcion_evento(self) -> None:
         if (desc_event := self.month_log.get("DescripcionEvento")) is None:
-            # raise BitacoraMensualError("Error: 'DescripcionEvento' no fue declarada.")
-            self.catch_error(err_type=BitacoraMensualError, err_message="Error: 'DescripcionEvento' no fue declarada.")
+            self.catch_error(err_type=BitacoraMensualError, err_message="Error: clave 'DescripcionEvento' no fue declarada.")
         if desc_event and not 2 <= len(desc_event) <= 250:
             self.catch_error(
                 err_type=LongitudError,
-                err_message="Error: 'DescripcionEvento' no cumple con la longitud min 2 o max 250.")
-            # raise LongitudError("Error: 'DescripcionEvento' no cumple con la longitud min 2 o max 250.")
+                err_message="Error: clave 'DescripcionEvento' no cumple con la longitud min 2 o max 250.")
 
     # @exception_wrapper
     def _validate_id_comp_alarma(self) -> None:
@@ -108,12 +93,14 @@ class MonthlyLogValidator:
         if component_id and not 2 <= len(component_id) <= 250:
             self.catch_error(
                 err_type=LongitudError,
-                err_message="Error: 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")
-            # raise LongitudError("Error: 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")
+                err_message="Error: clave 'IdentificacionComponenteAlarma' no cumple con la longitud min 2 o max 250.")
 
-# TODO productos implementa el mismo comportamiento, averiguar por que ahi si funciona
     def catch_error(self, err_type: Exception, err_message: str) -> None:
-        self._errors[err_type.__name__] = err_message
+        """Add dict errors to errors list"""
+        self.errors = {
+            "type_error": err_type.__name__, 
+            "error": err_message
+        }
 
     @property
     def func_exc(self) -> None:
@@ -130,12 +117,12 @@ class MonthlyLogValidator:
     @property
     def errors(self) -> dict:
         """Get errors from monthly log validation obj."""
-        return self._errors
+        return self._logs_errors
 
     @errors.setter
     def errors(self, errors: dict) -> None:
         """set errors in monthly log validation obj."""
-        self._errors[errors["type_error"]] = errors["error"]
+        self._logs_errors.append(errors)
 
     @property
     def exc_funcs(self) -> dict:
