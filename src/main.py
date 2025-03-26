@@ -190,11 +190,3 @@ if __name__ == "__main__":
     app = JsonValidatorApp(root)
     app.load_file()
     root.mainloop()
-
-# TODO
-# Lineas a descomentar para cargar un archivo instantaneamente
-        # file_path = "/Users/carlos/Downloads/demo 1.json"
-        # app.load_file()
-
-# Lineas a cdomentar para cargar un archivo instantaneamente
-        # file_path = filedialog.askopenfilename(filetypes=[("Archivos JSON", "*.json")])

@@ -28,7 +28,6 @@ class ProductValidator:
         self._product_errors_list = []
         self._executed_functions = set()
 
-# TODO DESCOMENTAR VALIDATE GASNATURAL Y AJUSTAR
     def validate_products(self) -> None:
         """Validate product JSON body."""
         if self._next_product():
@@ -91,7 +90,6 @@ class ProductValidator:
                 err_message=f"Error: 'ClaveSubProducto {subproduct_key}' no cumple con el patron {SUBPRODUCTO_REGEX}"
                 )
 
-# TODO FORMAN PARTE DEL PRODUCTO PR07
     @exception_wrapper
     def _validate_octanaje_gasolina(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
@@ -140,7 +138,6 @@ class ProductValidator:
                     err_message="Error: 'ComposDeCombustibleNoFosilEnGasolina' no está en el rango min 1 o max 99."
                     )
 
-# TODO FORMAN PARTE DEL PRODUCTO PRR03
     @exception_wrapper
     def _validate_diesel_combustible_nofosil(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
@@ -169,7 +166,6 @@ class ProductValidator:
                         err_message="Error: 'DieselConCombustibleNoFosil' no está en el rango min 1 o max 99."
                         )
 
-# TODO FORMAN PARTE DEL PRODUCTO PR11
     @exception_wrapper
     def _validate_combustible_turbosina_nofosil(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
@@ -197,7 +193,6 @@ class ProductValidator:
                         err_message="Error: 'ComposDeCombustibleNoFosilEnTurbosina' no está en el rango min 1 o max 99."
                         )
 
-# TODO FORMAN PARTE DE EL PRODUCTO PR12
     def _validate_compos_propano_gaslp(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
 
@@ -229,7 +224,6 @@ class ProductValidator:
                     err_message="Error: 'ComposDeButanoEnGasLP' no está en el rango min 0.01 o max 99.99."
                     )
 
-# TODO pertenece al productoo PR08 Y CARACTER CONTRATISTA O PERMISIONARIO
     @exception_wrapper
     def _validate_densidad_petroleo(self) -> None:
         if oil_density := self.current_product.get("DensidadDePetroleo"):
@@ -265,7 +259,6 @@ class ProductValidator:
                     err_message="Error: 'ComposDeAzufreEnPetroleo' no está en el rango min 0.1 o max 10."
                     )
 
-# TODO TERMINAN VALIDACIONES POR PRODUCTO
     @exception_wrapper
     def _validate_otros(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
@@ -331,24 +324,27 @@ class ProductValidator:
 
     # @exception_wrapper
     def _validate_gasnatural_ocondensados(self) -> None:
-        if self.caracter in petroleo_caracteres and self.current_product.get("ClaveProducto") in ["PR09", "PR10"]:
-            if (natural_gas := self.current_product.get("GasNaturalOCondensados")) is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message=f"Error: 'GasNaturalOCondensados' debe expresarse si se manifiesta caracter {petroleo_caracteres} y Producto 'PR09' o 'PR10'."
-                    )
-            if not 2 <= len(natural_gas) <= 10:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message="Error: 'InstalacionAlmacenGasNatural' no cumple con los elementos min 2 o max 10."
-                    )
+        if self.caracter not in petroleo_caracteres or self.current_product.get(
+            "ClaveProducto"
+        ) not in [ProductEnum.PR09.value, ProductEnum.PR10.value]:
+            return
+        if (natural_gas := self.current_product.get("GasNaturalOCondensados")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message=f"Error: 'GasNaturalOCondensados' debe expresarse si se manifiesta caracter {petroleo_caracteres} y Producto 'PR09' o 'PR10'."
+                )
+        if not 2 <= len(natural_gas) <= 10:
+            self.catch_error(
+                err_type=LongitudError,
+                err_message="Error: 'InstalacionAlmacenGasNatural' no cumple con los elementos min 2 o max 10."
+                )
 
-            gas_node = self.current_product.get("GasNaturalOCondensados")
-            condensed_obj = CondensedGasValidator(gas_node=gas_node)
-            condensed_obj.validate_gasnatural()
+        gas_node = self.current_product.get("GasNaturalOCondensados")
+        condensed_obj = CondensedGasValidator(gas_node=gas_node)
+        condensed_obj.validate_gasnatural()
 
-            if report_errors := condensed_obj.errors:
-                self._errors = self._errors | report_errors
+        if report_errors := condensed_obj.errors:
+            self._errors = self._errors | report_errors
 
     def _additionals_validations(self) -> None:
         """Extra validations according product and subproduct"""

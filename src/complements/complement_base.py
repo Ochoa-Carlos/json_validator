@@ -1,3 +1,4 @@
+"""Base class for components inheratence using Almacenamiento Complement"""
 import re
 
 from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX,
@@ -21,8 +22,6 @@ from src.dict_types import (compl_foreign_pedimentos, complement,
                             complement_national, complement_transport)
 
 
-# TODO IMPORTANTISIMO< HICE LA BASE BAASADO EN EL COMPLEMENTO ALMACENAMIENTO
-# TODO los valores son Almacenamiento, CDLR, Comercializacion, Distribucion
 class ComplementBuilder:
     """Base class for complement types according type."""
     def __init__(self, complement_type: str, complement_dict: list):
@@ -112,7 +111,6 @@ class ComplementBuilder:
                 err_message="Error: valor 'CargoVolumetricoTransporte' no se encuentra en el rango min 0 o max 1000000000000."
                 )
 
-# TODO preguntar reglas para aquellos que deben llevar dictamen dentro de su tipo de complemento
     @exception_wrapper
     def _validate_dictamen(self) -> None:
         if (dictamen := self.current_complement.get("Dictamen")) is None:

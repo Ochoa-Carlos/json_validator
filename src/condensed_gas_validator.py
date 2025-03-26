@@ -58,7 +58,7 @@ class CondensedGasValidator:
                 err_type=ValorMinMaxError,
                 err_message="Error: 'FraccionMolar' no está en el rango min 0 o max 0.999"
                 )
-        # TODO VALIDAR SUMA MLAR DE TODOS LOS COMPONENTES = 1
+        # TODO VALIDAR SUMA MLAR DE LOS COMPONENTES = 1
 
     @exception_wrapper
     def _validate_poder_calorifico(self) -> None:

@@ -13,7 +13,6 @@ from src.dict_types import deliveries_dict, exists_control, recepctions_dict
 ComplementType = TypeVar("ComplementType", bound="ComplementBuilder")
 
 
-# TODO hacer validaciones de tipo al inicio de la ejecucion de validacion y no por funcion
 class MonthlyVolumeReportValidator:
     """Validation of VolumenMensualReporte."""
 
@@ -25,7 +24,6 @@ class MonthlyVolumeReportValidator:
         self._report_errors = []
         self._executed_functions = set()
 
-# TODO hacer ufncion para validar el complemento de las entregas
     def validate_report(self) -> None:
         # self._validate_reporte_tipado()
         self._validate_control_existencias()
@@ -33,6 +31,7 @@ class MonthlyVolumeReportValidator:
         self.__validate_recepciones_complemento()
         self._validate_entregas()
         self.__validate_entregas_complemento()
+# Modificar instancia de TIMSA
 
     # @exception_wrapper
     # def _validate_reporte_tipado(self) -> None:
@@ -59,7 +58,7 @@ class MonthlyVolumeReportValidator:
         if month_volume and not -100000000000.0 <= month_volume <= 100000000000.0:
             self.catch_error(
                 err_type=ValorMinMaxError,
-                err_message="Error: 'VolumenExistenciasMes' no está en el rango min -100000000000.0 o max 100000000000.0."
+                err_message="Error:'VolumenExistenciasMes' no está en el rango min -100000000000.0 o max 100000000000.0"
                 )
         if month_measure_date and not re.match(UTC_FORMAT_REGEX, month_measure_date):
             self.catch_error(
@@ -137,10 +136,7 @@ class MonthlyVolumeReportValidator:
         receives = self.monthly_report.get("Recepciones")
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
-        # TODO FALTA EL COMPLEMENTO TRANSPORTE
-        # if comp_type in ["Transporte"]:
-            # self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
-            # return
+
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
 
@@ -202,28 +198,13 @@ class MonthlyVolumeReportValidator:
                 err_message="Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
                 )
 
-#         comp_type = complement[0].get("TipoComplemento")
-
-# # TODO FALTA EL COMPLEMENTO TRANSPORTE
-#         if comp_type == "Transporte":
-#             return
-#         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
-#         complement_obj.validate_complemento()
-
-#         if complement_errors := complement_obj.errors:
-#             err = complement_obj.get_error_list()
-#             self._report_errors.extend(err)
-#             self._errors = self._errors | complement_errors
-
     # @exception_wrapper
     def __validate_entregas_complemento(self) -> None:
         receives = self.monthly_report.get("Entregas")
         complement = receives.get("Complemento")
         comp_type = complement[0].get("TipoComplemento")
-        # TODO FALTA EL COMPLEMENTO TRANSPORTE
-        # if comp_type in ["Transporte"]:
-        #     self.catch_error(err_type=ClaveError, err_message=f"Error: complemento {comp_type} no validado.")
-        #     return
+
+
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
 

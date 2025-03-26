@@ -14,7 +14,6 @@ from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
 from src.decorators import exception_wrapper
 
 
-# TODO claves de CDLRNG => TIPOCOMPLEMENTO TERMINALAMYTRANS CERTIFICADO NACIONAL EXTRANJERO ACLARACION
 class CDLRGNComplement(ComplementBuilder):
     """Complement for comercialization type."""
     def validate_complemeto(self) -> None:
