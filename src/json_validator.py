@@ -1,9 +1,9 @@
 import re
 import traceback
 
-from src.constants import (MODALITY_PERMISSION_REGEX, RFC_CONTR_REGEX,
-                           RFC_PERSONA_FISICA, UTC_FORMAT_REGEX, VERSION_REGEX,
-                           caracteres)
+from src.constants import (FILE_NAME_REGEX, MODALITY_PERMISSION_REGEX,
+                           RFC_CONTR_REGEX, RFC_PERSONA_FISICA,
+                           UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
 from src.custom_exceptions import (CaracterAsignatarioError,
                                    CaracterContratistaError,
                                    CaracterPermisionarioError,
@@ -391,6 +391,13 @@ class JsonValidator():
 
         if log_errors := log_obj.errors:
             self._errors.extend(log_errors)
+
+    def validate_json_name(self, name: str) -> None:
+        """Check for name."""
+        if not re.match(FILE_NAME_REGEX, name.replace(".json", "")):
+            self.catch_error(err_type=ValorError,
+                             err_message="Error: nombre de archivo no válido."
+                             )
 
     def catch_error(self, err_type: BaseException, err_message: str) -> dict:
         """Catch error from validations."""

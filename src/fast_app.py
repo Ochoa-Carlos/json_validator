@@ -19,18 +19,17 @@ async def read_root():
 async def upload_json(file: UploadFile = File(...)):
     """Upload json file endppoint."""
     try:
-        # Leemos el archivo JSON subido
         content = await file.read()
         json_data = json.loads(content)
 
         # Validamos el JSON
         validator = JsonValidator(json_report=json_data)
         validator.set_json()
+        validator.validate_json_name(name=file.filename)
         validator.validate_json()
 
         errors = validator.get_errors()
 
-        # Convertimos los errores en un formato entendible
         error_list = []
         for error in errors:
             error_list.append({
