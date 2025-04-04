@@ -373,7 +373,7 @@ class ProductValidator:
                     err_type=ProductoError,
                     err_message=f"Error: para ClaveProducto {product_key} deben existir los elementos 'ComposicionOctanajeDeGasolina' y 'GasolinaConCombustibleNoFosil'."
                     )
-            if nofosil_gas and nofosil_gas == SiNoEnum.SI.value and self.current_product.get("ComposicionOctanajeDeGasolina") is None:
+            if nofosil_gas and nofosil_gas == SiNoEnum.SI.value and self.current_product.get("ComposDeCombustibleNoFosilEnGasolina") is None:
                 self.catch_error(
                     err_type=ProductoError,
                     err_message="Error: para valor 'Sí' en clave 'GasolinaConCombustibleNoFosil' debe existir elemento 'ComposDeCombustibleNoFosilEnGasolina'."
