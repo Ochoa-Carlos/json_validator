@@ -172,11 +172,6 @@ class DistributionComplement(ComplementBuilder):
                     err_type=ClaveError,
                     err_message="Error: clave 'RfcClienteOProveedor' no encontrada."
                     )
-            if custom_client_permission is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'PermisoClienteOProveedor' no encontrada."
-                    )
 
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
                 self.catch_error(
@@ -186,7 +181,7 @@ class DistributionComplement(ComplementBuilder):
             if custom_client_name and not 10 <= len(custom_client_name) <= 150:
                 self.catch_error(
                     err_type=LongitudError,
-                    err_message=f"Error: clave 'NombreClienteOProveedor' con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 300."
+                    err_message=f"Error: clave 'NombreClienteOProveedor' con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 150."
                     )
             if custom_client_permission and not re.match(PERMISSION_PROOVE_CLIENT_DIS_REGEX, custom_client_permission):
                 self.catch_error(

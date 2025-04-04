@@ -134,8 +134,19 @@ class MonthlyVolumeReportValidator:
     # @exception_wrapper
     def __validate_recepciones_complemento(self) -> None:
         receives = self.monthly_report.get("Recepciones")
-        complement = receives.get("Complemento")
-        comp_type = complement[0].get("TipoComplemento")
+        if (complement := receives.get("Complemento")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'Complemento' no fue expresada."
+                )
+            return
+
+        if (comp_type := complement[0].get("TipoComplemento")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'TipoComplemento' no fue expresada."
+                )
+            return
 
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
@@ -200,10 +211,21 @@ class MonthlyVolumeReportValidator:
 
     # @exception_wrapper
     def __validate_entregas_complemento(self) -> None:
-        receives = self.monthly_report.get("Entregas")
-        complement = receives.get("Complemento")
-        comp_type = complement[0].get("TipoComplemento")
+        deliveries = self.monthly_report.get("Entregas")
 
+        if (complement := deliveries.get("Complemento")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'Complemento' no fue expresada."
+                )
+            return
+
+        if (comp_type := complement[0].get("TipoComplemento")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'TipoComplemento' no fue expresada."
+                )
+            return
 
         complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
         complement_obj.validate_complemento()
