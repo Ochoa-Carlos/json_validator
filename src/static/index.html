@@ -251,23 +251,65 @@
 
     <script>
         function syntaxHighlight(json) {
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"\n])*"(:)?|\b(true|false|null)\b|\b\d+\b)/g, function (match) {
-                let cls = 'hljs-number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = 'hljs-keyword'; /* Claves en azul */
-                    } else {
-                        cls = 'hljs-string'; /* Strings en naranja */
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                // Definir un conjunto de colores limitados (5 colores)
+                const colors = ['#FF6188', '#FC9867', '#FFD866', '#A9DC76', '#78DCE8', '#AB9DF2'];
+
+                // Pila para almacenar los colores
+                let colorStack = [];
+                // Variable para llevar la profundidad
+                let depth = 0;
+
+                return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"\n])*"(:)?|\b(true|false|null)\b|\b\d+\b|{|}|\[|\])/g, function (match) {
+                    let cls = 'hljs-number';
+
+                    // Si es una llave de apertura ( { )
+                    if (match === '{' || match === '[') {
+                        cls = 'hljs-brace';
+                        // Determinar el color basado en la profundidad
+                        let color = colors[depth % colors.length];
+                        // Añadir el color a la pila
+                        colorStack.push(color);
+                        // Aumentamos la profundidad
+                        depth++;
+                        return `<span class="${cls}" style="color: ${color};">${match}</span>`;
                     }
-                } else if (/true|false/.test(match)) {
-                    cls = 'hljs-literal'; /* Literales en gris */
-                } else if (/null/.test(match)) {
-                    cls = 'hljs-literal';
-                }
-                return '<span class="' + cls + '">' + match + '</span>';
-            });
-        }
+
+                    // Si es una llave de cierre ( } )
+                    if (match === '}' || match === ']') {
+                        cls = 'hljs-brace';
+                        // Extraer el color de la pila
+                        let color = colorStack.pop();
+                        // Disminuimos la profundidad
+                        depth--;
+                        return `<span class="${cls}" style="color: ${color};">${match}</span>`;
+                    }
+
+                    // Si es una clave (entre comillas)
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'hljs-keyword'; /* Claves */
+                        } else {
+                            cls = 'hljs-string'; /* Strings */
+                        }
+                    }
+
+                    // Si es un valor booleano o null
+                    else if (/true|false/.test(match)) {
+                        cls = 'hljs-literal'; /* Literales */
+                    } else if (/null/.test(match)) {
+                        cls = 'hljs-literal'; /* Literales */
+                    }
+
+                    // Si es un número
+                    else if (/\d+/.test(match)) {
+                        cls = 'hljs-number'; /* Números */
+                    }
+
+                    return `<span class="${cls}">${match}</span>`;
+                });
+            }
 
         document.getElementById("jsonFile").addEventListener("change", function (event) {
                 // Obtener el nombre del archivo seleccionado
