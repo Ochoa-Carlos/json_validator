@@ -394,6 +394,11 @@ class JsonValidator():
 
     def validate_json_name(self, name: str) -> None:
         """Check for name."""
+        if len(name.split("_")) != 8:
+            self.catch_error(
+                err_type=ValorError,
+                err_message="Error: nombre de archivo no está compuesto por 'IdentificadorTipo_IdentificadorEnvio_RfcCV_RFCProveedor_Periodo_CveInstalacion_TipoReporte_TipoEstandar'."
+                )
         if not re.match(FILE_NAME_REGEX, name.replace(".json", "")):
             self.catch_error(err_type=ValorError,
                              err_message="Error: nombre de archivo no válido."
