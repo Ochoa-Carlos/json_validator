@@ -409,10 +409,22 @@ class ComplementBuilder:
     def __validate_extranjero_pedimentos(self) -> None:
         if (foreign := self.current_complement.get("Extranjero")) is None:
             return
-        if (pedimentos := foreign.get("Pedimentos")) is None:
+        # print("=====================================asdasd")
+        # print(type(foreign))
+        # print(foreign)
+        if (pedimentos := foreign[0].get("Pedimentos")) is None:
             return
-
-        for pedimento in pedimentos:
+        for fore in foreign:
+            if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=fore,
+                                                                    dict_type=complement_foreign):
+                type_err = err.get("type_err")
+                err_message = err.get("err_message")
+                # print('=asdasdasdasd===================', type_err, err_message)
+                self.catch_error(err_type=type_err, err_message=err_message)
+                return
+            pedimento = fore.get("Pedimentos")
+            # print("PEDIMENTO =>", pedimento)
+        # for pedimento in pedimentos:
             intern_point = pedimento.get("PuntoDeInternacion")
             origin_country = pedimento.get("PaisOrigen")
             aduanal_transp = pedimento.get("MedioDeTransEntraAduana")

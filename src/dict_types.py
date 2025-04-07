@@ -79,6 +79,15 @@ complement_cfdis = {
     # "VolumenDocumentado": ,
 }
 
+com_comp_cfdis = {
+    "Cfdi": str,
+    "TipoCfdi": str,
+    "PrecioVentaOCompraOContrap": CantidadMonetaria,
+    "VolumenDocumentado": CantidadMonetaria,
+    "FechaYHoraTransaccion": str,
+    # "VolumenDocumentado": ,
+}
+
 complement_foreign = {
     "PermisoImportacion": str,
     "Pedimentos": list,
@@ -97,6 +106,15 @@ compl_foreign_pedimentos = {
 compl_volumen = {
     "ValorNumerico": ValorNumerico,
     "UnidadDeMedida": str,
+}
+
+terminal_alm = {
+    "TerminalAlmYDist": str,
+    "PermisoAlmYDist": str,
+    "TarifaDeAlmacenamiento": CantidadMonetaria,
+    "CargoPorCapacidadAlmac": CantidadMonetaria,
+    "CargoPorUsoAlmac": CantidadMonetaria,
+    "CargoVolumetricoAlmac": CantidadMonetaria,
 }
 
 # month_report_dict = {

@@ -13,6 +13,11 @@ from src.complements.enumerators import (AduanaEntrance, CfdiType, CountryCode,
 from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
                                    ValorError, ValorMinMaxError)
 from src.decorators import exception_wrapper
+from src.dict_type_validator import DictionaryTypeValidator
+from src.dict_types import (compl_foreign_pedimentos, complement,
+                            complement_certified, complement_cfdis,
+                            complement_dictamen, complement_foreign, com_comp_cfdis,
+                            complement_national, complement_transport, terminal_alm)
 
 
 class ComercializationComplement(ComplementBuilder):
@@ -45,6 +50,12 @@ class ComercializationComplement(ComplementBuilder):
     @exception_wrapper
     def __validate_almacenamiento(self, alm: dict) -> None:
         if alm is None:
+            return
+        if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=alm,
+                                                                    dict_type=terminal_alm):
+            type_err = err.get("type_err")
+            err_message = err.get("err_message")
+            self.catch_error(err_type=type_err, err_message=err_message)
             return
 
         alm_dist_terminal = alm.get("TerminalAlmYDist")
@@ -99,6 +110,12 @@ class ComercializationComplement(ComplementBuilder):
     @exception_wrapper
     def __validate_transporte(self, transp: dict) -> None:
         if transp is None:
+            return
+        if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=transp,
+                                                                    dict_type=terminal_alm):
+            type_err = err.get("type_err")
+            err_message = err.get("err_message")
+            self.catch_error(err_type=type_err, err_message=err_message)
             return
 
         perm_transp = transp.get("PermisoTransporte")
@@ -156,6 +173,13 @@ class ComercializationComplement(ComplementBuilder):
             return
 
         for national_item in national:
+            if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=national_item,
+                                                                    dict_type=complement_national):
+                type_err = err.get("type_err")
+                err_message = err.get("err_message")
+                self.catch_error(err_type=type_err, err_message=err_message)
+                return
+
             custom_client_rfc = national_item.get("RfcClienteOProveedor")
             custom_client_name = national_item.get("NombreClienteOProveedor")
             custom_client_permission = national_item.get("PermisoClienteOProveedor")
@@ -194,6 +218,13 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def __validate_cfdi(self, cfdi):
+        if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=cfdi,
+                                                                    dict_type=com_comp_cfdis):
+            type_err = err.get("type_err")
+            err_message = err.get("err_message")
+            self.catch_error(err_type=type_err, err_message=err_message)
+            return
+
         cfdi_val = cfdi.get("Cfdi")
         cfdi_type = cfdi.get("TipoCfdi")
         consid_purch_sale_price = cfdi.get("PrecioVentaOCompraOContrap")
@@ -264,24 +295,32 @@ class ComercializationComplement(ComplementBuilder):
         if (foreign := self.current_complement.get("Extranjero")) is None:
             return
 
-        import_export_permission = foreign.get("PermisoImportacionOExportacion")
-        pedimentos = foreign.get("Pedimentos")
+        for fore_elem in foreign:
+            if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=fore_elem,
+                                                                    dict_type=complement_foreign):
+                type_err = err.get("type_err")
+                err_message = err.get("err_message")
+                self.catch_error(err_type=type_err, err_message=err_message)
+                return
 
-        if import_export_permission is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PermisoImportacionOExportacion' no se encuentra."
-                )
+            import_export_permission = fore_elem.get("PermisoImportacionOExportacion")
+            pedimentos = fore_elem.get("Pedimentos")
 
-        if import_export_permission and not re.match(IMPORT_PERMISSION_REGEX, import_export_permission):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PermisoImportacionOExportacion' con valor {import_export_permission} no cumple con el patron {IMPORT_PERMISSION_REGEX}"
-                )
+            if import_export_permission is None:
+                self.catch_error(
+                    err_type=ClaveError,
+                    err_message="Error: clave 'PermisoImportacionOExportacion' no se encuentra."
+                    )
 
-        if pedimentos:
-            for pedimento in pedimentos:
-                self.__validate_pedimentos(pedimento=pedimento)
+            if import_export_permission and not re.match(IMPORT_PERMISSION_REGEX, import_export_permission):
+                self.catch_error(
+                    err_type=RegexError,
+                    err_message=f"Error: clave 'PermisoImportacionOExportacion' con valor {import_export_permission} no cumple con el patron {IMPORT_PERMISSION_REGEX}"
+                    )
+
+            if pedimentos:
+                for pedimento in pedimentos:
+                    self.__validate_pedimentos(pedimento=pedimento)
 
     @exception_wrapper
     def __validate_pedimentos(self, pedimento: dict) -> None:
