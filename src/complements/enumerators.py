@@ -3,7 +3,7 @@ from enum import Enum, IntEnum
 
 class ComplementType(Enum):
     ALMACENAMIENTO = "Almacenamiento"
-    CDLR = "CDLR"
+    CDLRGN = "CDLRGN"
     COMERCIALIZACION = "Comercializacion"
     DISTRIBUCION = "Distribucion"
     EXPENDIO = "Expendio"
