@@ -20,6 +20,8 @@ async def upload_json(file: UploadFile = File(...)):
     """Upload json file endppoint."""
     try:
         content = await file.read()
+        content = content.decode("UTF-8", errors="replace")
+
         json_data = json.loads(content)
 
         # Validamos el JSON
@@ -37,10 +39,16 @@ async def upload_json(file: UploadFile = File(...)):
                 "error": error.get("error", "Sin mensaje")
             })
 
-        # Formatear el JSON para enviarlo con indentación
+        error_list.extend(
+            {
+                "type_error": "Decodificación",
+                "error": f"Caracter encontrado: '{char}' en linea '{ind}'",
+            }
+            for ind, char in enumerate(content)
+            if char == "�")
+
         formatted_json = json.dumps(json_data, indent=4)
 
-        # Devolver el JSON formateado y los errores (si los hay)
         return {"json_data": formatted_json, "errors": error_list}
 
     except json.JSONDecodeError as e:
