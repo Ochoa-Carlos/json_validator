@@ -10,7 +10,7 @@ from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX,
                                        RFC_PERSONA_MORAL_REGEX, RFC_REGEX,
                                        TRANSPORT_PERM_REGEX, UTC_FORMAT_REGEX)
 from src.complements.enumerators import (AduanaEntrance, CfdiType,
-                                         ComplementType, CountryCode,
+                                         ComplementTypeEnum, CountryCode,
                                          IncotermCode)
 from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
                                    TipadoError, ValorError, ValorMinMaxError)
@@ -62,7 +62,7 @@ class ComplementBuilder:
     def _validate_tipo_complemento(self) -> None:
         comp_type = self.current_complement.get("TipoComplemento")
 
-        if comp_type not in [en.value for en in ComplementType]:
+        if comp_type not in {en.value for en in ComplementTypeEnum}:
             self.catch_error(err_type=TipadoError, err_message=f"Error: TipoComplemento {comp_type} no válido.")
 
     @exception_wrapper

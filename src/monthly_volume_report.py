@@ -2,6 +2,7 @@ import re
 from typing import TypeVar
 
 from src.complements import ComplementBuilder
+from src.complements.enumerators import ComplementTypeEnum
 from src.complements.helpers import complement_builder
 from src.constants import UTC_FORMAT_REGEX, cal_value_caracteres
 from src.custom_exceptions import (ClaveError, EntregasError, RecepcionesError,
@@ -148,12 +149,13 @@ class MonthlyVolumeReportValidator:
                 )
             return
 
-        complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
-        complement_obj.validate_complemento()
+        if self._check_complement(complement_type=comp_type):
+            complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
+            complement_obj.validate_complemento()
 
-        if complement_errors := complement_obj.errors:
-            self._report_errors.extend(complement_obj.get_error_list())
-            self._errors = self._errors | complement_errors
+            if complement_errors := complement_obj.errors:
+                self._report_errors.extend(complement_obj.get_error_list())
+                self._errors = self._errors | complement_errors
 
 
     @exception_wrapper
@@ -227,12 +229,20 @@ class MonthlyVolumeReportValidator:
                 )
             return
 
-        complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
-        complement_obj.validate_complemento()
+        if self._check_complement(complement_type=comp_type):
+            complement_obj = complement_builder(complement_data=complement, complement_type=comp_type)
+            complement_obj.validate_complemento()
 
-        if complement_errors := complement_obj.errors:
-            self._report_errors.extend(complement_obj.get_error_list())
-            self._errors = self._errors | complement_errors
+            if complement_errors := complement_obj.errors:
+                self._report_errors.extend(complement_obj.get_error_list())
+                self._errors = self._errors | complement_errors
+
+    def _check_complement(self, complement_type: str) -> bool:
+        """Check if complement is a valid complement."""
+        if complement_type not in {en.value for en in ComplementTypeEnum}:
+            self.catch_error(err_type=TipadoError, err_message=f"Error: TipoComplemento {complement_type} no válido.")
+            return False
+        return True
 
     def catch_error(self, err_type: str | Exception, err_message: str) -> dict:
         """Catch error from validations."""

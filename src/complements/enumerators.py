@@ -1,7 +1,8 @@
 from enum import Enum, IntEnum
 
 
-class ComplementType(Enum):
+class ComplementTypeEnum(Enum):
+    """Complement Enum."""
     ALMACENAMIENTO = "Almacenamiento"
     CDLRGN = "CDLRGN"
     COMERCIALIZACION = "Comercializacion"
