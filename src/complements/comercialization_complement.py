@@ -190,11 +190,6 @@ class ComercializationComplement(ComplementBuilder):
                     err_type=ClaveError,
                     err_message="Error: clave 'RfcClienteOProveedor' no encontrada."
                     )
-            if custom_client_permission is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'PermisoClienteOProveedor' no encontrada."
-                    )
 
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
                 self.catch_error(
