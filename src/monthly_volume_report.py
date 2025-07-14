@@ -145,7 +145,7 @@ class MonthlyVolumeReportValidator:
         if not complement:
             self.catch_error(
                 err_type=ClaveError,
-                err_message="Error: clave 'Complemento' no fue expresada."
+                err_message="Error: clave 'Complemento' vacía."
                 )
             return
 
@@ -232,7 +232,7 @@ class MonthlyVolumeReportValidator:
         if not complement:
             self.catch_error(
                 err_type=ClaveError,
-                err_message="Error: clave 'Complemento' no fue expresada."
+                err_message="Error: clave 'Complemento' vacía."
                 )
             return
 
