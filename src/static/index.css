@@ -1,0 +1,247 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#jsonDisplay {
+    background-color: #2D2A2E;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-top: 20px;
+    display: none;
+    max-height: 500px;
+    overflow: auto;
+    font-family: "Courier Prime", monospace;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+}
+
+.file-name-display {
+    background-color: #2D2A2E;
+    /* Azul intenso */
+    color: #FFD866;
+    ;
+    font-weight: bold;
+    text-align: center;
+    font-family: "Courier Prime", monospace;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.error {
+    color: red;
+    background-color: #f8d7da;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.error-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.error-item {
+    background-color: #f8d7da;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.error-item p {
+    margin: 0;
+}
+
+.warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.warning-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.warning-item {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.warning-item p {
+    margin: 0;
+    color: #856404;
+}
+
+/* input[type="file"] {
+    display: block;
+    margin: 20px auto;
+} */
+
+/* Personaliza los colores de las claves y valores del JSON */
+.hljs-keyword {
+    color: #F8FBF8;
+    /*#F4F8FF */
+    /* Color para las claves */
+}
+
+.hljs-string {
+    color: #FFD866;
+    /* Color para los strings */
+}
+
+.hljs-number {
+    color: #A295E5;
+    /* Color neutro para los números */
+}
+
+.hljs-literal {
+    color: #d4d4d4;
+}
+
+/* Estilo de los botones (más pequeños) */
+button[type="submit"] {
+    background-color: #0A5D99;
+    /* Color de fondo verde #0ABCEE #0A5D99*/
+    color: white;
+    padding: 8px 15px;
+    /* Menos padding para hacerlo más pequeño */
+    font-size: 14px;
+    /* Tamaño de fuente más pequeño */
+    border: none;
+    border-radius: 6px;
+    /* Bordes un poco más pequeños */
+    cursor: pointer;
+    width: auto;
+    text-align: center;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover para el botón */
+button[type="submit"]:hover {
+    background-color: #0ABCEE;
+    /* Color verde más oscuro */
+    transform: translateY(-2px);
+    /* Sube un poco el botón */
+}
+
+/* Efecto focus para el botón */
+button[type="submit"]:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 140, 186, 1);
+    /* Resaltado verde */
+}
+
+/* Estilo para el input de archivo */
+input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    /* Lo hace invisible pero sigue siendo interactivo */
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+}
+
+/* Estilo para el label que actúa como botón */
+label[for="jsonFile"] {
+    display: inline-block;
+    background-color: #008CBA;
+    color: white;
+    padding: 8px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover en el label */
+label[for="jsonFile"]:hover {
+    background-color: #005f73;
+    transform: translateY(-2px);
+}
+
+/* Efecto focus para el label */
+label[for="jsonFile"]:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 140, 186, 1);
+}
+
+/* Mostrar el nombre del archivo cargado */
+#file-name {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Botón de carga de archivo (más pequeño) */
+.file-upload-btn {
+    display: inline-block;
+    background-color: #008CBA;
+    /* Color de fondo azul */
+    color: white;
+    padding: 8px 15px;
+    /* Menos padding */
+    font-size: 14px;
+    /* Fuente más pequeña */
+    border: none;
+    border-radius: 6px;
+    /* Bordes más pequeños */
+    cursor: pointer;
+    width: auto;
+    text-align: center;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efecto hover para el botón de carga */
+.file-upload-btn:hover {
+    background-color: #005f73;
+    /* Azul más oscuro */
+    transform: translateY(-2px);
+}
+
+/* Efecto focus para el botón de carga */
+.file-upload-btn:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 140, 186, 1);
+    /* Sombra verde */
+}
+
+/* Estilo para pantallas pequeñas */
+@media (max-width: 600px) {
+
+    button[type="submit"],
+    .file-upload-btn {
+        width: 100%;
+        /* Hace el botón responsivo */
+    }
+}

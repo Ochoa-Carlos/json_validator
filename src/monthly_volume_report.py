@@ -142,6 +142,13 @@ class MonthlyVolumeReportValidator:
                 )
             return
 
+        if not complement:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'Complemento' no fue expresada."
+                )
+            return
+
         if (comp_type := complement[0].get("TipoComplemento")) is None:
             self.catch_error(
                 err_type=ClaveError,
@@ -216,6 +223,13 @@ class MonthlyVolumeReportValidator:
         deliveries = self.monthly_report.get("Entregas")
 
         if (complement := deliveries.get("Complemento")) is None:
+            self.catch_error(
+                err_type=ClaveError,
+                err_message="Error: clave 'Complemento' no fue expresada."
+                )
+            return
+
+        if not complement:
             self.catch_error(
                 err_type=ClaveError,
                 err_message="Error: clave 'Complemento' no fue expresada."
