@@ -341,7 +341,7 @@ class ComplementBuilder:
                             err_type=RegexError,
                             err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}"
                             )
-                    if purchase_price and not 1 <= purchase_price <= 1000000000000:
+                    if purchase_price and not 0 <= purchase_price <= 1000000000000:
                         self.catch_error(
                             err_type=ValorMinMaxError,
                             err_message=f"Error: Clave 'PrecioCompra' con valor '{purchase_price}' no tiene el valor min 0 o max 1000000000000."
