@@ -36,7 +36,7 @@ class ComplementBuilder:
 
     def validate_complemento(self) -> None:
         """Base complement validations"""
-        if self._next_complement():
+        while self._next_complement():
             self._validate_complemento_tipado()
             self._validate_tipo_complemento()
             self._validate_transporte()
@@ -49,7 +49,7 @@ class ComplementBuilder:
             self.__validate_extranjero_pedimentos()
 
             self._update_index()
-            self.validate_complemento()
+            # self.validate_complemento()
 
     @exception_wrapper
     def _validate_complemento_tipado(self) -> None:
