@@ -302,17 +302,17 @@
             }
 
             if (errors.length === 0) {
-                statusBadge.textContent = '✓ Sin errores';
+                statusBadge.textContent = 'Sin errores';
                 statusBadge.style.background = 'rgba(52, 211, 153, 0.2)';
-                statusBadge.style.color = '#6ee7b7';
+                statusBadge.style.color = '#059669';
 
                 resultsDiv.innerHTML = `
                     <div class="success-card">
                         <div class="success-icon-wrapper">
                             <span class="success-icon">✓</span>
                         </div>
-                        <div class="success-title">¡Validación exitosa!</div>
-                        <div class="success-message">Tu archivo JSON no contiene errores</div>
+                        <div class="success-title">Validación exitosa</div>
+                        <div class="success-message">No se encontraron motivos de rechazo en el JSON.</div>
                     </div>
                 `;
             } else {
