@@ -248,7 +248,7 @@ h1 {
 .upload-card {
     background: var(--bg-upload);
     border-radius: 20px;
-    padding: 48px 40px;
+    padding: 16px 40px;
     text-align: center;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -490,7 +490,7 @@ h1 {
     font-weight: 600;
     display: inline-block;
     margin-bottom: 10px;
-    text-transform: uppercase;
+    text-transform: capitalize;
     letter-spacing: 0.5px;
 }
 
