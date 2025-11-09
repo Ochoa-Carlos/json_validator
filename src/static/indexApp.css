@@ -1,3 +1,149 @@
+:root {
+    /* Tema Oscuro - Monokai Pro */
+    --bg-gradient-start: #2d2a2e;
+    --bg-gradient-end: #221f22;
+    --bg-card: #2d2a2e;
+    --bg-card-secondary: #403e41;
+    --bg-card-hover: #494650;
+    --bg-json-viewer: #312E32;
+    --bg-upload: linear-gradient(135deg, #403e41 0%, #2d2a2e 100%);
+    --bg-upload-hover: linear-gradient(135deg, #494650 0%, #3a373d 100%);
+    --bg-upload-icon: rgba(255, 97, 136, 0.15);
+    --bg-upload-icon-hover: rgba(255, 97, 136, 0.25);
+    --bg-section-header: linear-gradient(135deg, #403e41 0%, #3a373d 100%);
+
+    --text-primary: #fcfcfa;
+    --text-secondary: #f8f8f2;
+    --text-tertiary: #c1c0c0;
+    --text-quaternary: #939293;
+    --text-muted: #727072;
+
+    --border-color: #5b595c;
+    --border-dashed: #5b595c;
+    --border-section: #5b595c;
+
+    --accent-primary: #ff6188;
+    --accent-secondary: #fc9867;
+
+    /* Colores de estado - Error */
+    --error-bg: linear-gradient(135deg, #403e41 0%, #2d2a2e 100%);
+    --error-border: #ff6188;
+    --error-icon-bg: rgba(255, 97, 136, 0.15);
+    --error-badge-bg: rgba(255, 97, 136, 0.2);
+    --error-badge-color: #ff6188;
+    --error-text: #fcfcfa;
+
+    /* Colores de estado - Success */
+    --success-bg: linear-gradient(135deg, rgba(169, 220, 118, 0.15) 0%, rgba(169, 220, 118, 0.08) 100%);
+    --success-border: rgba(169, 220, 118, 0.3);
+    --success-icon-bg: rgba(169, 220, 118, 0.2);
+    --success-color: #a9dc76;
+    --success-text: #c1c0c0;
+
+    /* Colores de estado - Warning */
+    --warning-bg: rgba(255, 216, 102, 0.2);
+    --warning-color: #ffd866;
+
+    /* Botones y badges */
+    --badge-bg: rgba(255, 97, 136, 0.2);
+    --badge-color: #ff6188;
+    --button-bg: rgba(255, 97, 136, 0.15);
+    --button-border: rgba(255, 97, 136, 0.3);
+    --button-color: #ff6188;
+    --button-hover-bg: #ff6188;
+    --button-hover-color: #ffffff;
+
+    /* Scrollbar */
+    --scrollbar-track: #2D2A2E;
+    --scrollbar-thumb: #5b595c;
+    --scrollbar-thumb-hover: #727072;
+
+    /* Toast */
+    --toast-bg: linear-gradient(135deg, #ff6188 0%, #fc9867 100%);
+    --toast-shadow: rgba(255, 97, 136, 0.4);
+
+    /* Syntax Highlighting */
+    --syntax-key: #ffffff;
+    --syntax-string: #fbbf24;
+    --syntax-number: #86efac;
+    --syntax-literal: #fb7185;
+}
+
+[data-theme="light"] {
+    /* Tema Claro */
+    --bg-gradient-start: #F8EFE7;
+    --bg-gradient-end: #EEE5DE;
+    --bg-card: #F8EFE7;
+    --bg-card-secondary: #f8f9fa;
+    --bg-card-hover: #f1f3f5;
+    --bg-json-viewer: #FEFAF9;
+    --bg-upload: #FDF7F3;
+    --bg-upload-hover: #f8f9fa;
+    --bg-upload-icon: rgba(102, 126, 234, 0.1);
+    --bg-upload-icon-hover: rgba(102, 126, 234, 0.2);
+    --bg-section-header: linear-gradient(135deg, #FDF7F3 0%, #FDF7F5 100%);
+
+    --text-primary: #1a202c;
+    --text-secondary: #2d3748;
+    --text-tertiary: #4a5568;
+    --text-quaternary: #718096;
+    --text-muted: #a0aec0;
+
+    --border-color: #e2e8f0;
+    --border-dashed: #cbd5e0;
+    --border-section: #e2e8f0;
+
+    --accent-primary: #cb4b16;
+    --accent-secondary: #d33682;
+
+    /* Colores de estado - Error */
+    --error-bg: #FDF7F3;
+    --error-border: #f87171;
+    --error-icon-bg: #EEE5DE;
+    --error-badge-bg: #EEE5DE;
+    --error-badge-color: #dc2626;
+    --error-text: #1a202c;
+
+    /* Colores de estado - Success */
+    --success-bg: #e6f7ed;
+    --success-border: #86efac;
+    --success-icon-bg: #d1fae5;
+    --success-color: #059669;
+    --success-text: #4a5568;
+
+    /* Colores de estado - Warning */
+    --warning-bg: #fef3c7;
+    --warning-color: #d97706;
+
+    /* Botones y badges */
+    --badge-bg: rgba(203, 75, 22, 0.12);
+    --badge-color: #cb4b16;
+    --button-bg: #f8f5ec;
+    --button-border: #ede8d5;
+    --button-color: #cb4b16;
+    --button-hover-bg: #cb4b16;
+    --button-hover-color: #fdf6e3;
+
+    /* Scrollbar */
+    --scrollbar-track: #fdf6e3;
+    --scrollbar-thumb: #d5cdb3;
+    --scrollbar-thumb-hover: #c5bda3;
+
+    /* Toast */
+    --toast-bg: linear-gradient(135deg, #cb4b16 0%, #d33682 100%);
+    --toast-shadow: rgba(203, 75, 22, 0.3);
+
+    /* Syntax Highlighting - Tema Claro */
+    --syntax-key: #2d3748;
+    --syntax-string: #d97706;
+    --syntax-number: #059669;
+    --syntax-literal: #dc2626;
+}
+
+/* ===========================
+   ESTILOS BASE
+   =========================== */
+
 * {
     margin: 0;
     padding: 0;
@@ -5,13 +151,14 @@
 }
 
 body {
-    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif; */
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-    color: #e2e8f0;
+    /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif; */
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    color: var(--text-secondary);
     min-height: 100vh;
     padding: 24px;
     line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -19,38 +166,79 @@ body {
     margin: 0 auto;
 }
 
+/* ===========================
+   HEADER
+   =========================== */
+
 .header {
     text-align: center;
     margin-bottom: 40px;
     animation: fadeInDown 0.6s ease-out;
+    position: relative;
 }
 
 .logo-wrapper {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
     font-size: 40px;
-    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 40px var(--toast-shadow);
 }
 
 h1 {
     font-size: 36px;
     font-weight: 300;
-    color: #f7fafc;
+    color: var(--text-primary);
     margin-bottom: 8px;
     letter-spacing: -0.5px;
 }
 
 .subtitle {
     font-size: 16px;
-    color: #a0aec0;
+    color: var(--text-tertiary);
     font-weight: 400;
 }
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--bg-card-hover);
+}
+
+.theme-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===========================
+   UPLOAD SECTION
+   =========================== */
 
 .upload-section {
     margin-bottom: 32px;
@@ -58,33 +246,33 @@ h1 {
 }
 
 .upload-card {
-    background: linear-gradient(135deg, #374151 0%, #2d3748 100%);
+    background: var(--bg-upload);
     border-radius: 20px;
-    padding: 18px 40px;
+    padding: 48px 40px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px dashed #4b5563;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px dashed var(--border-dashed);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .upload-card:hover {
     transform: translateY(-4px);
-    border-color: #667eea;
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
-    background: linear-gradient(135deg, #3f4756 0%, #333d4d 100%);
+    border-color: var(--accent-primary);
+    box-shadow: 0 12px 40px var(--toast-shadow);
+    background: var(--bg-upload-hover);
 }
 
 .upload-card.dragover {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #3f4756 0%, #333d4d 100%);
+    border-color: var(--accent-primary);
+    background: var(--bg-upload-hover);
     transform: scale(1.02);
 }
 
 .upload-icon {
     width: 70px;
     height: 70px;
-    background: rgba(102, 126, 234, 0.15);
+    background: var(--bg-upload-icon);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -96,24 +284,38 @@ h1 {
 
 .upload-card:hover .upload-icon {
     transform: scale(1.1) rotate(5deg);
-    background: rgba(102, 126, 234, 0.25);
+    background: var(--bg-upload-icon-hover);
 }
 
 .upload-title {
     font-size: 20px;
     font-weight: 500;
-    color: #f7fafc;
+    color: var(--text-primary);
     margin-bottom: 8px;
 }
 
 .upload-description {
     font-size: 15px;
-    color: #a0aec0;
+    color: var(--text-tertiary);
 }
 
 .file-input {
     display: none;
 }
+
+.file-name-display {
+    background: var(--badge-bg);
+    color: var(--badge-color);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    display: inline-block;
+    margin-top: 12px;
+}
+
+/* ===========================
+   CONTENT SECTIONS
+   =========================== */
 
 .content-wrapper {
     display: flex;
@@ -123,19 +325,20 @@ h1 {
 }
 
 .section {
-    background: #2d3748;
+    background: var(--bg-card);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: background 0.3s ease;
 }
 
 .section-header {
-    background: linear-gradient(135deg, #4a5568 0%, #3f4756 100%);
-    padding: 10px 28px;
+    background: var(--bg-section-header);
+    padding: 20px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #4b5563;
+    border-bottom: 1px solid var(--border-section);
 }
 
 .section-title {
@@ -144,7 +347,7 @@ h1 {
     gap: 12px;
     font-size: 18px;
     font-weight: 500;
-    color: #f7fafc;
+    color: var(--text-primary);
 }
 
 .section-icon {
@@ -152,8 +355,8 @@ h1 {
 }
 
 .section-badge {
-    background: rgba(102, 126, 234, 0.2);
-    color: #a5b4fc;
+    background: var(--badge-bg);
+    color: var(--badge-color);
     padding: 6px 14px;
     border-radius: 10px;
     font-size: 13px;
@@ -161,9 +364,9 @@ h1 {
 }
 
 .copy-btn {
-    background: rgba(102, 126, 234, 0.2);
-    border: 1px solid rgba(102, 126, 234, 0.3);
-    color: #a5b4fc;
+    background: var(--button-bg);
+    border: 1px solid var(--button-border);
+    color: var(--button-color);
     padding: 8px 18px;
     border-radius: 10px;
     cursor: pointer;
@@ -174,9 +377,9 @@ h1 {
 }
 
 .copy-btn:hover {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
+    background: var(--button-hover-bg);
+    color: var(--button-hover-color);
+    border-color: var(--accent-primary);
     transform: translateY(-2px);
 }
 
@@ -184,16 +387,24 @@ h1 {
     padding: 28px;
 }
 
+/* ===========================
+   JSON VIEWER
+   =========================== */
+
 .json-viewer-wrapper {
-    background: #2D2A2E;
+    background: var(--bg-json-viewer);
     border-radius: 12px;
-    border: 1px solid #4b5563;
+    border: 1px solid var(--border-color);
     overflow: hidden;
+    transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .json-viewer {
     padding: 24px;
-    font-family: 'Azeret Mono', 'Roboto Mono', 'Courier Prime', 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-family: "Source Code Pro", monospace;
+    font-optical-sizing: auto;
+    font-weight: 650;
+    font-style: normal;
     font-size: 14px;
     line-height: 1.8;
     overflow-x: auto;
@@ -203,33 +414,31 @@ h1 {
     min-height: 300px;
 }
 
-/* Nuevos estilos para syntax highlighting mejorado */
+/* Syntax Highlighting */
 .hljs-keyword {
-    color: #ffffff;
+    color: var(--syntax-key);
     font-weight: 500;
 }
 
-/* Claves (keys) - blanco */
 .hljs-string {
-    color: #fbbf24;
+    color: var(--syntax-string);
 }
 
-/* Strings - amarillo */
 .hljs-number {
-    color: #86efac;
+    color: var(--syntax-number);
 }
 
-/* Números - verde */
 .hljs-literal {
-    color: #fb7185;
+    color: var(--syntax-literal);
 }
 
-/* true, false, null */
 .hljs-brace {
     font-weight: bold;
 }
 
-/* Llaves y corchetes - colores dinámicos por profundidad */
+/* ===========================
+   ERROR DISPLAY
+   =========================== */
 
 .error-list {
     display: flex;
@@ -238,17 +447,17 @@ h1 {
 }
 
 .error-card {
-    background: linear-gradient(135deg, #374151 0%, #2d3748 100%);
+    background: var(--error-bg);
     border-radius: 16px;
-    padding: 15px 24px;
+    padding: 20px 24px;
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    border-left: 4px solid #f87171;
+    border-left: 4px solid var(--error-border);
     transition: all 0.3s ease;
     opacity: 0;
     animation: slideInLeft 0.4s ease-out forwards;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .error-card:hover {
@@ -259,7 +468,7 @@ h1 {
 .error-icon {
     width: 44px;
     height: 44px;
-    background: rgba(248, 113, 113, 0.15);
+    background: var(--error-icon-bg);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -273,37 +482,41 @@ h1 {
 }
 
 .error-type {
-    background: rgba(248, 113, 113, 0.2);
-    color: #fca5a5;
+    background: var(--error-badge-bg);
+    color: var(--error-badge-color);
     padding: 5px 12px;
     border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
     display: inline-block;
     margin-bottom: 10px;
-    text-transform: capitalize;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .error-message {
-    color: #e2e8f0;
+    color: var(--error-text);
     font-size: 15px;
     line-height: 1.6;
 }
 
+/* ===========================
+   SUCCESS DISPLAY
+   =========================== */
+
 .success-card {
-    background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+    background: var(--success-bg);
     border-radius: 16px;
     padding: 48px 32px;
     text-align: center;
-    border: 1px solid rgba(52, 211, 153, 0.3);
+    border: 1px solid var(--success-border);
     animation: successPulse 0.6s ease-out;
 }
 
 .success-icon-wrapper {
     width: 80px;
     height: 80px;
-    background: rgba(52, 211, 153, 0.2);
+    background: var(--success-icon-bg);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -319,24 +532,28 @@ h1 {
 .success-title {
     font-size: 26px;
     font-weight: 500;
-    color: #6ee7b7;
+    color: var(--success-color);
     margin-bottom: 8px;
 }
 
 .success-message {
     font-size: 16px;
-    color: #a0aec0;
+    color: var(--success-text);
 }
+
+/* ===========================
+   TOAST NOTIFICATION
+   =========================== */
 
 .toast {
     position: fixed;
     bottom: 32px;
     right: 32px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
+    background: var(--toast-bg);
+    color: #FDF7F3;
     padding: 16px 24px;
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 32px var(--toast-shadow);
     font-size: 14px;
     font-weight: 500;
     display: flex;
@@ -364,10 +581,14 @@ h1 {
     font-size: 14px;
 }
 
+/* ===========================
+   EMPTY STATE
+   =========================== */
+
 .empty-state {
     text-align: center;
     padding: 60px 20px;
-    color: #718096;
+    color: var(--text-quaternary);
 }
 
 .empty-icon {
@@ -380,15 +601,9 @@ h1 {
     font-size: 15px;
 }
 
-.file-name-display {
-    background: rgba(102, 126, 234, 0.1);
-    color: #a5b4fc;
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 13px;
-    display: inline-block;
-    margin-top: 12px;
-}
+/* ===========================
+   ANIMATIONS
+   =========================== */
 
 @keyframes fadeInDown {
     from {
@@ -436,25 +651,32 @@ h1 {
     }
 }
 
-/* Scrollbar styling */
+/* ===========================
+   SCROLLBAR
+   =========================== */
+
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #2D2A2E;
+    background: var(--scrollbar-track);
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #4b5563;
+    background: var(--scrollbar-thumb);
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #6b7280;
+    background: var(--scrollbar-thumb-hover);
 }
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
 
 @media (max-width: 768px) {
     body {
@@ -474,7 +696,16 @@ h1 {
     }
 
     .json-viewer {
-        font-size: 12px;
+        font-size: 13px;
         max-height: 60vh;
+    }
+
+    .theme-toggle {
+        position: static;
+        margin: 20px auto 0;
+    }
+
+    .header {
+        margin-bottom: 24px;
     }
 }
