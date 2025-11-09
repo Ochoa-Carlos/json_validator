@@ -17,36 +17,621 @@
         rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="static/index.css" type="text/css" rel="stylesheet">
+    <!-- <link href="static/index.css" type="text/css" rel="stylesheet"> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif;
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 24px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .logo-wrapper {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 300;
+            color: #f7fafc;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        .upload-section {
+            margin-bottom: 32px;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+
+        .upload-card {
+            background: linear-gradient(135deg, #374151 0%, #2d3748 100%);
+            border-radius: 20px;
+            padding: 18px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px dashed #4b5563;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-card:hover {
+            transform: translateY(-4px);
+            border-color: #667eea;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+            background: linear-gradient(135deg, #3f4756 0%, #333d4d 100%);
+        }
+
+        .upload-card.dragover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #3f4756 0%, #333d4d 100%);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(102, 126, 234, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-card:hover .upload-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(102, 126, 234, 0.25);
+        }
+
+        .upload-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #f7fafc;
+            margin-bottom: 8px;
+        }
+
+        .upload-description {
+            font-size: 15px;
+            color: #a0aec0;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.6s ease-out 0.4s both;
+        }
+
+        .section {
+            background: #2d3748;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #4a5568 0%, #3f4756 100%);
+            padding: 10px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #4b5563;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #f7fafc;
+        }
+
+        .section-icon {
+            font-size: 24px;
+        }
+
+        .section-badge {
+            background: rgba(102, 126, 234, 0.2);
+            color: #a5b4fc;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #a5b4fc;
+            padding: 8px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .copy-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .section-content {
+            padding: 28px;
+        }
+
+        .json-viewer-wrapper {
+            background: #2D2A2E;
+            border-radius: 12px;
+            border: 1px solid #4b5563;
+            overflow: hidden;
+        }
+
+        .json-viewer {
+            padding: 24px;
+            font-family: 'Azeret Mono', 'Roboto Mono', 'Courier Prime', 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            overflow-x: auto;
+            overflow-y: auto;
+            white-space: pre;
+            max-height: 70vh;
+            min-height: 300px;
+        }
+
+        /* Nuevos estilos para syntax highlighting mejorado */
+        .hljs-keyword {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        /* Claves (keys) - blanco */
+        .hljs-string {
+            color: #fbbf24;
+        }
+
+        /* Strings - amarillo */
+        .hljs-number {
+            color: #86efac;
+        }
+
+        /* Números - verde */
+        .hljs-literal {
+            color: #fb7185;
+        }
+
+        /* true, false, null */
+        .hljs-brace {
+            font-weight: bold;
+        }
+
+        /* Llaves y corchetes - colores dinámicos por profundidad */
+
+        .error-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .error-card {
+            background: linear-gradient(135deg, #374151 0%, #2d3748 100%);
+            border-radius: 16px;
+            padding: 15px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            border-left: 4px solid #f87171;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: slideInLeft 0.4s ease-out forwards;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 20px rgba(248, 113, 113, 0.2);
+        }
+
+        .error-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(248, 113, 113, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .error-content {
+            flex: 1;
+        }
+
+        .error-type {
+            background: rgba(248, 113, 113, 0.2);
+            color: #fca5a5;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+            letter-spacing: 0.5px;
+        }
+
+        .error-message {
+            color: #e2e8f0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .success-card {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border-radius: 16px;
+            padding: 48px 32px;
+            text-align: center;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            animation: successPulse 0.6s ease-out;
+        }
+
+        .success-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: rgba(52, 211, 153, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 24px rgba(52, 211, 153, 0.3);
+        }
+
+        .success-icon {
+            font-size: 44px;
+        }
+
+        .success-title {
+            font-size: 26px;
+            font-weight: 500;
+            color: #6ee7b7;
+            margin-bottom: 8px;
+        }
+
+        .success-message {
+            font-size: 16px;
+            color: #a0aec0;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 15px;
+        }
+
+        .file-name-display {
+            background: rgba(102, 126, 234, 0.1);
+            color: #a5b4fc;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 12px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes successPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2D2A2E;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .upload-card {
+                padding: 32px 24px;
+            }
+
+            .section-content {
+                padding: 20px;
+            }
+
+            .json-viewer {
+                font-size: 12px;
+                max-height: 60vh;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Sube tu archivo JSON mensual para validarlo</h1>
     <div class="container">
-        <form id="jsonForm" enctype="multipart/form-data">
-            <input type="file" id="jsonFile" accept=".json" required />
-            <label for="jsonFile" class="file-upload-btn">Cargar archivo JSON</label>
-            <div id="file-name"></div>
-            <button type="submit">Validar JSON</button>
-        </form>
+        <div class="header">
+            <h1>Validador de Controles Volumétricos</h1>
+            <p class="subtitle">Valida el cumplimiento de tu <i><b>reporte mensual</b></i></p>
+        </div>
 
-        <div id="jsonFileName" class="file-name-display" style="display: none;"></div>
+        <div class="upload-section">
+            <div class="upload-card" id="uploadCard">
+                <input type="file" id="jsonFile" class="file-input" accept=".json">
+                <div class="upload-icon">📎</div>
+                <div class="upload-title">Selecciona tu archivo JSON</div>
+                <div class="upload-description">o arrastra y suelta aquí</div>
+                <div class="file-name-display" id="fileNameDisplay" style="display: none;"></div>
+            </div>
+        </div>
 
-        <div id="warningDisplay" class="warning" style="display: none;"></div>
-        <ul id="warningList" class="warning-list" style="display: none;"></ul>
+        <div class="content-wrapper" id="contentWrapper" style="display: none;">
+            <!-- JSON Section -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">📄</span>
+                        <span id="jsonFileName">Contenido del archivo</span>
+                    </div>
+                    <button class="copy-btn" id="copyBtn">
+                        📋 Copiar
+                    </button>
+                </div>
+                <div class="section-content">
+                    <div class="json-viewer-wrapper">
+                        <div class="json-viewer" id="jsonContent"></div>
+                    </div>
+                </div>
+            </div>
 
-        <div id="jsonDisplay"></div>
+            <!-- Results Section -->
+            <div class="section">
+                <div class="section-header">
+                    <!-- <div class="section-title">
+                        <span class="section-icon">🔍</span>
+                        Resultados de validación
+                    </div> -->
+                    <span class="section-badge" id="statusBadge">Validando...</span>
+                </div>
+                <div class="section-content">
+                    <div id="resultsContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <div id="errorDisplay" class="error" style="display: none;"></div>
-
-        <ul id="errorList" class="error-list" style="display: none;"></ul>
+    <div class="toast" id="toast">
+        <div class="toast-icon">✓</div>
+        JSON copiado correctamente
     </div>
 
     <script>
-        let dataSanitizationIssues = [];
+        let currentJSON = null;
+        const uploadCard = document.getElementById('uploadCard');
+        const fileInput = document.getElementById('jsonFile');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+        // Upload interactions
+        uploadCard.addEventListener('click', () => fileInput.click());
+
+        uploadCard.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadCard.classList.add('dragover');
+        });
+
+        uploadCard.addEventListener('dragleave', () => {
+            uploadCard.classList.remove('dragover');
+        });
+
+        uploadCard.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadCard.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'application/json') {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+
+        async function handleFile(file) {
+            // Show file name
+            fileNameDisplay.textContent = `📄 ${file.name}`;
+            fileNameDisplay.style.display = 'inline-block';
+            
+            try {
+                const text = await file.text();
+                currentJSON = JSON.parse(text);
+
+                document.getElementById('jsonFileName').textContent = file.name;
+                displayJSON(currentJSON);
+                document.getElementById('contentWrapper').style.display = 'flex';
+
+                // API call
+                let formData = new FormData();
+                formData.append("file", file);
+
+                let response = await fetch("/upload/", {
+                    method: "POST",
+                    body: formData
+                });
+                let result = await response.json();
+
+                // Manejar diferentes tipos de respuesta
+                let errors = [];
+                if (Array.isArray(result)) {
+                    errors = result;
+                } else if (result && Array.isArray(result.errors)) {
+                    errors = result.errors;
+                } else if (result && result.error) {
+                    errors = [{ type_error: 'Error', error: result.error }];
+                }
+
+                displayResults(errors);
+
+            } catch (error) {
+                console.error('Error:', error);
+                displayError(error.message);
+            }
+        }
 
         const INVALID_VALUE_REPLACEMENT = "Valor NaN no valido";
-
         let nanValuesCount = 0;
 
         function sanitizeRawJsonString(jsonString) {
@@ -73,20 +658,29 @@
             return nanMatches.length;
         }
 
-        function displaySanitizationWarnings(count) {
-            const warningDisplay = document.getElementById("warningDisplay");
-            const warningList = document.getElementById("warningList");
+        function displayJSON(json) {
+            let formatted = JSON.stringify(json, null, 2);
 
-            if (count > 0) {
-                warningDisplay.style.display = "block";
-                warningDisplay.innerHTML = `
-                    <strong>Datos Sanitizados:</strong> Se encontraron ${count} valores NaN originales que fueron reemplazados por "${INVALID_VALUE_REPLACEMENT}".
+            // Contar valores NaN antes de sanitizar
+            nanValuesCount = countNanValuesInString(formatted);
+
+            // Sanitizar el JSON
+            if (nanValuesCount > 0) {
+                formatted = sanitizeRawJsonString(formatted);
+            }
+
+            const highlighted = syntaxHighlight(formatted);
+            document.getElementById('jsonContent').innerHTML = highlighted;
+
+            // Actualizar el badge si hay sanitización
+            if (nanValuesCount > 0) {
+                const statusBadge = document.getElementById('statusBadge');
+                const originalText = statusBadge.textContent;
+                statusBadge.innerHTML = `
+                    <span style="margin-right: 8px;"> ${nanValuesCount} valor${nanValuesCount > 1 ? 'es' : ''} sanitizado${nanValuesCount > 1 ? 's' : ''}</span>
                 `;
-
-                warningList.style.display = "none";
-            } else {
-                warningDisplay.style.display = "none";
-                warningList.style.display = "none";
+                statusBadge.style.background = 'rgba(251, 191, 36, 0.2)';
+                statusBadge.style.color = '#fbbf24';
             }
         }
 
@@ -98,10 +692,10 @@
             let colorStack = [];
             let depth = 0;
 
-            return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"\n])*"(:)?|\b(true|false|null)\b|\b\d+\b|{|}|\[|\])/g, function (match) {
+            return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"\n])*"(:)?|\b(true|false|null)\b|\b-?\d+(\.\d+)?([eE][+\-]?\d+)?\b|{|}|\[|\])/g, function (match) {
                 let cls = 'hljs-number';
 
-                // Si es una llave de apertura ( { )
+                // Si es una llave de apertura ( { o [ )
                 if (match === '{' || match === '[') {
                     cls = 'hljs-brace';
                     // Determinar el color basado en la profundidad
@@ -113,7 +707,7 @@
                     return `<span class="${cls}" style="color: ${color};">${match}</span>`;
                 }
 
-                // Si es una llave de cierre ( } )
+                // Si es una llave de cierre ( } o ] )
                 if (match === '}' || match === ']') {
                     cls = 'hljs-brace';
                     // Extraer el color de la pila
@@ -123,24 +717,26 @@
                     return `<span class="${cls}" style="color: ${color};">${match}</span>`;
                 }
 
-                // Si es una clave (entre comillas)
+                // Si es una clave (entre comillas seguida de :)
                 if (/^"/.test(match)) {
                     if (/:$/.test(match)) {
-                        cls = 'hljs-keyword'; /* Claves */
+                        cls = 'hljs-keyword'; /* Claves - blanco */
                     } else {
-                        cls = 'hljs-string'; /* Strings */
+                        cls = 'hljs-string'; /* Strings - amarillo */
                     }
                 }
 
-                // Si es un valor booleano o null
+                // Si es un valor booleano
                 else if (/true|false/.test(match)) {
                     cls = 'hljs-literal'; /* Literales */
-                } else if (/null/.test(match)) {
+                }
+                // Si es null
+                else if (/null/.test(match)) {
                     cls = 'hljs-literal'; /* Literales */
                 }
 
                 // Si es un número
-                else if (/\d+/.test(match)) {
+                else if (/^-?\d+(\.\d+)?([eE][+\-]?\d+)?$/.test(match)) {
                     cls = 'hljs-number'; /* Números */
                 }
 
@@ -148,77 +744,91 @@
             });
         }
 
-        document.getElementById("jsonFile").addEventListener("change", function (event) {
-            const fileName = event.target.files[0] ? event.target.files[0].name : "No se ha seleccionado ningún archivo";
+        function displayResults(errors) {
+            const resultsDiv = document.getElementById('resultsContent');
+            const statusBadge = document.getElementById('statusBadge');
 
-            document.getElementById("file-name").textContent = "Archivo: " + fileName;
-        });
+            // Asegurar que errors sea un array
+            if (!Array.isArray(errors)) {
+                console.error('La respuesta no es un array:', errors);
+                errors = [];
+            }
 
-        document.getElementById("jsonForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+            if (errors.length === 0) {
+                statusBadge.textContent = '✓ Sin errores';
+                statusBadge.style.background = 'rgba(52, 211, 153, 0.2)';
+                statusBadge.style.color = '#6ee7b7';
 
-            nanValuesCount = 0;
+                resultsDiv.innerHTML = `
+                    <div class="success-card">
+                        <div class="success-icon-wrapper">
+                            <span class="success-icon">✓</span>
+                        </div>
+                        <div class="success-title">¡Validación exitosa!</div>
+                        <div class="success-message">Tu archivo JSON no contiene errores</div>
+                    </div>
+                `;
+            } else {
+                statusBadge.textContent = `${errors.length} error${errors.length > 1 ? 'es' : ''} encontrado${errors.length > 1 ? 's' : ''}`;
+                statusBadge.style.background = 'rgba(248, 113, 113, 0.2)';
+                statusBadge.style.color = '#fca5a5';
 
-            let formData = new FormData();
-            formData.append("file", document.getElementById("jsonFile").files[0]);
+                let errorsHTML = '<div class="error-list">';
 
-            try {
-                let response = await fetch("/upload/", {
-                    method: "POST",
-                    body: formData
+                errors.forEach((error, index) => {
+                    errorsHTML += `
+                        <div class="error-card" style="animation-delay: ${index * 0.1}s">
+                            <div class="error-content">
+                                <div class="error-type">${error.type_error}</div>
+                                <div class="error-message">${error.error}</div>
+                            </div>
+                        </div>
+                    `;
                 });
-                let result = await response.json();
 
-                if (result.error) {
-                    document.getElementById("errorDisplay").style.display = "block";
-                    document.getElementById("errorDisplay").textContent = result.error;
-                    document.getElementById("jsonDisplay").style.display = "none";
-                    document.getElementById("errorList").style.display = "none";
-                    document.getElementById("warningDisplay").style.display = "none";
-                    document.getElementById("warningList").style.display = "none";
-                } else {
-                    const originalJsonString = result.json_data;
-                    const sanitizedJsonString = sanitizeRawJsonString(originalJsonString);
+                errorsHTML += '</div>';
+                resultsDiv.innerHTML = errorsHTML;
+            }
+        }
 
-                    nanValuesCount = countNanValuesInString(originalJsonString);
+        function displayError(message) {
+            const resultsDiv = document.getElementById('resultsContent');
+            const statusBadge = document.getElementById('statusBadge');
 
-                    let parsedData = JSON.parse(sanitizedJsonString);
+            statusBadge.textContent = 'Error al procesar';
+            statusBadge.style.background = 'rgba(248, 113, 113, 0.2)';
+            statusBadge.style.color = '#fca5a5';
 
-                    displaySanitizationWarnings(nanValuesCount);
+            resultsDiv.innerHTML = `
+                <div class="error-card">
+                    <div class="error-icon">❌</div>
+                    <div class="error-content">
+                        <div class="error-type">Error de formato</div>
+                        <div class="error-message">${message}</div>
+                    </div>
+                </div>
+            `;
 
-                    let formattedJson = JSON.stringify(parsedData, null, 4);
+            document.getElementById('contentWrapper').style.display = 'flex';
+        }
 
-                    document.getElementById("jsonFileName").textContent = document.getElementById("jsonFile").files[0].name;
-                    document.getElementById("jsonFileName").style.display = "block";
-                    document.getElementById("jsonDisplay").innerHTML = '<pre>' + syntaxHighlight(formattedJson) + '</pre>';
-                    document.getElementById("jsonDisplay").style.display = "block";
-                    document.getElementById("errorDisplay").style.display = "none";
-
-                    let errorList = document.getElementById("errorList");
-
-                    if (result.errors && result.errors.length > 0) {
-                        errorList.style.display = "block";
-                        errorList.innerHTML = "";
-                        result.errors.forEach(error => {
-                            let errorItem = document.createElement("li");
-                            errorItem.classList.add("error-item");
-                            errorItem.innerHTML = `<p><strong>Tipo de Error:</strong> ${error.type_error}</p><p><strong>Mensaje:</strong> ${error.error}</p>`;
-                            errorList.appendChild(errorItem);
-                        });
-                    } else {
-                        errorList.style.display = "block";
-                        errorList.innerHTML = '<p style="border-radius: 8px; padding: 20px; text-align: center; justify-content: center; color: green; background-color: #2D2A2E; width: auto;">No se encontraron errores</p>';
-                    }
-
-                }
-            } catch (error) {
-                console.error("Error al procesar el archivo:", error);
-                document.getElementById("errorDisplay").style.display = "block";
-                document.getElementById("errorDisplay").textContent = "Error al procesar el archivo: " + error.message;
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            if (currentJSON) {
+                const jsonString = JSON.stringify(currentJSON, null, 2);
+                navigator.clipboard.writeText(jsonString).then(() => {
+                    showToast();
+                });
             }
         });
-    </script>
 
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 
 </html>
