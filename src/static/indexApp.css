@@ -1,66 +1,69 @@
 :root {
-    /* Tema Oscuro - Monokai Pro */
-    --bg-gradient-start: #2d2a2e;
-    --bg-gradient-end: #221f22;
-    --bg-card: #2d2a2e;
-    --bg-card-secondary: #403e41;
-    --bg-card-hover: #494650;
+    --bg-gradient-start: #2f3d4f;
+    --bg-gradient-end: #1f2d3d;
+    --bg-card: #313f52;
+    --bg-card-secondary: #445264;
+    --bg-card-hover: #263447;
+    --bg-odd-theme: #FDFFE3;
+
+    /* Monokai Viewer Theme */
     --bg-json-viewer: #312E32;
     --bg-upload: linear-gradient(135deg, #403e41 0%, #2d2a2e 100%);
     --bg-upload-hover: linear-gradient(135deg, #494650 0%, #3a373d 100%);
     --bg-upload-icon: rgba(255, 97, 136, 0.15);
     --bg-upload-icon-hover: rgba(255, 97, 136, 0.25);
     --bg-section-header: linear-gradient(135deg, #403e41 0%, #3a373d 100%);
+    /* --bg-section-header: linear-gradient(135deg, #075197 0%, #04808b 100%); */
 
-    --text-primary: #fcfcfa;
-    --text-secondary: #f8f8f2;
-    --text-tertiary: #c1c0c0;
-    --text-quaternary: #939293;
-    --text-muted: #727072;
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --text-tertiary: #d1d5db;
+    --text-quaternary: #9ca3af;
+    --text-muted: #6b7280;
 
-    --border-color: #5b595c;
-    --border-dashed: #5b595c;
-    --border-section: #5b595c;
+    --border-color: #5d6b7e;
+    --border-dashed: #6f7d90;
+    --border-section: #5d6b7e;
 
-    --accent-primary: #ff6188;
-    --accent-secondary: #fc9867;
+    --accent-primary: #0ea5e9;
+    --accent-secondary: #06b6d4;
 
     /* Colores de estado - Error */
-    --error-bg: linear-gradient(135deg, #403e41 0%, #2d2a2e 100%);
-    --error-border: #ff6188;
-    --error-icon-bg: rgba(255, 97, 136, 0.15);
-    --error-badge-bg: rgba(255, 97, 136, 0.2);
-    --error-badge-color: #ff6188;
-    --error-text: #fcfcfa;
+    --error-bg: linear-gradient(135deg, #445264 0%, #313f52 100%);
+    --error-border: #f43f5e;
+    --error-icon-bg: rgba(244, 63, 94, 0.15);
+    --error-badge-bg: rgba(244, 63, 94, 0.2);
+    --error-badge-color: #fb7185;
+    --error-text: #f9fafb;
 
     /* Colores de estado - Success */
-    --success-bg: linear-gradient(135deg, rgba(169, 220, 118, 0.15) 0%, rgba(169, 220, 118, 0.08) 100%);
-    --success-border: rgba(169, 220, 118, 0.3);
-    --success-icon-bg: rgba(169, 220, 118, 0.2);
-    --success-color: #a9dc76;
-    --success-text: #c1c0c0;
+    --success-bg: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+    --success-border: rgba(14, 165, 233, 0.3);
+    --success-icon-bg: rgba(14, 165, 233, 0.2);
+    --success-color: #22d3ee;
+    --success-text: #d1d5db;
 
     /* Colores de estado - Warning */
-    --warning-bg: rgba(255, 216, 102, 0.2);
-    --warning-color: #ffd866;
+    --warning-bg: rgba(251, 219, 9, 0.15);
+    --warning-color: #fbbf24;
 
     /* Botones y badges */
-    --badge-bg: rgba(255, 97, 136, 0.2);
-    --badge-color: #ff6188;
-    --button-bg: rgba(255, 97, 136, 0.15);
-    --button-border: rgba(255, 97, 136, 0.3);
-    --button-color: #ff6188;
-    --button-hover-bg: #ff6188;
+    --badge-bg: rgba(14, 165, 233, 0.2);
+    --badge-color: #38bdf8;
+    --button-bg: rgba(14, 165, 233, 0.15);
+    --button-border: rgba(14, 165, 233, 0.3);
+    --button-color: #38bdf8;
+    --button-hover-bg: #0ea5e9;
     --button-hover-color: #ffffff;
 
     /* Scrollbar */
     --scrollbar-track: #2D2A2E;
-    --scrollbar-thumb: #5b595c;
-    --scrollbar-thumb-hover: #727072;
+    --scrollbar-thumb: #5d6b7e;
+    --scrollbar-thumb-hover: #0ea5e9;
 
     /* Toast */
-    --toast-bg: linear-gradient(135deg, #ff6188 0%, #fc9867 100%);
-    --toast-shadow: rgba(255, 97, 136, 0.4);
+    --toast-bg: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    --toast-shadow: rgba(14, 165, 233, 0.4);
 
     /* Syntax Highlighting */
     --syntax-key: #ffffff;
@@ -74,6 +77,10 @@
     --bg-gradient-start: #F8EFE7;
     --bg-gradient-end: #EEE5DE;
     --bg-card: #F8EFE7;
+    --bg-odd-theme: #2f3d4f;
+    /* --bg-gradient-start: #2f3d4f;
+        283342 */
+
     --bg-card-secondary: #f8f9fa;
     --bg-card-hover: #f1f3f5;
     --bg-json-viewer: #FEFAF9;
@@ -212,6 +219,7 @@ h1 {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
+    /* background: on */
     width: 48px;
     height: 48px;
     border-radius: 12px;
@@ -227,7 +235,7 @@ h1 {
 .theme-toggle:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    background: var(--bg-card-hover);
+    background: var(--bg-odd-theme);
 }
 
 .theme-icon {
@@ -334,7 +342,7 @@ h1 {
 
 .section-header {
     background: var(--bg-section-header);
-    padding: 20px 28px;
+    padding: 15px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -359,7 +367,7 @@ h1 {
     color: var(--badge-color);
     padding: 6px 14px;
     border-radius: 10px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
 }
 
@@ -449,7 +457,7 @@ h1 {
 .error-card {
     background: var(--error-bg);
     border-radius: 16px;
-    padding: 20px 24px;
+    padding: 10px 24px;
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -486,7 +494,7 @@ h1 {
     color: var(--error-badge-color);
     padding: 5px 12px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 15px;
     font-weight: 600;
     display: inline-block;
     margin-bottom: 10px;
@@ -497,6 +505,7 @@ h1 {
 .error-message {
     color: var(--error-text);
     font-size: 15px;
+    font-family: sans-serif;
     line-height: 1.6;
 }
 
