@@ -103,7 +103,7 @@ class ProductValidator:
             if not 87 <= octanaje_gas <= 130:
                 self.catch_error(
                     err_type=ValorMinMaxError,
-                    err_message="Error: 'ComposOctanajeGasolina' no está en el rango min 87 o max 130."
+                    err_message="Error: 'ComposOctanajeGasolina' debe tener un valor min 88 ó max 130."
                     )
 
     @exception_wrapper
@@ -367,11 +367,16 @@ class ProductValidator:
                 )
         if product_key == ProductEnum.PR07.value:
             nofosil_gas = self.current_product.get("GasolinaConCombustibleNoFosil")
-            if (self.current_product.get("ComposicionOctanajeDeGasolina")
-                    or nofosil_gas) is None:
+            comp_oct_gas = self.current_product.get("ComposOctanajeGasolina")
+            if comp_oct_gas is None:
                 self.catch_error(
                     err_type=ProductoError,
-                    err_message=f"Error: para ClaveProducto {product_key} deben existir los elementos 'ComposicionOctanajeDeGasolina' y 'GasolinaConCombustibleNoFosil'."
+                    err_message=f"Error: para ClaveProducto {product_key} debe existir el elemento 'ComposOctanajeGasolina'."
+                    )
+            if nofosil_gas is None:
+                self.catch_error(
+                    err_type=ProductoError,
+                    err_message=f"Error: para ClaveProducto {product_key} debe existir el elemento 'GasolinaConCombustibleNoFosil'."
                     )
             if nofosil_gas and nofosil_gas == SiNoEnum.SI.value and self.current_product.get("ComposDeCombustibleNoFosilEnGasolina") is None:
                 self.catch_error(
