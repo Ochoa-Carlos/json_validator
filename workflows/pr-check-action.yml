@@ -1,0 +1,90 @@
+name: QA Commit Verification
+run-name: QA Check by ${{ github.actor }}
+
+on:
+  pull_request:
+    types: ["opened", "synchronize", "reopened"]
+    branches:
+      - main
+
+jobs:
+  verify-qa-commits:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necesitamos todo el historial
+          
+      - name: Fetch QA branch
+        run: |
+          git fetch origin qa:qa
+          
+      - name: Verify commits exist in QA
+        id: check
+        run: |
+          echo "Checking commits from PR..."
+          
+          # Obtener los commits del PR (desde base hasta head)
+          PR_COMMITS=$(git log --format="%H" origin/${{ github.base_ref }}..${{ github.head_ref }})
+          
+          MISSING_COMMITS=()
+          
+          for commit in $PR_COMMITS; do
+            # Verificar si el commit existe en qa
+            if ! git branch -r --contains $commit | grep -q "origin/qa"; then
+              MISSING_COMMITS+=($commit)
+              echo "❌ Commit $commit NOT found in qa branch"
+            else
+              echo "✅ Commit $commit found in qa branch"
+            fi
+          done
+          
+          # Si hay commits faltantes, fallar
+          if [ ${#MISSING_COMMITS[@]} -gt 0 ]; then
+            echo "missing=true" >> $GITHUB_OUTPUT
+            echo "count=${#MISSING_COMMITS[@]}" >> $GITHUB_OUTPUT
+            echo ""
+            echo "⚠️  Found ${#MISSING_COMMITS[@]} commit(s) not present in qa branch"
+            exit 1
+          else
+            echo "missing=false" >> $GITHUB_OUTPUT
+            echo "✅ All commits have been merged to qa"
+          fi
+          
+      - name: Add label if commits missing
+        if: failure() && steps.check.outputs.missing == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['⚠️ missing-qa-verification']
+            });
+            
+      - name: Comment on PR
+        if: failure() && steps.check.outputs.missing == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## ⚠️ QA Verification Failed
+              
+              This PR contains **${{ steps.check.outputs.count }} commit(s)** that have not been merged to the \`qa\` branch.
+              
+              **Required action**: 
+              - Ensure all commits in this PR exist in \`qa\` before merging to \`main\`
+              - Merge your feature branch to \`qa\` first
+              - Then create a new PR from \`qa\` to \`main\`
+              
+              ---
+              *This is an automated check to maintain code quality and deployment flow.*`
+            });
