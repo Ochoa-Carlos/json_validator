@@ -1,3 +1,4 @@
+"""This module handles API."""
 import json
 
 from fastapi import FastAPI, File, UploadFile
