@@ -26,8 +26,15 @@ jobs:
         run: |
           echo "Checking commits from PR..."
           
-          # Obtener los commits del PR (desde base hasta head)
-          PR_COMMITS=$(git log --format="%H" origin/${{ github.base_ref }}..${{ github.head_ref }})
+          # Obtener los commits del PR usando los SHAs del evento
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          echo "Base: $BASE_SHA"
+          echo "Head: $HEAD_SHA"
+          
+          # Obtener lista de commits del PR
+          PR_COMMITS=$(git rev-list $BASE_SHA..$HEAD_SHA)
           
           MISSING_COMMITS=()
           
@@ -35,9 +42,12 @@ jobs:
             # Verificar si el commit existe en qa
             if ! git branch -r --contains $commit | grep -q "origin/qa"; then
               MISSING_COMMITS+=($commit)
-              echo "❌ Commit $commit NOT found in qa branch"
+              SHORT_SHA=$(git rev-parse --short $commit)
+              COMMIT_MSG=$(git log -1 --pretty=%s $commit)
+              echo "❌ Commit $SHORT_SHA NOT found in qa: $COMMIT_MSG"
             else
-              echo "✅ Commit $commit found in qa branch"
+              SHORT_SHA=$(git rev-parse --short $commit)
+              echo "✅ Commit $SHORT_SHA found in qa"
             fi
           done
           
