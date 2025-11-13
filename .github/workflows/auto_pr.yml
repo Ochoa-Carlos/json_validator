@@ -1,0 +1,25 @@
+name: Auto Pull Request
+run-name: PR by ${{ github.actor }}
+
+on:
+  push:
+    branches:
+      - feat/**
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create_pull_request:
+    name: Create Pull Action
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Repo
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: vsoch/pull-request-action@d703f40f3af5ae294f9816395ddf2e3d2d3feafa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_BRANCH: qa
