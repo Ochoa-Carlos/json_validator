@@ -1,4 +1,4 @@
-
+"""This module handle constants."""
 
 complement_type = ["Almacenamiento", "CDLR", "Comercializacion",
                    "Distribucion", "Expendio", "Extraccion", "Refinacion", "Transporte"]
