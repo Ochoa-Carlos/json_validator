@@ -1,4 +1,4 @@
-
+"""This module handle all custom exceptions."""
 
 class BaseError(Exception):
     """Base class for custom exception"""
