@@ -23,3 +23,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_BRANCH: qa
+          PULL_REQUEST_TITLE: "Auto PR: ${{ github.ref_name }} to qa"
+          PULL_REQUEST_BODY: "${{ github.events.head_commit.message }}"
