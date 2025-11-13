@@ -1,3 +1,4 @@
+"""This module handles product validations."""
 import re
 
 from src.condensed_gas_validator import CondensedGasValidator
