@@ -1,4 +1,4 @@
-
+"""This module handle constants."""
 
 caracteres = {
     "contratista": ["NumContratoOAsignacion"],
