@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   create_pull_request:
+    if: ${{ !contains(github.event.head_commit.message, 'Merge branch') }}
     name: Create Pull Action
     runs-on: ubuntu-latest
     steps:
@@ -24,4 +25,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_BRANCH: qa
           PULL_REQUEST_TITLE: "Auto PR: ${{ github.ref_name }} to qa"
-          PULL_REQUEST_BODY: "${{ github.events.head_commit.message }}"
+          PULL_REQUEST_BODY: "${{ github.event.head_commit.message }}"
