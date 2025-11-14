@@ -80,10 +80,13 @@ class ProductValidator:
         product_key = self.current_product.get("ClaveProducto")
         subproduct_key = self.current_product.get("ClaveSubProducto")
 
-        if product_key not in subproducts_keys:
+        if product_key in [ProductEnum.PR03.value, ProductEnum.PR07.value, ProductEnum.PR08.value,
+                           ProductEnum.PR09.value, ProductEnum.PR11.value, ProductEnum.PR13.value,
+                           ProductEnum.PR15.value, ProductEnum.PR16.value, ProductEnum.PR17.value,
+                           ProductEnum.PR18.value, ProductEnum.PR19.value] and subproduct_key is None:
             self.catch_error(
                 err_type=ClaveSubProductoError,
-                err_message=f"Error: 'ClaveSubProducto {subproduct_key}' debe pertenecer a los productos {subproducts_keys}."
+                err_message=f"Error: Elemento 'ClaveSubProducto' requerido para ClaveProducto: {product_key}",
                 )
         if subproduct_key and not re.match(SUBPRODUCTO_REGEX, subproduct_key):
             self.catch_error(
