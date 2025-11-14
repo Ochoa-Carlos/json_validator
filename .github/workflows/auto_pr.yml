@@ -26,3 +26,4 @@ jobs:
           PULL_REQUEST_BRANCH: qa
           PULL_REQUEST_TITLE: "Auto PR: ${{ github.ref_name }} to qa"
           PULL_REQUEST_BODY: "${{ github.event.head_commit.message }}"
+          PULL_REQUEST_REVIEWERS: "${{ github.repository_owner }}"
