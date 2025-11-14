@@ -1,10 +1,13 @@
+"""This module handle FastAPI inst."""
 import json
+from typing import Any, Dict, List, Union
 
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.json_validator import JsonValidator
+
 
 app = FastAPI()
 
@@ -16,7 +19,7 @@ async def read_root():
     return open("src/static/index.html", "rb").read()
 
 @app.post("/upload/")
-async def upload_json(file: UploadFile = File(...)):
+async def upload_json(file: UploadFile = File(...)) -> Dict[str, Union[str, List, Any]]:
     """Upload json file endppoint."""
     try:
         content = await file.read()
@@ -53,5 +56,6 @@ async def upload_json(file: UploadFile = File(...)):
 
     except json.JSONDecodeError as e:
         return {"Error": f"Error al cargar el archivo: {str(e)}"}
+
     except Exception as exc:
         return {"Error": f"Error al cargar el archivo: {str(exc)}"}
