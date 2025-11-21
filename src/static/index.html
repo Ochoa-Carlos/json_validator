@@ -144,7 +144,13 @@
             
             try {
                 const text = await file.text();
-                currentJSON = JSON.parse(text);
+                const texT = text
+                    .replace(/:\s*NaN\s*([,\}])/g, ': "NaN"$1')
+                    .replace(/:\s*Infinity\s*([,\}])/g, ': "Infinity"$1')
+                    .replace(/:\s*-Infinity\s*([,\}])/g, ': "-Infinity"$1')
+                    .replace(/:\s*undefined\s*([,\}])/g, ': "undefined"$1');
+
+                currentJSON = JSON.parse(texT)
 
                 document.getElementById('jsonFileName').textContent = file.name;
                 displayJSON(currentJSON);
