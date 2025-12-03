@@ -246,7 +246,7 @@ class ExpenditureComplement(ComplementBuilder):
                     err_type=ClaveError,
                     err_message="Error: clave 'PrecioDeVentaAlPublico' es condicional cuando clave 'TipoCFDI' = 'Ingreso'."
                     )
-            if public_sale_price and not 1 <= public_sale_price <= 1000000000000:
+            if public_sale_price and not 0 <= public_sale_price <= 1000000000000:
                 self.catch_error(
                     err_type=ValorMinMaxError,
                     err_message=f"Error: Clave 'PrecioVentaOCompraOContrap' con valor '{public_sale_price}' no tiene el valor min 0 o max 1000000000000."

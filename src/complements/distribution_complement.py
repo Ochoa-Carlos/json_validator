@@ -251,7 +251,7 @@ class DistributionComplement(ComplementBuilder):
                 err_type=RegexError,
                 err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el patron {CFDI_REGEX}"
                 )
-        if consid_purch_sale_price and not 1 <= consid_purch_sale_price <= 1000000000000:
+        if consid_purch_sale_price and not 0 <= consid_purch_sale_price <= 1000000000000:
             self.catch_error(
                 err_type=ValorMinMaxError,
                 err_message=f"Error: Clave 'PrecioVentaOCompraOContrap' con valor '{consid_purch_sale_price}' no tiene el valor min 0 o max 1000000000000."
