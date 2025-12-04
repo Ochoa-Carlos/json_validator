@@ -17,7 +17,7 @@ from src.decorators import exception_wrapper
 
 class DistributionComplement(ComplementBuilder):
     """Validation of distribution complement type."""
-    def validate_complemeto(self) -> None:
+    def validate_complemento(self) -> None:
         if self._next_complement():
             self._validate_complemento_tipado()
             self._validate_tipo_complemento()
