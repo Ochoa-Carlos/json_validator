@@ -19,7 +19,7 @@ from src.dict_types import compl_foreign_pedimentos
 
 class ExpenditureComplement(ComplementBuilder):
     """Validation of expenditure complement type."""
-    def validate_complemeto(self) -> None:
+    def validate_complemento(self) -> None:
         """Validate expenditure ecomplement."""
         if self._next_complement():
             self._validate_complemento_tipado()

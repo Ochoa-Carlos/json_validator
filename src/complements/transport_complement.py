@@ -12,7 +12,7 @@ from src.decorators import exception_wrapper
 
 class TransportComplement(ComplementBuilder):
     """Complement for comercialization type."""
-    def validate_complemeto(self) -> None:
+    def validate_complemento(self) -> None:
         if self._next_complement():
             self._validate_complemento_tipado()
             self._validate_tipo_complemento()
