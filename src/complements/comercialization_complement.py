@@ -1,3 +1,4 @@
+"""This module validate Comercializacion Complement Element."""
 import re
 
 from src.complements.complement_base import ComplementBuilder
@@ -14,17 +15,18 @@ from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
                                    ValorError, ValorMinMaxError)
 from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
-from src.dict_types import (compl_foreign_pedimentos, complement,
-                            complement_certified, complement_cfdis,
-                            complement_dictamen, complement_foreign, com_comp_cfdis,
-                            complement_national, complement_transport, terminal_alm)
+from src.dict_types import (com_comp_cfdis, compl_foreign_pedimentos,
+                            complement, complement_certified, complement_cfdis,
+                            complement_dictamen, complement_foreign,
+                            complement_national, complement_transport,
+                            terminal_alm)
 
 
 class ComercializationComplement(ComplementBuilder):
     """Complement for comercialization type."""
-    def validate_complemeto(self) -> None:
+    def validate_complemento(self) -> None:
         """Validate comercialization complement items."""
-        if self._next_complement():
+        while self._next_complement():
             self._validate_complemento_tipado()
             self._validate_tipo_complemento()
             self._validate_terminal_alm_dist()
@@ -380,7 +382,7 @@ class ComercializationComplement(ComplementBuilder):
                 err_type=RegexError,
                 err_message=f"Error: clave 'PuntoDeInternacionOExtraccion' con valor {intern_extrac_point} no cumple con el patron {INTERN_SPOT_REGEX}"
                 )
-        if intern_extrac_point and not 2 <= intern_extrac_point <= 3:
+        if intern_extrac_point and not 2 <= len(intern_extrac_point) <= 3:
             self.catch_error(
                 err_type=ValorMinMaxError,
                 err_message=f"Error: clave 'PuntoDeInternacion' con valor {intern_extrac_point} no tiene la longitud min 2 o max 3."
