@@ -1,3 +1,4 @@
+"""This module handle Expendio complemento."""
 import re
 
 from src.complements.complement_base import ComplementBuilder
@@ -21,7 +22,7 @@ class ExpenditureComplement(ComplementBuilder):
     """Validation of expenditure complement type."""
     def validate_complemento(self) -> None:
         """Validate expenditure ecomplement."""
-        if self._next_complement():
+        while self._next_complement():
             self._validate_complemento_tipado()
             self._validate_tipo_complemento()
             self._validate_terminal_alm_dist()
@@ -32,7 +33,7 @@ class ExpenditureComplement(ComplementBuilder):
             self._validate_aclaracion()
 
             self._update_index()
-            self.validate_complemento()
+            # self.validate_complemento()
 
     @exception_wrapper
     def _validate_terminal_alm_dist(self) -> None:
