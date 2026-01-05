@@ -1,5 +1,6 @@
 """Base class for components inheratence using Almacenamiento Complement"""
 import re
+from typing import Optional, Union
 
 from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX,
                                        DATE_REGEX, FOLIO_CERTIFIED_REGEX,
@@ -244,7 +245,7 @@ class ComplementBuilder:
             if custom_client_name and not 10 <= len(custom_client_name) <= 150:
                 self.catch_error(
                     err_type=LongitudError,
-                    err_message=f"Error: clave 'NombreClienteOProveedor' con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 300."
+                    err_message=f"Error: clave 'NombreClienteOProveedor' con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 300.",
                     )
             if supplier_permission and not re.match(PERMISSION_PROOVE_REGEX, supplier_permission):
                 self.catch_error(
@@ -536,11 +537,95 @@ class ComplementBuilder:
         if self._next_complement():
             self.current_complement = self.complement[self._comp_index]
 
-    def catch_error(self, err_type: BaseException, err_message: str) -> None:
+    def catch_error(self, err_type: BaseException, err_message: str, source: Optional[str] = None) -> None:
+        """Store given error in class error list.
+        :param err_type: Class from BaseException inherit.\n
+        :param err_message: Message of the given error.\n
+        :param source: Source reference of the error\n
+        :return: None."""
         self.errors = {
             "type_error": err_type.__name__, 
-            "error": err_message
+            "error": err_message,
+            "source": source,
             }
+
+    def _min_max_value_error(
+            self,
+            key: str,
+            value: Union[int, float, str],
+            min_val: Union[int, float, str],
+            max_val: Union[int, float, str],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that unmatch range.\n
+        :param min_val: minimium value.\n
+        :param max_val: maximum value.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ValorMinMaxError,
+            err_message=f"Error: clave {key} con valor {value} no tiene el valor min {min_val} ó max {max_val}.",
+            source=source
+        )
+
+    def _longitud_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            min_long: Union[int, float],
+            max_long: Union[int, float],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that unmatch lenght.\n
+        :param min_long: minimium lenght.\n
+        :param max_long: maximum lenght.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=LongitudError,
+            err_message=f"Error: clave {key} con valor {value} no tiene una longitud min {min_long} ó max {max_long}.",
+            source=source
+        )
+
+    def _value_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store ValorError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that is invalid.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ValorError,
+            err_message=f"Error: valor '{value}' en clave {key} no válido.",
+            source=source
+        )
+
+    def _regex_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            pattern: str,
+            source: Optional[str] = None,
+        ) -> None:
+        """Store RegexError in self.errors.\n
+        :param key: Dict Key element.\n
+        :param value: value that unmatch regex.\n
+        :param patter: Reggex pattern.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=RegexError,
+            err_message=f"Error: clave {key} con valor {value} no cumple con el patrón {pattern}",
+            source=source
+        )
 
     @property
     def errors(self) -> dict:
