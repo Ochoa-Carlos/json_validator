@@ -1,3 +1,4 @@
+"""This module handle Transporte complemento."""
 import re
 
 from src.complements.complement_base import ComplementBuilder
@@ -44,15 +45,21 @@ class TransportComplement(ComplementBuilder):
                 )
 
         if alm_terminal and not 5 <= len(alm_terminal) <= 250:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message=f"Error: clave 'TerminalAlmYDist' con valor {alm_terminal} no tiene la longitud min 5 ó max 250."
+            self._longitud_error(
+                key="TerminalAlmYDist", value=alm_terminal, min_long=21, max_long=21,
                 )
+            # self.catch_error(
+            #     err_type=LongitudError,
+            #     err_message=f"Error: clave 'TerminalAlmYDist'
+            # con valor {alm_terminal} no tiene la longitud min 5 ó max 250.")
         if alm_permission and not re.match(PERMISSION_ALM_TRANSP_REGEX, alm_permission):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PermisoAlmYDist' con valor {alm_permission} no cumple con el patrón {PERMISSION_ALM_TRANSP_REGEX}"
+            self._regex_error(
+                key="RfcCliente", value=alm_permission, pattern=PERMISSION_ALM_TRANSP_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'PermisoAlmYDist'
+            # con valor {alm_permission} no cumple con el patrón {PERMISSION_ALM_TRANSP_REGEX}")
 
     @exception_wrapper
     def _validate_nacional(self):
@@ -74,17 +81,22 @@ class TransportComplement(ComplementBuilder):
                     err_type=ClaveError,
                     err_message="Error: clave 'NombreCliente' no encontrada."
                     )
-
             if client_rfc and not re.match(RFC_REGEX, client_rfc):
-                self.catch_error(
-                    err_type=RegexError,
-                    err_message=f"Error: clave 'RfcCliente' con valor {client_rfc} no cumple con el patron {RFC_REGEX}"
-                    )
+                self._regex_error(
+                    key="RfcCliente", value=client_rfc, pattern=RFC_REGEX,
+                )
+                # self.catch_error(
+                #     err_type=RegexError,
+                #     err_message=f"Error: clave 'RfcCliente'
+                # con valor {client_rfc} no cumple con el patron {RFC_REGEX}")
             if client_name and not 10 <= len(client_name) <= 150:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message=f"Error: clave 'NombreCliente' con valor '{client_name}' no se encuentra en el rango min 10 o max 300."
-                    )
+                self._longitud_error(
+                    key="NombreCliente", value=client_name, min_long=10, max_long=150,
+                )
+                # self.catch_error(
+                #     err_type=LongitudError,
+                #     err_message=f"Error: clave 'NombreCliente'
+                # con valor '{client_name}' no se encuentra en el rango min 10 o max 300.")
 
             if cfdis:
                 for cfdi in cfdis:
