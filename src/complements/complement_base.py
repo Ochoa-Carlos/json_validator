@@ -88,29 +88,50 @@ class ComplementBuilder:
             self.catch_error(ClaveError, "Error: clave 'TarifaDeTransporte' no encontrada.")
 
         if transp_permission and not re.match(TRANSPORT_PERM_REGEX, transp_permission):
-            self.catch_error(RegexError, f"Error: valor 'PermisoTransporte' no cumple con el patron {TRANSPORT_PERM_REGEX}")
+            self._regex_error(
+                key="PermisoTransporte", value=transp_permission, pattern=TRANSPORT_PERM_REGEX,
+                )
+            # self.catch_error(RegexError,
+            # f"Error: valor 'PermisoTransporte' no cumple con el patron {TRANSPORT_PERM_REGEX}")
         if vehicle_key and not 6 <= len(vehicle_key) <= 12:
-            self.catch_error(LongitudError, "Error: 'ClaveVehiculo' no cumple con la longitud min 6 o max 12.")
+            self._longitud_error(
+                key="ClaveVehiculo", value=vehicle_key, min_long=6, max_long=12,
+                )
+            # self.catch_error(LongitudError, "Error: 'ClaveVehiculo' no cumple con la longitud min 6 o max 12.")
         if trans_fee and not 0 <= trans_fee <= 1000000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: valor 'TarifaDeTransporte' no se encuentra en el rango min 0 o max 1000000000000."
+            self._min_max_value_error(
+                key="TarifaDeTransporte", value=trans_fee, min_val=0, max_val=1000000000000,
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: valor 'TarifaDeTransporte' no se encuentra en el rango min 0 o max 1000000000000."
+            #     )
         if trans_cap_fee and 0 <= trans_cap_fee <= 1000000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: valor 'CargoPorCapacidadTransporte' no se encuentra en el rango min 0 o max 1000000000000."
+            self._min_max_value_error(
+                key="CargoPorCapacidadTransporte", value=trans_cap_fee, min_val=0, max_val=1000000000000,
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error:
+            # valor 'CargoPorCapacidadTransporte' no se encuentra en el rango min 0 o max 1000000000000."
+            #     )
         if trans_use_fee and 0 <= trans_use_fee <= 1000000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: valor 'CargoPorUsoTrans' no se encuentra en el rango min 0 o max 1000000000000."
+            self._min_max_value_error(
+                key="CargoPorUsoTrans", value=ValorMinMaxError, min_val=0, max_val=1000000000000,
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: valor 'CargoPorUsoTrans' no se encuentra en el rango min 0 o max 1000000000000."
+            #     )
         if trans_volum_charge and 0 <= trans_volum_charge <= 1000000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: valor 'CargoVolumetricoTransporte' no se encuentra en el rango min 0 o max 1000000000000."
+            self._min_max_value_error(
+                key="CargoVolumetricoTransporte", value=trans_volum_charge, min_val=0, max_val=1000000000000,
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error:
+            # valor 'CargoVolumetricoTransporte' no se encuentra en el rango min 0 o max 1000000000000."
+            #     )
 
     @exception_wrapper
     def _validate_dictamen(self) -> None:
@@ -140,30 +161,48 @@ class ComplementBuilder:
             self.catch_error(ClaveError, "Error: clave 'ResultadoDictamen' no encontrada.")
 
         if dictamen_rfc and not re.match(RFC_PERSONA_MORAL_REGEX, dictamen_rfc):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'RfcDictamen' con valor '{dictamen_rfc} no cumple con el regex {RFC_PERSONA_MORAL_REGEX}'"
+            self._regex_error(
+                key="RfcDictamen", value=dictamen_rfc, pattern=RFC_PERSONA_MORAL_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'RfcDictamen'
+            # con valor '{dictamen_rfc} no cumple con el regex {RFC_PERSONA_MORAL_REGEX}'")
         if dictamen_lote and not 1 <= len(dictamen_lote) <= 50:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message=f"Error: clave 'LoteDictamen' con valor '{dictamen_lote}' no se encuentra en el rango min 1 o max 50."
+            self._longitud_error(
+                key="LoteDictamen", value=dictamen_lote, min_long=1, max_long=50,
                 )
+            # self.catch_error(
+            #     err_type=LongitudError,
+            #     err_message=f"Error:
+            # clave 'LoteDictamen' con valor '{dictamen_lote}' no se encuentra en el rango min 1 o max 50."
+            #     )
         if dictamen_folio and not re.match(FOLIO_DICTAMEN_REGEX, dictamen_folio):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'NumeroFolioDictamen' con valor {dictamen_folio} no cumple con el regex {FOLIO_DICTAMEN_REGEX}"
+            self._regex_error(
+                key="NumeroFolioDictamen", value=dictamen_folio, pattern=FOLIO_DICTAMEN_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error:
+            # clave 'NumeroFolioDictamen' con valor {dictamen_folio} no cumple con el regex {FOLIO_DICTAMEN_REGEX}"
+            #     )
         if dictamen_date and not re.match(DATE_REGEX, dictamen_date):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'FechaEmisionDictamen' con valor {dictamen_date} no se expresa en formato yyyy-mm-dd"
+            self._regex_error(
+                key="FechaEmisionDictamen", value=dictamen_date, pattern=DATE_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error:
+            # clave 'FechaEmisionDictamen' con valor {dictamen_date} no se expresa en formato yyyy-mm-dd"
+            #     )
         if dictamen_result and not 10 <= len(dictamen_result) <= 300:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message=f"Error: clave 'ResultadoDictamen' con valor {dictamen_result} no se encuentra en el rango min 10 o max 300."
+            self._longitud_error(
+                key="ResultadoDictamen", value=dictamen_result, min_long=10, max_long=300,
                 )
+            # self.catch_error(
+            #     err_type=LongitudError,
+            #     err_message=f"Error: clave 'ResultadoDictamen'
+            # con valor {dictamen_result} no se encuentra en el rango min 10 o max 300.")
 
     @exception_wrapper
     def _validate_certificado(self) -> None:
@@ -190,25 +229,38 @@ class ComplementBuilder:
             self.catch_error(ClaveError, "Error: clave 'ResultadoCertificado' no encontrada.")
 
         if certified_rfc and not re.match(RFC_PERSONA_MORAL_REGEX, certified_rfc):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'RfcCertificado' con valor {certified_rfc} no cumple con el regex {RFC_PERSONA_MORAL_REGEX}"
+            self._regex_error(
+                key="RfcCertificado", value=certified_rfc, pattern=RFC_PERSONA_MORAL_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'RfcCertificado'
+            # con valor {certified_rfc} no cumple con el regex {RFC_PERSONA_MORAL_REGEX}")
         if certified_folio and not re.match(FOLIO_CERTIFIED_REGEX, certified_folio):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'NumeroFolioCertificado' con valor {certified_folio} no cumple con el regex {FOLIO_CERTIFIED_REGEX}"
+            self._regex_error(
+                key="NumeroFolioCertificado", value=certified_folio, pattern=FOLIO_CERTIFIED_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'NumeroFolioCertificado'
+            # con valor {certified_folio} no cumple con el regex {FOLIO_CERTIFIED_REGEX}")
         if certified_date and not re.match(DATE_REGEX, certified_date):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'FechaEmisionCertificado' con valor {certified_date} no se expresa en formato yyyy-mm-dd"
+            self._regex_error(
+                key="FechaEmisionCertificado", value=certified_date, pattern=DATE_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'FechaEmisionCertificado'
+            # con valor {certified_date} no se expresa en formato yyyy-mm-dd")
         if certified_result and not 10 <= len(certified_result) <= 300:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message=f"Error: clave 'ResultadoCertificado' con valor {certified_result} no se encuentra en el rango min 10 o max 300."
+            self._longitud_error(
+                key="ResultadoCertificado", value=certified_result, min_long=10, max_long=300,
                 )
+            # self.catch_error(
+            #     err_type=LongitudError,
+            #     err_message=f"Error: clave 'ResultadoCertificado'
+            # con valor {certified_result} no se encuentra en el rango min 10 o max 300."
+            #     )
 
     @exception_wrapper
     def _validate_nacional(self) -> None:
@@ -238,26 +290,31 @@ class ComplementBuilder:
                     )
 
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
-                self.catch_error(
-                    err_type=RegexError,
-                    err_message=f"Error: clave 'RfcClienteOProveedor' con valor {custom_client_rfc} no cumple con el regex {RFC_REGEX}"
+                self._regex_error(
+                    key="RfcClienteOProveedor", value=custom_client_rfc, pattern=RFC_REGEX,
                     )
+                # self.catch_error(
+                #     err_type=RegexError,
+                #     err_message=f"Error: clave 'RfcClienteOProveedor'
+                # con valor {custom_client_rfc} no cumple con el regex {RFC_REGEX}")
             if custom_client_name and not 10 <= len(custom_client_name) <= 150:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message=f"Error: clave 'NombreClienteOProveedor' con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 300.",
+                self._longitud_error(
+                    key="NombreClienteOProveedor", value=custom_client_name, min_long=10, max_long=150,
                     )
+                # self.catch_error(
+                #     err_type=LongitudError,
+                #     err_message=f"Error: clave 'NombreClienteOProveedor'
+                # con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 300.")
             if supplier_permission and not re.match(PERMISSION_PROOVE_REGEX, supplier_permission):
-                self.catch_error(
-                    err_type=RegexError,
-                    err_message=f"Error: clave 'PermisoProveedor' con valor {supplier_permission} no cumple con el regex {PERMISSION_PROOVE_REGEX}"
+                self._regex_error(
+                    key="PermisoProveedor", value=supplier_permission, pattern=PERMISSION_PROOVE_REGEX,
                     )
+                # self.catch_error(
+                #     err_type=RegexError,
+                #     err_message=f"Error: clave 'PermisoProveedor'
+                # con valor {supplier_permission} no cumple con el regex {PERMISSION_PROOVE_REGEX}")
 
             # if cfdis:
-            #     print("HAY CFDI")
-            #     print("HAY CFDI")
-            #     print("HAY CFDI")
-            #     print("HAY CFDI")
             #     print("HAY CFDI")
             #     print(cfdis)
             #     for cfdi in cfdis:
@@ -327,61 +384,94 @@ class ComplementBuilder:
                                 err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
                                 )
                         if num_value and not 0 <= num_value <= 100000000000:
-                            self.catch_error(
-                                err_type=ValorMinMaxError,
-                                err_message=f"Error: clave 'ValorNumerico' con valor {num_value} no tiene el valor min 0 o max 100000000000."
+                            self._min_max_value_error(
+                                key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
                                 )
+                            # self.catch_error(
+                            #     err_type=ValorMinMaxError,
+                            #     err_message=f"Error: clave 'ValorNumerico'
+                            # con valor {num_value} no tiene el valor min 0 o max 100000000000.")
                         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
-                            self.catch_error(
-                                err_type=RegexError,
-                                err_message=f"Error: clave 'UnidadDeMedida' con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
+                            self._regex_error(
+                                key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
                                 )
+                            # self.catch_error(
+                            #     err_type=RegexError,
+                            #     err_message=f"Error: clave 'UnidadDeMedida'
+                            # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
 
                     if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
-                        self.catch_error(
-                            err_type=RegexError,
-                            err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}"
-                            )
+                        self._regex_error(
+                                key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
+                                )
+                        # self.catch_error(
+                        #     err_type=RegexError,
+                        #     err_message=f"Error: clave 'Cfdi'
+                        # con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}")
                     if purchase_price and not 0 <= purchase_price <= 1000000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: Clave 'PrecioCompra' con valor '{purchase_price}' no tiene el valor min 0 o max 1000000000000."
-                            )
+                        self._min_max_value_error(
+                                key="PrecioCompra", value=purchase_price, min_val=0, max_val=1000000000000,
+                                )
+                        # self.catch_error(
+                        #     err_type=ValorMinMaxError,
+                        #     err_message=f"Error: Clave 'PrecioCompra'
+                        # con valor '{purchase_price}' no tiene el valor min 0 o max 1000000000000.")
                     if consideration and not 1 <= consideration <= 1000000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: Clave 'Contraprestacion' con valor '{consideration}' no tiene el valor min 0 o max 1000000000000."
+                        self._min_max_value_error(
+                            key="Contraprestacion", value=consideration, min_val=0, max_val=1000000000000,
                             )
+                        # self.catch_error(
+                        #     err_type=ValorMinMaxError,
+                        #     err_message=f"Error: Clave 'Contraprestacion'
+                        # con valor '{consideration}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_fee and not 1 <= alm_fee <= 1000000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: Clave 'Contraprestacion' con valor '{alm_fee}' no tiene el valor min 0 o max 1000000000000."
-                            )
+                        self._min_max_value_error(
+                                key="CargoPorCapacidadAlmac", value=alm_fee, min_val=1, max_val=1000000000000,
+                                )
+                        # self.catch_error(
+                        #     err_type=ValorMinMaxError,
+                        #     err_message=f"Error: Clave 'Contraprestacion'
+                        # con valor '{alm_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_cap_fee and not 1 <= alm_cap_fee <= 1000000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: Clave 'CargoPorCapacidadALmac' con valor '{alm_cap_fee}' no tiene el valor min 0 o max 1000000000000."
-                            )
+                        self._min_max_value_error(
+                                key="CargoPorCapacidadAlmac", value=alm_cap_fee, min_val=1, max_val=1000000000000,
+                                )
+                        # self.catch_error(
+                        #     err_type=ValorMinMaxError,
+                        #     err_message=f"Error: Clave 'CargoPorCapacidadALmac'
+                        # con valor '{alm_cap_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_use_fee and not 1 <= alm_use_fee <= 1000000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: Clave 'CargoPorUsoAlmac' con valor '{alm_use_fee}' no tiene el valor min 0 o max 1000000000000."
+                        self._min_max_value_error(
+                            key="CargoPorUsoAlmac", value=alm_use_fee, min_val=1, max_val=1000000000000,
                             )
+                        # self.catch_error(
+                        #     err_type=ValorMinMaxError,
+                        #     err_message=f"Error: Clave 'CargoPorUsoAlmac'
+                        # con valor '{alm_use_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_volum_fee and not 1 <= alm_volum_fee <= 1000000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: Clave 'CargoVolumetricoAlmac' con valor '{alm_volum_fee}' no tiene el valor min 0 o max 1000000000000."
+                        self._min_max_value_error(
+                            key="CargoVolumetricoAlmac", value=alm_volum_fee, min_val=1, max_val=1000000000000,
                             )
+                        # self.catch_error(
+                        #     err_type=ValorMinMaxError,
+                        #     err_message=f"Error: Clave 'CargoVolumetricoAlmac'
+                        # con valor '{alm_volum_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if discount and not 1 <= discount <= 1000000000000:
-                        self.catch_error(
-                            err_type=ValorMinMaxError,
-                            err_message=f"Error: Clave 'Descuento' con valor '{discount}' no tiene el valor min 0 o max 1000000000000."
+                        self._min_max_value_error(
+                            key="Descuento", value=discount, min_val=1, max_val=1000000000000,
                             )
+                        # self.catch_error(
+                        #     err_type=ValorMinMaxError,
+                        #     err_message=f"Error: Clave 'Descuento'
+                        # con valor '{discount}' no tiene el valor min 0 o max 1000000000000.")
                     if transaction_date and not re.match(UTC_FORMAT_REGEX, transaction_date):
-                        self.catch_error(
-                            err_type=RegexError,
-                            err_message=f"Error: clave 'FechaYHoraTransaccion' con valor {transaction_date} no se expresa en formato yyyy-mm-ddThh:mm:ss+-hh:mm"
+                        self._regex_error(
+                            key="FechaYHoraTransaccion", value=transaction_date, pattern=UTC_FORMAT_REGEX,
                             )
+                        # self.catch_error(
+                        #     err_type=RegexError,
+                        #     err_message=f"Error: clave 'FechaYHoraTransaccion'
+                        # con valor {transaction_date} no se expresa en formato yyyy-mm-ddThh:mm:ss+-hh:mm")
 
     @exception_wrapper
     def _validate_extranjero(self) -> None:
@@ -398,10 +488,13 @@ class ComplementBuilder:
             self.catch_error(err_type=ClaveError, err_message="Error: clave 'PermisoImportacion' no se encuentra.")
 
         if import_permission and not re.match(IMPORT_PERMISSION_REGEX, import_permission):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PermisoImportacion' con valor {import_permission} no cumple con el regex {IMPORT_PERMISSION_REGEX}"
+            self._regex_error(
+                key="PermisoImportacion", value=import_permission, pattern=IMPORT_PERMISSION_REGEX,
                 )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'PermisoImportacion'
+            # con valor {import_permission} no cumple con el regex {IMPORT_PERMISSION_REGEX}")
 
         # for pedimento in pedimentos:
         #     self.__validate_pedimentos(pedimento=pedimento)
@@ -420,7 +513,6 @@ class ComplementBuilder:
                                                                     dict_type=complement_foreign):
                 type_err = err.get("type_err")
                 err_message = err.get("err_message")
-                # print('=asdasdasdasd===================', type_err, err_message)
                 self.catch_error(err_type=type_err, err_message=err_message)
                 return
             pedimento = fore.get("Pedimentos")
@@ -465,66 +557,96 @@ class ComplementBuilder:
                         err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
                         )
                 if num_value and not 0 <= num_value <= 100000000000:
-                    self.catch_error(
-                        err_type=ValorMinMaxError,
-                        err_message=f"Error: clave 'ValorNumerico' con valor {num_value} no está en el valor min 0 o max 100000000000."
+                    self._min_max_value_error(
+                        key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
                         )
+                    # self.catch_error(
+                    #     err_type=ValorMinMaxError,
+                    #     err_message=f"Error: clave 'ValorNumerico'
+                    # con valor {num_value} no está en el valor min 0 o max 100000000000.")
                 if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
-                    self.catch_error(
-                        err_type=RegexError,
-                        err_message=f"Error: clave 'UnidadDeMedida' con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
+                    self._regex_error(
+                        key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
                         )
+                    # self.catch_error(
+                    #     err_type=RegexError,
+                    #     err_message=f"Error: clave 'UnidadDeMedida'
+                    # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
+                    #     )
 
             if intern_point and not re.match(INTERN_SPOT_REGEX, intern_point):
-                self.catch_error(
-                    err_type=RegexError,
-                    err_message=f"Error: clave 'PuntoDeInternacion' con valor {intern_point} no cumple con el patron {INTERN_SPOT_REGEX}"
+                self._regex_error(
+                    key="PuntoDeInternacion", value=intern_point, pattern=INTERN_SPOT_REGEX,
                     )
+                # self.catch_error(
+                #     err_type=RegexError,
+                #     err_message=f"Error: clave 'PuntoDeInternacion'
+                # con valor {intern_point} no cumple con el patron {INTERN_SPOT_REGEX}")
             if intern_point and not 2 <= intern_point <= 3:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message=f"Error: clave 'PuntoDeInternacion' con valor {intern_point} no tiene la longitud min 2 o max 3."
+                self._min_max_value_error(
+                    key="PuntoDeInternacion", value=intern_point, min_val=2, max_val=3,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message=f"Error: clave 'PuntoDeInternacion'
+                # con valor {intern_point} no tiene la longitud min 2 o max 3.")
             if origin_country and origin_country not in CountryCode:
-                self.catch_error(
-                    err_type=ValorError,
-                    err_message=f"Error: valor '{origin_country}' en clave 'PaisOrigen' no válido."
+                self._value_error(
+                    key="PaisOrigen", value=origin_country,
                     )
+                # self.catch_error(
+                #     err_type=ValorError,
+                #     err_message=f"Error: valor '{origin_country}' en clave 'PaisOrigen' no válido.")
             if aduanal_transp and aduanal_transp not in [item.value for item in AduanaEntrance]:
-                self.catch_error(
-                    err_type=ValorError,
-                    err_message=f"Error: valor '{aduanal_transp}' en clave 'MedioDeTransporteAduana' no válido."
+                self._value_error(
+                    key="MedioDeTransporteAduana", value=aduanal_transp,
                     )
+                # self.catch_error(
+                #     err_type=ValorError,
+                #     err_message=f"Error: valor '{aduanal_transp}' en clave 'MedioDeTransporteAduana' no válido.")
             if aduanal_pedimento and not re.match(ADUANAL_PEDIMENTO, aduanal_pedimento):
-                self.catch_error(
-                    err_type=RegexError,
-                    err_message=f"Error: clave 'PedimentoAduanal' con valor {aduanal_pedimento} no cumple con el patron {ADUANAL_PEDIMENTO}"
+                self._regex_error(
+                    key="PedimentoAduanal", value=aduanal_pedimento, pattern=ADUANAL_PEDIMENTO,
                     )
+                # self.catch_error(
+                #     err_type=RegexError,
+                #     err_message=f"Error: clave 'PedimentoAduanal'
+                # con valor {aduanal_pedimento} no cumple con el patron {ADUANAL_PEDIMENTO}")
             if aduanal_pedimento and len(aduanal_pedimento) != 21:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message=f"Error: clave 'PedimentoAduanal' con valor '{aduanal_pedimento} no cumple con la longitud de 21.'"
+                self._longitud_error(
+                    key="PedimentoAduanal", value=aduanal_pedimento, min_long=21, max_long=21,
                     )
+                # self.catch_error(
+                #     err_type=LongitudError,
+                #     err_message=f"Error: clave 'PedimentoAduanal'
+                # con valor '{aduanal_pedimento} no cumple con la longitud de 21.'")
             if incoterm and incoterm not in IncotermCode.__members__:
-                self.catch_error(
-                    err_type=ValorError,
-                    err_message=f"Error: clave 'Incoterms' con valor {incoterm} no válido."
+                self._value_error(
+                    key="Incoterms", value=incoterm
                     )
+                # self.catch_error(
+                #     err_type=ValorError,
+                #     err_message=f"Error: clave 'Incoterms' con valor {incoterm} no válido.")
             if import_price and not 0 <= import_price <= 100000000000:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message=f"Error: clave 'PrecioDeImportacion' con valor {import_price} no tiene el valor min 0 o max 100000000000."
+                self._min_max_value_error(
+                    key="PrecioDeImportacion", value=import_price, min_val=0, max_val=100000000000,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message=f"Error: clave 'PrecioDeImportacion'
+                # con valor {import_price} no tiene el valor min 0 o max 100000000000.")
 
     @exception_wrapper
     def _validate_aclaracion(self) -> None:
         if (clarif := self.current_complement.get("Aclaracion")) is None:
             return
         if clarif and not 10 <= len(clarif) <= 600:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message="Error: valor 'Aclaracion' no cumple con la longitud min 10 o max 600."
+            self._longitud_error(
+                key="Aclaracion", value=clarif, min_long=10, max_long=600,
                 )
+            # self.catch_error(
+            #     err_type=LongitudError,
+            #     err_message="Error: valor 'Aclaracion' no cumple con la longitud min 10 o max 600.")
 
     def _current_complement(self) -> dict:
         return self.current_complement[self._comp_index]
