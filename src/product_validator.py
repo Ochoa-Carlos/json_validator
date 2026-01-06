@@ -1,5 +1,6 @@
 """This module handles product validations."""
 import re
+from typing import Optional, Union
 
 from src.condensed_gas_validator import CondensedGasValidator
 from src.constants import (SUBPRODUCTO_REGEX, petroleo_caracteres,
@@ -526,12 +527,97 @@ class ProductValidator:
         if self._next_product():
             self.current_product = self.products[self._gen_index]
 
-    def catch_error(self, err_type: str | Exception, err_message: str) -> dict:
-        """Catch error from validations."""
+    def catch_error(self, err_type: BaseException, err_message: str, source: Optional[str] = None) -> None:
+        """Store given error in class error list.
+        :param err_type: Class from BaseException inherit.\n
+        :param err_message: Message of the given error.\n
+        :param source: Source reference of the error\n
+        :return: None."""
         self.errors = {
             "type_error": err_type.__name__, 
-            "error": err_message
+            "error": err_message,
+            # "source": source,
+            "source": f"Producto[{self.products.index(self.current_product)}].{source}"
             }
+
+    def _min_max_value_error(
+            self,
+            key: str,
+            value: Union[int, float, str],
+            min_val: Union[int, float, str],
+            max_val: Union[int, float, str],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that unmatch range.\n
+        :param min_val: minimium value.\n
+        :param max_val: maximum value.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ValorMinMaxError,
+            err_message=f"Error: clave {key} con valor {value} no tiene el valor min {min_val} ó max {max_val}.",
+            source=source
+        )
+
+    def _longitud_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            min_long: Union[int, float],
+            max_long: Union[int, float],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that unmatch lenght.\n
+        :param min_long: minimium lenght.\n
+        :param max_long: maximum lenght.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=LongitudError,
+            err_message=f"Error: clave {key} con valor {value} no tiene una longitud min {min_long} ó max {max_long}.",
+            source=source
+        )
+
+    def _value_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store ValorError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that is invalid.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ValorError,
+            err_message=f"Error: valor '{value}' en clave {key} no válido.",
+            source=source
+        )
+
+    def _regex_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            pattern: str,
+            source: Optional[str] = None,
+        ) -> None:
+        """Store RegexError in self.errors.\n
+        :param key: Dict Key element.\n
+        :param value: value that unmatch regex.\n
+        :param patter: Reggex pattern.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=RegexError,
+            err_message=f"Error: clave {key} con valor {value} no cumple con el patrón {pattern}",
+            source=source
+        )
+
 
     @property
     def errors(self) -> dict:
