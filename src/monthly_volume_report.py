@@ -60,6 +60,7 @@ class MonthlyVolumeReportValidator:
         if month_volume and not -100000000000.0 <= month_volume <= 100000000000.0:
             self._min_max_value_error(
                 key="VolumenExistenciasMes", value=month_volume, min_val=-100000000000.0, max_val=100000000000.0,
+                source="ControlDeExistencias.VolumenExistenciasMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -118,6 +119,7 @@ class MonthlyVolumeReportValidator:
         if total_receptions_month and not 0 <= total_receptions_month <= 100000000:
             self._min_max_value_error(
                 key="TotalRecepcionesMes", value=total_receptions_month, min_val=0, max_val=100000000,
+                source="Recepciones.TotalRecepcionesMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -130,6 +132,7 @@ class MonthlyVolumeReportValidator:
         if month_documents and month_documents > 1000000:
             self._min_max_value_error(
                 key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=1000000,
+                source="Recepciones.TotalDocumentosMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -137,6 +140,7 @@ class MonthlyVolumeReportValidator:
         if amount_receptions_month and not 0 <= amount_receptions_month <= 100000000000.0:
             self._min_max_value_error(
                 key="ImporteTotalRecepcionesMensual", value=amount_receptions_month, min_val=0, max_val=100000000000.0,
+                source="Recepciones.ImporteTotalRecepcionesMensual"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -171,7 +175,13 @@ class MonthlyVolumeReportValidator:
             complement_obj.validate_complemento()
 
             if complement_errors := complement_obj.errors:
-                self._report_errors.extend(complement_obj.get_error_list())
+                comp_errors = complement_obj.get_error_list()
+                for comp_err in comp_errors:
+                    if source := comp_err.get("source"):
+                        comp_err["source"] = f"Recepciones.{source}"
+
+                self._report_errors.extend(comp_errors)
+                # self._report_errors.extend(complement_obj.get_error_list())
                 self._errors = self._errors | complement_errors
 
 
@@ -208,6 +218,7 @@ class MonthlyVolumeReportValidator:
         if total_deliveries_month and not 0 <= total_deliveries_month <= 10000000:
             self._min_max_value_error(
                 key="TotalEntregasMes", value=total_deliveries_month, min_val=0, max_val=10000000,
+                source="Entregas.TotalEntregasMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -221,6 +232,7 @@ class MonthlyVolumeReportValidator:
         if month_documents and not 0 <= month_documents <= 100000000:
             self._min_max_value_error(
                 key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=100000000,
+                source="Entregas.TotalDocumentosMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -231,6 +243,7 @@ class MonthlyVolumeReportValidator:
             self._min_max_value_error(
                 key="ImporteTotalEntregasMes", value=round(amount_deliveries_month, 3),
                 min_val=0, max_val=100000000000.0,
+                source="Entregas.ImporteTotalEntregasMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -267,7 +280,13 @@ class MonthlyVolumeReportValidator:
             complement_obj.validate_complemento()
 
             if complement_errors := complement_obj.errors:
-                self._report_errors.extend(complement_obj.get_error_list())
+                comp_errors = complement_obj.get_error_list()
+                for comp_err in comp_errors:
+                    if source := comp_err.get("source"):
+                        comp_err["source"] = f"Entregas.{source}"
+
+                self._report_errors.extend(comp_errors)
+                # self._report_errors.extend(complement_obj.get_error_list())
                 self._errors = self._errors | complement_errors
 
     def _check_complement(self, complement_type: str) -> bool:
@@ -370,6 +389,10 @@ class MonthlyVolumeReportValidator:
     @property
     def errors(self) -> dict:
         """Get errors from montly volume report validation obj."""
+        for err in self._report_errors:
+            if source := err.get("source"):
+                err["source"] = f"ReporteDeVolumenMensual.{source}"
+
         return self._report_errors
 
     @errors.setter
