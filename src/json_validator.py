@@ -10,7 +10,7 @@ from src.custom_exceptions import (CaracterAsignatarioError,
                                    CaracterUsuarioError, ClaveError,
                                    LongitudError, RegexError, TipadoError,
                                    ValorError, ValorMinMaxError)
-from src.decorators import wrapper_handler
+from src.decorators import exception_wrapper, wrapper_handler
 from src.enumerators import CaracterTypeEnum, PermisoEnum
 from src.json_model import JsonRoot
 from src.monthly_log import MonthlyLogValidator
@@ -75,7 +75,8 @@ class JsonValidator():
             logging.warning(f"Error al validar JSON: {exc}")
             logging.warning(f": {traceback.format_exc()}")
 
-    @wrapper_handler
+    # @wrapper_handler
+    @exception_wrapper
     def _validate_version(self) -> bool:
         if (version := self.json_report.get("Version")) is None:
             self.catch_error(

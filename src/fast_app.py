@@ -39,7 +39,8 @@ async def upload_json(file: UploadFile = File(...)) -> Dict[str, Union[str, List
         for error in errors:
             error_list.append({
                 "type_error": error.get("type_error", "Desconocido"),
-                "error": error.get("error", "Sin mensaje")
+                "error": error.get("error", "Sin mensaje"),
+                "source": error.get("source", "Objeto no encontrado.")
             })
 
         error_list.extend(

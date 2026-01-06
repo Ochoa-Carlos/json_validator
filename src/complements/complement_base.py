@@ -64,7 +64,8 @@ class ComplementBuilder:
         comp_type = self.current_complement.get("TipoComplemento")
 
         if comp_type not in {en.value for en in ComplementTypeEnum}:
-            self.catch_error(err_type=TipadoError, err_message=f"Error: TipoComplemento {comp_type} no válido.")
+            self._value_error(key="TipoComplemento", value=comp_type)
+            # self.catch_error(err_type=TipadoError, err_message=f"Error: TipoComplemento {comp_type} no válido.")
 
     @exception_wrapper
     def _validate_transporte(self) -> None:
@@ -83,9 +84,11 @@ class ComplementBuilder:
             err_message = err.get("err_message")
             self.catch_error(err_type=type_err, err_message=err_message)
         if transp_permission is None:
-            self.catch_error(err_type=ClaveError, err_message="Error: clave 'PermisoTransporte' no encontrada.")
+            self._nonfound_key_error(key="PermisoTransporte")
+            # self.catch_error(err_type=ClaveError, err_message="Error: clave 'PermisoTransporte' no encontrada.")
         if trans_fee is None:
-            self.catch_error(ClaveError, "Error: clave 'TarifaDeTransporte' no encontrada.")
+            self._nonfound_key_error(key="TarifaDeTransporte")
+            # self.catch_error(ClaveError, "Error: clave 'TarifaDeTransporte' no encontrada.")
 
         if transp_permission and not re.match(TRANSPORT_PERM_REGEX, transp_permission):
             self._regex_error(
@@ -150,15 +153,20 @@ class ComplementBuilder:
         dictamen_result = dictamen.get("ResultadoDictamen")
 
         if dictamen_rfc is None:
-            self.catch_error(ClaveError, "Error: clave 'RfcDictamen no encontrada.")
+            self._nonfound_key_error(key="RfcDictamen")
+            # self.catch_error(ClaveError, "Error: clave 'RfcDictamen no encontrada.")
         if dictamen_lote is None:
-            self.catch_error(ClaveError, "Error: clave 'LoteDictamen' no encontrada.")
+            self._nonfound_key_error(key="LoteDictamen")
+            # self.catch_error(ClaveError, "Error: clave 'LoteDictamen' no encontrada.")
         if dictamen_folio is None:
-            self.catch_error(ClaveError, "Error: clave 'NumeroFolioDictamen' no encontrada.")
+            self._nonfound_key_error(key="NumeroFolioDictamen")
+            # self.catch_error(ClaveError, "Error: clave 'NumeroFolioDictamen' no encontrada.")
         if dictamen_date is None:
-            self.catch_error(ClaveError, "Error: clave 'FechaEmisionDictamen' no encontrada.")
+            self._nonfound_key_error(key="FechaEmisionDictamen")
+            # self.catch_error(ClaveError, "Error: clave 'FechaEmisionDictamen' no encontrada.")
         if dictamen_result is None:
-            self.catch_error(ClaveError, "Error: clave 'ResultadoDictamen' no encontrada.")
+            self._nonfound_key_error(key="ResultadoDictamen")
+            # self.catch_error(ClaveError, "Error: clave 'ResultadoDictamen' no encontrada.")
 
         if dictamen_rfc and not re.match(RFC_PERSONA_MORAL_REGEX, dictamen_rfc):
             self._regex_error(
@@ -220,13 +228,17 @@ class ComplementBuilder:
             err_message = err.get("err_message")
             self.catch_error(err_type=type_err, err_message=err_message)
         if certified_rfc is None:
-            self.catch_error(ClaveError, "Error: clave 'RfcCertificado' no encontrada.")
+            self._nonfound_key_error(key="RfcCertificado")
+            # self.catch_error(ClaveError, "Error: clave 'RfcCertificado' no encontrada.")
         if certified_folio is None:
-            self.catch_error(ClaveError, "Error: clave 'NumeroFolioCertificado' no encontrada.")
+            self._nonfound_key_error(key="NumeroFolioCertificado")
+            # self.catch_error(ClaveError, "Error: clave 'NumeroFolioCertificado' no encontrada.")
         if certified_date is None:
-            self.catch_error(ClaveError, "Error: clave 'FechaEmisionCertificado' no encontrada.")
+            self._nonfound_key_error(key="FechaEmisionCertificado")
+            # self.catch_error(ClaveError, "Error: clave 'FechaEmisionCertificado' no encontrada.")
         if certified_result is None:
-            self.catch_error(ClaveError, "Error: clave 'ResultadoCertificado' no encontrada.")
+            self._nonfound_key_error(key="ResultadoCertificado")
+            # self.catch_error(ClaveError, "Error: clave 'ResultadoCertificado' no encontrada.")
 
         if certified_rfc and not re.match(RFC_PERSONA_MORAL_REGEX, certified_rfc):
             self._regex_error(
@@ -271,7 +283,8 @@ class ComplementBuilder:
             custom_client_rfc = national_item.get("RfcClienteOProveedor")
             custom_client_name = national_item.get("NombreClienteOProveedor")
             supplier_permission = national_item.get("PermisoProveedor")
-            # cfdis = national_item.get("CFDIs")
+
+            national_parent = f"Nacional[{national.index(national_item)}]"
 
             if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=national_item,
                                                                 dict_type=complement_national):
@@ -279,19 +292,25 @@ class ComplementBuilder:
                 err_message = err.get("err_message")
                 self.catch_error(err_type=type_err, err_message=err_message)
             if custom_client_rfc is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'RfcClienteOProveedor' no encontrada."
+                self._nonfound_key_error(
+                    key="RfcClienteOProveedor",
+                    source=f"{national_parent}.RfcClienteOProveedor"
                     )
+                # self.catch_error(
+                #     err_type=ClaveError,
+                #     err_message="Error: clave 'RfcClienteOProveedor' no encontrada.")
             if custom_client_name is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'NombreClienteOProveedor' no encontrada."
+                self._nonfound_key_error(
+                    key="NombreClienteOProveedor",
+                    source=f"{national_parent}.NombreClienteOProveedor"
                     )
-
+                # self.catch_error(
+                #     err_type=ClaveError,
+                #     err_message="Error: clave 'NombreClienteOProveedor' no encontrada.")
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
                 self._regex_error(
                     key="RfcClienteOProveedor", value=custom_client_rfc, pattern=RFC_REGEX,
+                    source=f"{national_parent}.RfcClienteOProveedor"
                     )
                 # self.catch_error(
                 #     err_type=RegexError,
@@ -300,6 +319,7 @@ class ComplementBuilder:
             if custom_client_name and not 10 <= len(custom_client_name) <= 150:
                 self._longitud_error(
                     key="NombreClienteOProveedor", value=custom_client_name, min_long=10, max_long=150,
+                    source=f"{national_parent}.NombreClienteOProveedor"
                     )
                 # self.catch_error(
                 #     err_type=LongitudError,
@@ -308,23 +328,20 @@ class ComplementBuilder:
             if supplier_permission and not re.match(PERMISSION_PROOVE_REGEX, supplier_permission):
                 self._regex_error(
                     key="PermisoProveedor", value=supplier_permission, pattern=PERMISSION_PROOVE_REGEX,
+                    source=f"{national_parent}.PermisoProveedor"
                     )
                 # self.catch_error(
                 #     err_type=RegexError,
                 #     err_message=f"Error: clave 'PermisoProveedor'
                 # con valor {supplier_permission} no cumple con el regex {PERMISSION_PROOVE_REGEX}")
 
-            # if cfdis:
-            #     print("HAY CFDI")
-            #     print(cfdis)
-            #     for cfdi in cfdis:
-            #         self.__validate_cfdi(cfdi=cfdi)
-
     @exception_wrapper
     def __validate_national_cfdi(self) -> None:
         if (national := self.current_complement.get("Nacional")) is None:
             return
         for national_item in national:
+            national_parent = f"Nacional[{national.index(national_item)}]"
+
             if cfdis := national_item.get("CFDIs"):
                 for cfdi in cfdis:
                     cfdi_val = cfdi.get("Cfdi")
@@ -339,6 +356,7 @@ class ComplementBuilder:
                     transaction_date = cfdi.get("FechaYHoraTransaccion")
                     documented_volum = cfdi.get("VolumenDocumentado")
 
+                    cfdi_parent = f"CFDIs[{cfdis.index(cfdi)}]"
                     if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=cfdi,
                                                                         dict_type=complement_cfdis):
                         type_err = err.get("type_err")
@@ -346,46 +364,66 @@ class ComplementBuilder:
                         self.catch_error(err_type=type_err, err_message=err_message)
 
                     if cfdi_val is None:
-                        self.catch_error(
-                            err_type=ClaveError,
-                            err_message="Error: clave 'Cfdi' no se encuentra."
+                        self._nonfound_key_error(
+                            key="Cfdi",
                             )
+                        # self.catch_error(
+                        #     err_type=ClaveError,
+                        #     err_message="Error: clave 'Cfdi' no se encuentra.")
                     if cfdi_type is None:
-                        self.catch_error(
-                            err_type=ClaveError,
-                            err_message="Error: clave 'TipoCfdi' no se encuentra."
+                        self._nonfound_key_error(
+                            key="TipoCfdi",
                             )
+                        # self.catch_error(
+                        #     err_type=ClaveError,
+                        #     err_message="Error: clave 'TipoCfdi' no se encuentra.")
                     if cfdi_type and cfdi_type not in [cfdi.value for cfdi in CfdiType]:
-                        self.catch_error(
-                            err_type=ClaveError,
-                            err_message=f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válido."
+                        self._value_error(
+                            key="TipoCfdi", value=cfdi_type,
+                            source=f"{national_parent}.{cfdi_parent}.TipoCfdi"
                             )
+                        # self.catch_error(
+                        #     err_type=ClaveError,
+                        #     err_message=f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válido.")
                     if transaction_date is None:
-                        self.catch_error(
-                            err_type=ClaveError,
-                            err_message="Error: clave 'FechaYHoraTransaccion' no se encuentra."
+                        self._nonfound_key_error(
+                            key="FechaYHoraTransaccion",
                             )
+                        # self.catch_error(
+                        #     err_type=ClaveError,
+                        #     err_message="Error: clave 'FechaYHoraTransaccion' no se encuentra.")
                     if documented_volum is None:
-                        self.catch_error(
-                            err_type=ClaveError,
-                            err_message="Error: clave 'VolumenDocumentado' no se encuentra."
+                        self._nonfound_key_error(
+                            key="VolumenDocumentado",
                             )
+                        # self.catch_error(
+                        #     err_type=ClaveError,
+                        #     err_message="Error: clave 'VolumenDocumentado' no se encuentra.")
                     if documented_volum:
                         num_value = documented_volum.get("ValorNumerico")
                         measure_unit = documented_volum.get("UnidadDeMedida")
                         if num_value is None:
-                            self.catch_error(
-                                err_type=ClaveError,
-                                err_message="Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'."
+                            self._nonfound_key_error(
+                                key="ValorNumerico",
+                                source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado"
                                 )
+                            # self.catch_error(
+                            #     err_type=ClaveError,
+                            #     err_message="Error: clave 'ValorNumerico'
+                            # no se encuentra en clave 'VolumenDocumentado'.")
                         if measure_unit is None:
-                            self.catch_error(
-                                err_type=ClaveError,
-                                err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
+                            self._nonfound_key_error(
+                                key="UnidadDeMedida",
+                                source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado"
                                 )
+                            # self.catch_error(
+                            #     err_type=ClaveError,
+                            #     err_message="Error: clave 'UnidadDeMedida'
+                            # no se encuentra en clave 'VolumenDocumentado'.")
                         if num_value and not 0 <= num_value <= 100000000000:
                             self._min_max_value_error(
                                 key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
+                                source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado.ValorNumerico"
                                 )
                             # self.catch_error(
                             #     err_type=ValorMinMaxError,
@@ -394,6 +432,7 @@ class ComplementBuilder:
                         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
                             self._regex_error(
                                 key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
+                                source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado.UnidadDeMedida"
                                 )
                             # self.catch_error(
                             #     err_type=RegexError,
@@ -402,16 +441,18 @@ class ComplementBuilder:
 
                     if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
                         self._regex_error(
-                                key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
-                                )
+                            key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
+                            source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado.UnidadDeMedida"
+                            )
                         # self.catch_error(
                         #     err_type=RegexError,
                         #     err_message=f"Error: clave 'Cfdi'
                         # con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}")
                     if purchase_price and not 0 <= purchase_price <= 1000000000000:
                         self._min_max_value_error(
-                                key="PrecioCompra", value=purchase_price, min_val=0, max_val=1000000000000,
-                                )
+                            key="PrecioCompra", value=purchase_price, min_val=0, max_val=1000000000000,
+                            source=f"{national_parent}.{cfdi_parent}.PrecioCompra"
+                            )
                         # self.catch_error(
                         #     err_type=ValorMinMaxError,
                         #     err_message=f"Error: Clave 'PrecioCompra'
@@ -419,6 +460,7 @@ class ComplementBuilder:
                     if consideration and not 1 <= consideration <= 1000000000000:
                         self._min_max_value_error(
                             key="Contraprestacion", value=consideration, min_val=0, max_val=1000000000000,
+                            source=f"{national_parent}.{cfdi_parent}.Contraprestacion"
                             )
                         # self.catch_error(
                         #     err_type=ValorMinMaxError,
@@ -426,16 +468,18 @@ class ComplementBuilder:
                         # con valor '{consideration}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_fee and not 1 <= alm_fee <= 1000000000000:
                         self._min_max_value_error(
-                                key="CargoPorCapacidadAlmac", value=alm_fee, min_val=1, max_val=1000000000000,
-                                )
+                            key="CargoPorCapacidadAlmac", value=alm_fee, min_val=1, max_val=1000000000000,
+                            source=f"{national_parent}.{cfdi_parent}.CargoPorCapacidadAlmac"
+                            )
                         # self.catch_error(
                         #     err_type=ValorMinMaxError,
                         #     err_message=f"Error: Clave 'Contraprestacion'
                         # con valor '{alm_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_cap_fee and not 1 <= alm_cap_fee <= 1000000000000:
                         self._min_max_value_error(
-                                key="CargoPorCapacidadAlmac", value=alm_cap_fee, min_val=1, max_val=1000000000000,
-                                )
+                            key="CargoPorCapacidadAlmac", value=alm_cap_fee, min_val=1, max_val=1000000000000,
+                            source=f"{national_parent}.{cfdi_parent}.CargoPorCapacidadAlmac"
+                            )
                         # self.catch_error(
                         #     err_type=ValorMinMaxError,
                         #     err_message=f"Error: Clave 'CargoPorCapacidadALmac'
@@ -443,6 +487,7 @@ class ComplementBuilder:
                     if alm_use_fee and not 1 <= alm_use_fee <= 1000000000000:
                         self._min_max_value_error(
                             key="CargoPorUsoAlmac", value=alm_use_fee, min_val=1, max_val=1000000000000,
+                            source=f"{national_parent}.{cfdi_parent}.CargoPorUsoAlmac"
                             )
                         # self.catch_error(
                         #     err_type=ValorMinMaxError,
@@ -451,6 +496,7 @@ class ComplementBuilder:
                     if alm_volum_fee and not 1 <= alm_volum_fee <= 1000000000000:
                         self._min_max_value_error(
                             key="CargoVolumetricoAlmac", value=alm_volum_fee, min_val=1, max_val=1000000000000,
+                            source=f"{national_parent}.{cfdi_parent}.CargoVolumetricoAlmac"
                             )
                         # self.catch_error(
                         #     err_type=ValorMinMaxError,
@@ -459,6 +505,7 @@ class ComplementBuilder:
                     if discount and not 1 <= discount <= 1000000000000:
                         self._min_max_value_error(
                             key="Descuento", value=discount, min_val=1, max_val=1000000000000,
+                            source=f"{national_parent}.{cfdi_parent}.Descuento"
                             )
                         # self.catch_error(
                         #     err_type=ValorMinMaxError,
@@ -467,6 +514,7 @@ class ComplementBuilder:
                     if transaction_date and not re.match(UTC_FORMAT_REGEX, transaction_date):
                         self._regex_error(
                             key="FechaYHoraTransaccion", value=transaction_date, pattern=UTC_FORMAT_REGEX,
+                            source=f"{national_parent}.{cfdi_parent}.FechaYHoraTransaccion"
                             )
                         # self.catch_error(
                         #     err_type=RegexError,
@@ -485,7 +533,8 @@ class ComplementBuilder:
             err_message = err.get("err_message")
             self.catch_error(err_type=type_err, err_message=err_message)
         if import_permission is None:
-            self.catch_error(err_type=ClaveError, err_message="Error: clave 'PermisoImportacion' no se encuentra.")
+            self._nonfound_key_error(key="PermisoImportacion")
+            # self.catch_error(err_type=ClaveError, err_message="Error: clave 'PermisoImportacion' no se encuentra.")
 
         if import_permission and not re.match(IMPORT_PERMISSION_REGEX, import_permission):
             self._regex_error(
@@ -532,30 +581,36 @@ class ComplementBuilder:
                 err_message = err.get("err_message")
                 self.catch_error(err_type=type_err, err_message=err_message)
             if intern_point is None:
-                self.catch_error(err_type=ClaveError, err_message="Error: clave 'PuntoDeInternacion' no se encuentra.")
+                self._nonfound_key_error(key="PuntoDeInternacion")
+                # self.catch_error(err_type=ClaveError, err_message="Error: clave 'PuntoDeInternacion' no se encuentra")
             if origin_country is None:
-                self.catch_error(err_type=ClaveError, err_message="Error: clave 'PaisOrigen' no se encuentra.")
+                self._nonfound_key_error(key="PaisOrigen")
+                # self.catch_error(err_type=ClaveError, err_message="Error: clave 'PaisOrigen' no se encuentra")
             if aduanal_pedimento is None:
-                self.catch_error(err_type=ClaveError, err_message="Error: clave 'PedimentoAduanal' no se encuentra.")
+                self._nonfound_key_error(key="PedimentoAduanal")
+                # self.catch_error(err_type=ClaveError, err_message="Error: clave 'PedimentoAduanal' no se encuentra")
             if incoterm is None:
-                self.catch_error(err_type=ClaveError, err_message="Error: clave 'Incoterms' no se encuentra.")
+                self._nonfound_key_error(key="Incoterms")
+                # self.catch_error(err_type=ClaveError, err_message="Error: clave 'Incoterms' no se encuentra")
             if import_price is None:
-                self.catch_error(err_type=ClaveError, err_message="Error: clave 'PrecioDeImportacion' no se encuentra.")
+                self._nonfound_key_error(key="PrecioDeImportacion")
+                #self.catch_error(err_type=ClaveError, err_message="Error: clave 'PrecioDeImportacion' no se encuentra")
             if documented_volume is None:
-                self.catch_error(err_type=ClaveError, err_message="Error: clave 'VolumenDocumentado' no se encuentra.")
+                self._nonfound_key_error(key="VolumenDocumentado")
+                # self.catch_error(err_type=ClaveError, err_message="Error: clave 'VolumenDocumentado' no se encuentra")
             if documented_volume:
                 num_value = documented_volume.get("ValorNumerico")
                 measure_unit = documented_volume.get("UnidadDeMedida")
                 if num_value is None:
-                    self.catch_error(
-                        err_type=ClaveError,
-                        err_message="Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'."
-                        )
+                    self._nonfound_key_error(key="ValorNumerico")
+                    # self.catch_error(
+                    #     err_type=ClaveError,
+                    #     err_message="Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'.")
                 if measure_unit is None:
-                    self.catch_error(
-                        err_type=ClaveError,
-                        err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
-                        )
+                    self._nonfound_key_error(key="UnidadDeMedida")
+                    # self.catch_error(
+                    #     err_type=ClaveError,
+                    #     err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'.")
                 if num_value and not 0 <= num_value <= 100000000000:
                     self._min_max_value_error(
                         key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
@@ -571,8 +626,7 @@ class ComplementBuilder:
                     # self.catch_error(
                     #     err_type=RegexError,
                     #     err_message=f"Error: clave 'UnidadDeMedida'
-                    # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
-                    #     )
+                    # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
 
             if intern_point and not re.match(INTERN_SPOT_REGEX, intern_point):
                 self._regex_error(
@@ -668,8 +722,24 @@ class ComplementBuilder:
         self.errors = {
             "type_error": err_type.__name__, 
             "error": err_message,
-            "source": source,
+            # "source": source,
+            "source": f"Complemento[{self.complement.index(self.current_complement)}].{source}"
             }
+
+    def _nonfound_key_error(
+            self,
+            key: str,
+            source: Optional[str] = None,
+        ) -> None:
+        """Store ClaveError in self.errors.\n
+        :param key: Dict key element.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ClaveError,
+            err_message=f"Error: Elemento '{key}' no declarado.",
+            source=source
+        )
 
     def _min_max_value_error(
             self,
@@ -755,6 +825,8 @@ class ComplementBuilder:
         return self._errors
 
     def get_error_list(self) -> list:
+        """Return recopiled error through Complemento validations.\n
+        :return: List[Dict[str | Any]]."""
         return self._errors_list
 
     @errors.setter
