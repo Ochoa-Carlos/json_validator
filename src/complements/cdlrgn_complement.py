@@ -1,3 +1,4 @@
+"""This module handle CDLRGN complemento."""
 import re
 
 from src.complements.complement_base import ComplementBuilder
@@ -60,15 +61,21 @@ class CDLRGNComplement(ComplementBuilder):
                 )
 
         if alm_terminal and not 5 <= len(alm_terminal) <= 250:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message=f"Error: clave 'TerminalAlm' con valor {alm_terminal} no tiene la longitud min 5 o max 250."
-                )
+            self._longitud_error(
+                key="TerminalAlm", value=alm_terminal, min_long=5, max_long=250,
+            )
+            # self.catch_error(
+            #     err_type=LongitudError,
+            #     err_message=f"Error: clave 'TerminalAlm'
+            # con valor {alm_terminal} no tiene la longitud min 5 o max 250.")
         if alm_permission and not re.match(PERMISSION_ALM_CDLRGN_REGEX, alm_permission):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PermisoAlmacenamiento' con valor {alm_permission} no cumple con el patrón {PERMISSION_ALM_CDLRGN_REGEX}"
-                )
+            self._regex_error(
+                key="PermisoAlmacenamiento", value=alm_permission, pattern=PERMISSION_ALM_CDLRGN_REGEX,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'PermisoAlmacenamiento'
+            # con valor {alm_permission} no cumple con el patrón {PERMISSION_ALM_CDLRGN_REGEX}")
 
     @exception_wrapper
     def __validate_transporte(self, transp: dict) -> None:
@@ -83,17 +90,22 @@ class CDLRGNComplement(ComplementBuilder):
                 err_type=ClaveError,
                 err_message="Error: clave 'PermisoTransporte' no encontrada."
                 )
-
         if perm_transp and not re.match(TRANSP_PERM_CDLRGN_REGEX, perm_transp):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PermisoTransporte' con valor {perm_transp} no cumple con el patrón {TRANSP_PERM_CDLRGN_REGEX}"
-                )
+            self._regex_error(
+                key="PermisoTransporte", value=perm_transp, pattern=TRANSP_PERM_CDLRGN_REGEX,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'PermisoTransporte'
+            # con valor {perm_transp} no cumple con el patrón {TRANSP_PERM_CDLRGN_REGEX}")
         if vehicle_key and 6 <= len(vehicle_key) <= 12:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message=f"Error: clave 'ClaveDeVehiculo' con valor {vehicle_key} no se encuentra en el rango min 6 o max 12."
-                )
+            self._min_max_value_error(
+                key="ClaveDeVehiculo", value=vehicle_key, min_val=6, max_val=12,
+            )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message=f"Error: clave 'ClaveDeVehiculo'
+            # con valor {vehicle_key} no se encuentra en el rango min 6 o max 12.")
 
     @exception_wrapper
     def _validate_nacional(self):
@@ -115,17 +127,22 @@ class CDLRGNComplement(ComplementBuilder):
                     err_type=ClaveError,
                     err_message="Error: clave 'NombreCliente' no encontrada."
                     )
-
             if client_rfc and not re.match(RFC_REGEX, client_rfc):
-                self.catch_error(
-                    err_type=RegexError,
-                    err_message=f"Error: clave 'RfcCliente' con valor {client_rfc} no cumple con el patron {RFC_REGEX}"
-                    )
+                self._regex_error(
+                    key="RfcCliente", value=client_rfc, pattern=RFC_REGEX,
+                )
+                # self.catch_error(
+                #     err_type=RegexError,
+                #     err_message=f"Error: clave 'RfcCliente'
+                # con valor {client_rfc} no cumple con el patron {RFC_REGEX}")
             if client_name and not 10 <= len(client_name) <= 150:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message=f"Error: clave 'NombreCliente' con valor '{client_name}' no se encuentra en el rango min 10 o max 300."
-                    )
+                self._longitud_error(
+                    key="NombreCliente", value=client_name, min_long=10, max_long=150,
+                )
+                # self.catch_error(
+                #     err_type=LongitudError,
+                #     err_message=f"Error: clave 'NombreCliente'
+                # con valor '{client_name}' no se encuentra en el rango min 10 o max 300.")
 
             if cfdis:
                 for cfdi in cfdis:
@@ -181,31 +198,45 @@ class CDLRGNComplement(ComplementBuilder):
                 err_type=ClaveError,
                 err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
                 )
-
         if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
-            self.catch_error(
-                err_type=RegexError,err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}"
-                )
+            self._regex_error(
+                key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,err_message=f"Error: clave 'Cfdi'
+            # con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}")
         if consideration and not 1 <= consideration <= 1000000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message=f"Error: Clave 'Contraprestacion' con valor '{consideration}' no tiene el valor min 0 o max 1000000000000."
-                )
+            self._min_max_value_error(
+                key="Contraprestacion", value=consideration, min_val=1, max_val=1000000000000,
+            )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message=f"Error: Clave 'Contraprestacion'
+            # con valor '{consideration}' no tiene el valor min 0 o max 1000000000000.")
         if transaction_date and not re.match(UTC_FORMAT_REGEX, transaction_date):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'FechaYHoraTransaccion' con valor {transaction_date} no cumple con el regex {UTC_FORMAT_REGEX}"
-                )
+            self._regex_error(
+                key="FechaYHoraTransaccion", value=transaction_date, pattern=UTC_FORMAT_REGEX,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'FechaYHoraTransaccion'
+            # con valor {transaction_date} no cumple con el regex {UTC_FORMAT_REGEX}")
         if num_value and not 0 <= num_value <= 100000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message=f"Error: clave 'ValorNumerico' con valor {num_value} no tiene el valor min 0 o max 100000000000."
-                )
+            self._min_max_value_error(
+                key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
+            )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message=f"Error: clave 'ValorNumerico'
+            # con valor {num_value} no tiene el valor min 0 o max 100000000000.")
         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'UnidadDeMedida' con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
-                )
+            self._regex_error(
+                key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'UnidadDeMedida'
+            # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
 
     @exception_wrapper
     def _validate_extranjero(self):
@@ -220,12 +251,14 @@ class CDLRGNComplement(ComplementBuilder):
                 err_type=ClaveError,
                 err_message="Error: clave 'PermisoImportacionOExportacion' no se encuentra."
                 )
-
         if import_export_permission and not re.match(IMPORT_PERMISSION_REGEX, import_export_permission):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PermisoImportacionOExportacion' con valor {import_export_permission} no cumple con el patron {IMPORT_PERMISSION_REGEX}"
-                )
+            self._regex_error(
+                key="PermisoImportacionOExportacion", value=import_export_permission, pattern=IMPORT_PERMISSION_REGEX,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'PermisoImportacionOExportacion'
+            # con valor {import_export_permission} no cumple con el patron {IMPORT_PERMISSION_REGEX}")
 
         if pedimentos:
             for pedimento in pedimentos:
@@ -288,54 +321,83 @@ class CDLRGNComplement(ComplementBuilder):
                 err_type=ClaveError,
                 err_message="Error: valor 'UnidadDeMedida' no se encuentra en clave 'ValorDocumentado'."
                 )
-
         if intern_extrac_point and not re.match(INTERN_SPOT_REGEX, intern_extrac_point):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PuntoDeInternacionOExtraccion' con valor {intern_extrac_point} no cumple con el patron {INTERN_SPOT_REGEX}"
-                )
+            self._regex_error(
+                key="PuntoDeInternacionOExtraccion", value=intern_extrac_point, pattern=INTERN_SPOT_REGEX,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'PuntoDeInternacionOExtraccion'
+            # con valor {intern_extrac_point} no cumple con el patron {INTERN_SPOT_REGEX}")
         if intern_extrac_point and not 2 <= intern_extrac_point <= 3:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message=f"Error: clave 'PuntoDeInternacion' con valor {intern_extrac_point} no tiene la longitud min 2 o max 3."
-                )
+            self._min_max_value_error(
+                key="PuntoDeInternacion", value=intern_extrac_point, min_val=2, max_val=3,
+            )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message=f"Error: clave 'PuntoDeInternacion'
+            # con valor {intern_extrac_point} no tiene la longitud min 2 o max 3.")
         if CountryCode and origin_destiny_country not in CountryCode:
-            self.catch_error(
-                err_type=ValorError,
-                err_message=f"Error: valor '{origin_destiny_country}' en clave 'PaisOrigenODestino' no válido."
+            self._value_error(
+                key="PaisOrigenODestino", value=origin_destiny_country
                 )
+            # self.catch_error(
+            #     err_type=ValorError,
+            #     err_message=f"Error: valor '{origin_destiny_country}' en clave 'PaisOrigenODestino' no válido."
+            #     )
         if aduana_transp_med and aduana_transp_med not in [item.value for item in AduanaEntrance]:
-            self.catch_error(
-                err_type=ValorError,
-                err_message=f"Error: valor '{aduana_transp_med}' en clave 'MedioDeTransporteAduana' no válido."
+            self._value_error(
+                key="MedioDeTransporteAduana", value=aduana_transp_med
                 )
+            # self.catch_error(
+            #     err_type=ValorError,
+            #     err_message=f"Error: valor '{aduana_transp_med}'
+            # en clave 'MedioDeTransporteAduana' no válido.")
         if aduanal_pedimento and not re.match(ADUANAL_PEDIMENTO, aduanal_pedimento):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'PedimentoAduanal' con valor {aduanal_pedimento} no cumple con el patron {ADUANAL_PEDIMENTO}"
-                )
+            self._regex_error(
+                key="PedimentoAduanal", value=aduanal_pedimento, pattern=ADUANAL_PEDIMENTO,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'PedimentoAduanal'
+            # con valor {aduanal_pedimento} no cumple con el patron {ADUANAL_PEDIMENTO}")
         if aduanal_pedimento and len(aduanal_pedimento) != 21:
-            self.catch_error(
-                err_type=LongitudError,
-                err_message=f"Error: clave 'PedimentoAduanal' con valor '{aduanal_pedimento} no cumple con la longitud de 21.'"
-                )
+            self._longitud_error(
+                key="PedimentoAduanal", value=aduanal_pedimento, min_long=21, max_long=21,
+            )
+            # self.catch_error(
+            #     err_type=LongitudError,
+            #     err_message=f"Error: clave 'PedimentoAduanal'
+            # con valor '{aduanal_pedimento} no cumple con la longitud de 21.'")
         if incoterm and incoterm not in IncotermCode.__members__:
-            self.catch_error(
-                err_type=ValorError,
-                err_message=f"Error: clave 'Incoterms' con valor {incoterm} no válido."
+            self._value_error(
+                key="Incoterms", value=incoterm
                 )
+            # self.catch_error(
+            #     err_type=ValorError,
+            #     err_message=f"Error: clave 'Incoterms'
+            # con valor {incoterm} no válido.")
         if import_price and not 0 <= import_price <= 100000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message=f"Error: clave 'PrecioDeImportacion' con valor {import_price} no está en el valor min 0 o max 100000000000."
-                )
+            self._min_max_value_error(
+                key="PrecioDeImportacion", value=import_price, min_val=0, max_val=100000000000,
+            )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message=f"Error: clave 'PrecioDeImportacion'
+            # con valor {import_price} no está en el valor min 0 o max 100000000000.")
         if num_value and not 0 <= num_value <= 100000000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message=f"Error: clave 'ValorNumerico' con valor {num_value} no está en el valor min 0 o max 100000000000."
-                )
+            self._min_max_value_error(
+                key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
+            )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message=f"Error: clave 'ValorNumerico'
+            # con valor {num_value} no está en el valor min 0 o max 100000000000.")
         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: clave 'UnidadDeMedida' con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}."
-                )
+            self._regex_error(
+                key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
+            )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: clave 'UnidadDeMedida'
+            # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
