@@ -322,8 +322,9 @@ class ProductValidator:
             month_report_obj.validate_report()
 
             if report_errors := month_report_obj.errors:
-                # self._errors = self._errors | report_errors
-                # self._product_errors[self.current_product.get("ClaveProducto")].extend(report_errors)
+                for err in report_errors:
+                    if source := err.get("source"):
+                        err["source"] = f"Producto[{self.products.index(self.current_product)}].{source}"
                 self._product_errors_list.extend(report_errors)
 
     # @exception_wrapper
