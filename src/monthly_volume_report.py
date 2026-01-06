@@ -1,12 +1,14 @@
+"""This module handles ReporteDeVolumenMensual validations."""
 import re
-from typing import TypeVar
+from typing import Optional, TypeVar, Union
 
 from src.complements import ComplementBuilder
 from src.complements.enumerators import ComplementTypeEnum
 from src.complements.helpers import complement_builder
 from src.constants import UTC_FORMAT_REGEX, cal_value_caracteres
-from src.custom_exceptions import (ClaveError, EntregasError, RecepcionesError,
-                                   TipadoError, ValorMinMaxError)
+from src.custom_exceptions import (ClaveError, EntregasError, LongitudError,
+                                   RecepcionesError, RegexError, TipadoError,
+                                   ValorError, ValorMinMaxError)
 from src.decorators import exception_wrapper
 from src.dict_type_validator import DictionaryTypeValidator
 from src.dict_types import deliveries_dict, exists_control, recepctions_dict
@@ -32,7 +34,6 @@ class MonthlyVolumeReportValidator:
         self.__validate_recepciones_complemento()
         self._validate_entregas()
         self.__validate_entregas_complemento()
-# Modificar instancia de TIMSA
 
     # @exception_wrapper
     # def _validate_reporte_tipado(self) -> None:
@@ -57,10 +58,14 @@ class MonthlyVolumeReportValidator:
         if month_measure_date is None:
             self.catch_error(err_type=ClaveError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
         if month_volume and not -100000000000.0 <= month_volume <= 100000000000.0:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error:'VolumenExistenciasMes' no está en el rango min -100000000000.0 o max 100000000000.0"
+            self._min_max_value_error(
+                key="VolumenExistenciasMes", value=month_volume, min_val=-100000000000.0, max_val=100000000000.0,
+                source="ControlDeExistencias.VolumenExistenciasMes"
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error:'VolumenExistenciasMes'
+            # no está en el rango min -100000000000.0 o max 100000000000.0")
         if month_measure_date and not re.match(UTC_FORMAT_REGEX, month_measure_date):
             self.catch_error(
                 err_type=TipadoError,
@@ -112,25 +117,34 @@ class MonthlyVolumeReportValidator:
                 )
 
         if total_receptions_month and not 0 <= total_receptions_month <= 100000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: 'TotalRecepcionesMes' no está en el rango min 0 o max 100000000."
+            self._min_max_value_error(
+                key="TotalRecepcionesMes", value=total_receptions_month, min_val=0, max_val=100000000,
+                source="Recepciones.TotalRecepcionesMes"
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: 'TotalRecepcionesMes' no está en el rango min 0 o max 100000000.")
         if self.product_key == "PR09" and self.caracter in cal_value_caracteres and cal_value is None:
             self.catch_error(
                 err_type=RecepcionesError,
                 err_message=f"""Error: 'PoderCalorifico' es requerido para caracteres {cal_value_caracteres} y Producto 'PR09'."""
                 )
         if month_documents and month_documents > 1000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: 'TotalDocumentosMes' no está en el rango max 1000000."
+            self._min_max_value_error(
+                key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=1000000,
+                source="Recepciones.TotalDocumentosMes"
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: 'TotalDocumentosMes' no está en el rango max 1000000.")
         if amount_receptions_month and not 0 <= amount_receptions_month <= 100000000000.0:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: 'ImporteTotalRecepcionesMensual' no está en el rango min 0 o max 100000000000.0"
+            self._min_max_value_error(
+                key="ImporteTotalRecepcionesMensual", value=amount_receptions_month, min_val=0, max_val=100000000000.0,
+                source="Recepciones.ImporteTotalRecepcionesMensual"
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: 'ImporteTotalRecepcionesMensual' no está en el rango min 0 o max 100000000000.0")
 
     # @exception_wrapper
     def __validate_recepciones_complemento(self) -> None:
@@ -161,7 +175,13 @@ class MonthlyVolumeReportValidator:
             complement_obj.validate_complemento()
 
             if complement_errors := complement_obj.errors:
-                self._report_errors.extend(complement_obj.get_error_list())
+                comp_errors = complement_obj.get_error_list()
+                for comp_err in comp_errors:
+                    if source := comp_err.get("source"):
+                        comp_err["source"] = f"Recepciones.{source}"
+
+                self._report_errors.extend(comp_errors)
+                # self._report_errors.extend(complement_obj.get_error_list())
                 self._errors = self._errors | complement_errors
 
 
@@ -196,27 +216,39 @@ class MonthlyVolumeReportValidator:
                 )
 
         if total_deliveries_month and not 0 <= total_deliveries_month <= 10000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: 'TotalEntregasMes' no está en el rango min 0 o max 10000000."
+            self._min_max_value_error(
+                key="TotalEntregasMes", value=total_deliveries_month, min_val=0, max_val=10000000,
+                source="Entregas.TotalEntregasMes"
                 )
-        if self.product_key == "PR09":
-            if (deliveries.get("PoderCalorifico")) is None:
-                self.catch_error(
-                    err_type=EntregasError,
-                    err_message="Error: 'PoderCalorifico' es requerido para caracteres Producto 'PR09'."
-                    )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: 'TotalEntregasMes' no está en el rango min 0 o max 10000000."
+            #     )
+        if self.product_key == "PR09" and (deliveries.get("PoderCalorifico")) is None:
+            self.catch_error(
+                err_type=EntregasError,
+                err_message="Error: 'PoderCalorifico' es requerido para caracteres Producto 'PR09'."
+                )
         if month_documents and not 0 <= month_documents <= 100000000:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: 'TotalDocumentosMes' no está en el rango min 0 o max 100000000."
+            self._min_max_value_error(
+                key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=100000000,
+                source="Entregas.TotalDocumentosMes"
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: 'TotalDocumentosMes' no está en el rango min 0 o max 100000000."
+            #     )
         # amount_deliveries_month = 1.222222
         if amount_deliveries_month and not 0 <= round(amount_deliveries_month, 3) <= 100000000000.0:
-            self.catch_error(
-                err_type=ValorMinMaxError,
-                err_message="Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
+            self._min_max_value_error(
+                key="ImporteTotalEntregasMes", value=round(amount_deliveries_month, 3),
+                min_val=0, max_val=100000000000.0,
+                source="Entregas.ImporteTotalEntregasMes"
                 )
+            # self.catch_error(
+            #     err_type=ValorMinMaxError,
+            #     err_message="Error: 'ImporteTotalEntregasMes' no está en el rango min 0 o max 100000000000.0"
+            #     )
 
     # @exception_wrapper
     def __validate_entregas_complemento(self) -> None:
@@ -248,7 +280,13 @@ class MonthlyVolumeReportValidator:
             complement_obj.validate_complemento()
 
             if complement_errors := complement_obj.errors:
-                self._report_errors.extend(complement_obj.get_error_list())
+                comp_errors = complement_obj.get_error_list()
+                for comp_err in comp_errors:
+                    if source := comp_err.get("source"):
+                        comp_err["source"] = f"Entregas.{source}"
+
+                self._report_errors.extend(comp_errors)
+                # self._report_errors.extend(complement_obj.get_error_list())
                 self._errors = self._errors | complement_errors
 
     def _check_complement(self, complement_type: str) -> bool:
@@ -258,16 +296,103 @@ class MonthlyVolumeReportValidator:
             return False
         return True
 
-    def catch_error(self, err_type: str | Exception, err_message: str) -> dict:
-        """Catch error from validations."""
+    def catch_error(self, err_type: BaseException, err_message: str, source: Optional[str] = None) -> None:
+        """Store given error in class error list.
+        :param err_type: Class from BaseException inherit.\n
+        :param err_message: Message of the given error.\n
+        :param source: Source reference of the error\n
+        :return: None."""
         self.errors = {
             "type_error": err_type.__name__, 
-            "error": err_message
+            "error": err_message,
+            "source": source,
             }
+
+    def _min_max_value_error(
+            self,
+            key: str,
+            value: Union[int, float, str],
+            min_val: Union[int, float, str],
+            max_val: Union[int, float, str],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that unmatch range.\n
+        :param min_val: minimium value.\n
+        :param max_val: maximum value.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ValorMinMaxError,
+            err_message=f"Error: clave {key} con valor {value} no tiene el valor min {min_val} ó max {max_val}.",
+            source=source
+        )
+
+    def _longitud_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            min_long: Union[int, float],
+            max_long: Union[int, float],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that unmatch lenght.\n
+        :param min_long: minimium lenght.\n
+        :param max_long: maximum lenght.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=LongitudError,
+            err_message=f"Error: clave {key} con valor {value} no tiene una longitud min {min_long} ó max {max_long}.",
+            source=source
+        )
+
+    def _value_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store ValorError in self.errors.\n
+        :param key: Dict key element.\n
+        :param value: value that is invalid.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ValorError,
+            err_message=f"Error: valor '{value}' en clave {key} no válido.",
+            source=source
+        )
+
+    def _regex_error(
+            self,
+            key: str,
+            value: Union[int, float],
+            pattern: str,
+            source: Optional[str] = None,
+        ) -> None:
+        """Store RegexError in self.errors.\n
+        :param key: Dict Key element.\n
+        :param value: value that unmatch regex.\n
+        :param patter: Reggex pattern.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=RegexError,
+            err_message=f"Error: clave {key} con valor {value} no cumple con el patrón {pattern}",
+            source=source
+        )
 
     @property
     def errors(self) -> dict:
         """Get errors from montly volume report validation obj."""
+        for err in self._report_errors:
+            if source := err.get("source"):
+                err["source"] = f"ReporteDeVolumenMensual.{source}"
+
         return self._report_errors
 
     @errors.setter
