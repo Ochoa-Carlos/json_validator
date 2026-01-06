@@ -668,7 +668,8 @@ class ComplementBuilder:
         self.errors = {
             "type_error": err_type.__name__, 
             "error": err_message,
-            "source": source,
+            # "source": source,
+            "source": f"Complemento[{self.complement.index(self.current_complement)}].{source}"
             }
 
     def _min_max_value_error(
