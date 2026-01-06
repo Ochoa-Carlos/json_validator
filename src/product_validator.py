@@ -90,10 +90,12 @@ class ProductValidator:
                 err_message=f"Error: Elemento 'ClaveSubProducto' requerido para ClaveProducto: {product_key}",
                 )
         if subproduct_key and not re.match(SUBPRODUCTO_REGEX, subproduct_key):
-            self.catch_error(
-                err_type=RegexError,
-                err_message=f"Error: 'ClaveSubProducto {subproduct_key}' no cumple con el patron {SUBPRODUCTO_REGEX}"
-                )
+            self._regex_error(
+                    key="ClaveSubProducto", value=subproduct_key, pattern=SUBPRODUCTO_REGEX,
+                    )
+            # self.catch_error(
+            #     err_type=RegexError,
+            #     err_message=f"Error: 'ClaveSubProducto {subproduct_key}' no cumple con el patron {SUBPRODUCTO_REGEX}")
 
     @exception_wrapper
     def _validate_octanaje_gasolina(self) -> None:
@@ -106,10 +108,12 @@ class ProductValidator:
                     err_message="Error: 'ComposOctanajeGasolina' solo pertenece a ClaveProducto 'PR07'."
                     )
             if not 87 <= octanaje_gas <= 130:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message="Error: 'ComposOctanajeGasolina' debe tener un valor min 88 ó max 130."
+                self._min_max_value_error(
+                    key="ComposOctanajeGasolina", value=octanaje_gas, min_val=87, max_val=130,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message="Error: 'ComposOctanajeGasolina' debe tener un valor min 87 ó max 130.")
 
     @exception_wrapper
     def _validate_combustible_nofosil(self) -> None:
@@ -122,10 +126,12 @@ class ProductValidator:
                     err_message="Error: 'GasolinaConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR07'"
                     )
             if nofossil_fuel not in ["Sí", "No"]:
-                self.catch_error(
-                    err_type=ValorError,
-                    err_message="Valor GasolinaConCombustibleNoFosil inválido."
+                self._value_error(
+                    key="GasolinaConCombustibleNoFosil", value=nofossil_fuel,
                     )
+                # self.catch_error(
+                #     err_type=ValorError,
+                #     err_message="Valor GasolinaConCombustibleNoFosil inválido.")
 
     @exception_wrapper
     def _validate_combustible_nofosil_engasolina(self) -> None:
@@ -138,10 +144,13 @@ class ProductValidator:
                     err_message="Error: 'ComposDeCombustibleNoFosilEnGasolina' solo pertenece a ClaveProducto 'PR07'"
                     )
             if not 1 <= nofossil_ingas_fuel <= 99:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message="Error: 'ComposDeCombustibleNoFosilEnGasolina' no está en el rango min 1 o max 99."
+                self._min_max_value_error(
+                    key="ComposDeCombustibleNoFosilEnGasolina", value=nofossil_ingas_fuel,
+                    min_val=1, max_val=99,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message="Error: 'ComposDeCombustibleNoFosilEnGasolina' no está en el rango min 1 o max 99.")
 
     @exception_wrapper
     def _validate_diesel_combustible_nofosil(self) -> None:
@@ -154,10 +163,12 @@ class ProductValidator:
                     err_message="Error: 'DieseConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR03'"
                     )
             if diesel_nofossil_fuel not in ["Sí", "No"]:
-                self.catch_error(
-                    err_type=ValorError,
-                    err_message="DieseConCombustibleNoFosil inválido."
+                self._value_error(
+                    key="DieseConCombustibleNoFosil", value=diesel_nofossil_fuel,
                     )
+                # self.catch_error(
+                #     err_type=ValorError,
+                #     err_message="DieseConCombustibleNoFosil inválido.")
 
     @exception_wrapper
     def _validate_combustible_nofosil_endiesel(self) -> None:
@@ -166,10 +177,13 @@ class ProductValidator:
         if nofossil_fuel == "Sí":
             if nofossil_fuel_diesel := self.current_product.get("ComposDeCombustibleNoFosilEnDiesel"):
                 if not 1 <= nofossil_fuel_diesel <= 99:
-                    self.catch_error(
-                        err_type=ValorMinMaxError,
-                        err_message="Error: 'DieselConCombustibleNoFosil' no está en el rango min 1 o max 99."
+                    self._min_max_value_error(
+                        key="DieselConCombustibleNoFosil", value=nofossil_fuel_diesel,
+                        min_val=1, max_val=99,
                         )
+                    # self.catch_error(
+                    #     err_type=ValorMinMaxError,
+                    #     err_message="Error: 'DieselConCombustibleNoFosil' no está en el rango min 1 o max 99.")
 
     @exception_wrapper
     def _validate_combustible_turbosina_nofosil(self) -> None:
@@ -182,10 +196,12 @@ class ProductValidator:
                     err_message="Error: 'TurbosinaConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR11'"
                     )
             if turbosine_nofossil_fuel not in ["Sí", "No"]:
-                self.catch_error(
-                    err_type=ValorError,
-                    err_message="TurbosinaConCombustibleNoFosil inválido."
+                self._value_error(
+                    key="TurbosinaConCombustibleNoFosil", value=turbosine_nofossil_fuel,
                     )
+                # self.catch_error(
+                #     err_type=ValorError,
+                #     err_message="TurbosinaConCombustibleNoFosil inválido.")
 
     @exception_wrapper
     def _validate_combustible_nofosil_enturbosina(self) -> None:
@@ -193,10 +209,14 @@ class ProductValidator:
             if turbosine_nofossil_fuel == "Sí":
                 nofossil_fuel_turobssine = self.current_product.get("ComposDeCombustibleNoFosilEnTurbosina")
                 if not 1 <= nofossil_fuel_turobssine <= 99:
-                    self.catch_error(
-                        err_type=ValorMinMaxError,
-                        err_message="Error: 'ComposDeCombustibleNoFosilEnTurbosina' no está en el rango min 1 o max 99."
+                    self._min_max_value_error(
+                        key="ComposDeCombustibleNoFosilEnTurbosina", value=nofossil_fuel_turobssine,
+                        min_val=1, max_val=99,
                         )
+                    # self.catch_error(
+                    #     err_type=ValorMinMaxError,
+                    #     err_message="Error: 'ComposDeCombustibleNoFosilEnTurbosina'
+                    # no está en el rango min 1 o max 99.")
 
     def _validate_compos_propano_gaslp(self) -> None:
         product_key = self.current_product.get("ClaveProducto")
@@ -208,10 +228,12 @@ class ProductValidator:
                     err_message="Error: 'ComposDePropanoEnGasLP' solo pertenece a ClaveProducto 'PR12'"
                     )
             if not 0.01 <= propane_gaslp <= 99.99:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message="Error: 'ComposDePropanoEnGasLP' no está en el rango min 0.01 o max 99.99."
+                self._min_max_value_error(
+                    key="ComposDePropanoEnGasLP", value=propane_gaslp, min_val=0.01, max_val=99.99,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message="Error: 'ComposDePropanoEnGasLP' no está en el rango min 0.01 o max 99.99.")
 
     @exception_wrapper
     def _validate_compos_butano_gaslp(self) -> None:
@@ -224,10 +246,12 @@ class ProductValidator:
                     err_message="Error: 'ComposDeButanoEnGasLP' solo pertenece a ClaveProducto 'PR12'"
                     )
             if not 0.01 <= propane_gaslp <= 99.99:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message="Error: 'ComposDeButanoEnGasLP' no está en el rango min 0.01 o max 99.99."
+                self._min_max_value_error(
+                    key="ComposDeButanoEnGasLP", value=propane_gaslp, min_val=0.01, max_val=99.99,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message="Error: 'ComposDeButanoEnGasLP' no está en el rango min 0.01 o max 99.99.")
 
     @exception_wrapper
     def _validate_densidad_petroleo(self) -> None:
@@ -238,10 +262,12 @@ class ProductValidator:
                     err_message=f"Error: 'DensidadDePetroleo' solo pertenece a los caracteres {petroleo_caracteres}"
                     )
             if not 0.1 <= oil_density <= 80:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message="Error: 'DensidadDePetroleo' no está en el rango min 0.1 o max 80."
+                self._min_max_value_error(
+                    key="DensidadDePetroleo", value=oil_density, min_val=0.1, max_val=80,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message="Error: 'DensidadDePetroleo' no está en el rango min 0.1 o max 80.")
 
     @exception_wrapper
     def _validate_compos_azufre_petroleo(self) -> None:
@@ -259,10 +285,12 @@ class ProductValidator:
                     err_message=f"Error: 'ComposDeAzufreEnPetroleo' solo pertenece a los caracteres {petroleo_caracteres}"
                     )
             if not 0.1 <= sulfur_compos <= 10:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message="Error: 'ComposDeAzufreEnPetroleo' no está en el rango min 0.1 o max 10."
+                self._min_max_value_error(
+                    key="ComposDeAzufreEnPetroleo", value=sulfur_compos, min_val=0.1, max_val=10,
                     )
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message="Error: 'ComposDeAzufreEnPetroleo' no está en el rango min 0.1 o max 10.")
 
     @exception_wrapper
     def _validate_otros(self) -> None:
@@ -272,28 +300,34 @@ class ProductValidator:
         if product_key == "PR15" and subproduct_key == "SP20":
             others = self.current_product.get("Otros")
             if not 1 <= len(others) <= 30:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message="Error: 'Otros' no cumple con la longitud min 1 o max 30."
+                self._longitud_error(
+                    key="Otros", value=others, min_long=1, max_long=30,
                     )
+                # self.catch_error(
+                #     err_type=LongitudError,
+                #     err_message="Error: 'Otros' no cumple con la longitud min 1 o max 30.")
 
     @exception_wrapper
     def _validate_marca_comercial(self) -> None:
         if brand := self.current_product.get("MarcaComercial"):
             if not 2 <= len(brand) <= 200:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message="Error: 'MarcaComercial' no cumple con la longitud min 2 o max 200."
+                self._longitud_error(
+                    key="MarcaComercial", value=brand, min_long=2, max_long=200,
                     )
+                # self.catch_error(
+                #     err_type=LongitudError,
+                #     err_message="Error: 'MarcaComercial' no cumple con la longitud min 2 o max 200.")
 
     @exception_wrapper
     def _validate_marcaje(self) -> None:
         if marking := self.current_product.get("Marcaje"):
             if not 2 <= len(marking) <= 40:
-                self.catch_error(
-                    err_type=LongitudError,
-                    err_message="Error: 'Marcaje' no cumple con la longitud min 2 o max 40."
+                self._longitud_error(
+                    key="Marcaje", value=marking, min_long=2, max_long=40,
                     )
+                # self.catch_error(
+                #     err_type=LongitudError,
+                #     err_message="Error: 'Marcaje' no cumple con la longitud min 2 o max 40.")
 
     @exception_wrapper
     def _validate_concentracion_sustancia_marcaje(self) -> None:
@@ -305,11 +339,12 @@ class ProductValidator:
                     err_message="Error: 'ConcentracionSustanciaMarcaje' debe expresarse si se manifiesta 'Marcaje'."
                     )
             if not 1 <= concentration <= 1000:
-                self.catch_error(
-                    err_type=ValorMinMaxError,
-                    err_message="Error: 'ConcentracionSustanciaMarcaje' no está en el rango min 1 o max 1000."
+                self._min_max_value_error(
+                    key="ConcentracionSustanciaMarcaje", value=concentration, min_val=1, max_val=1000,
                     )
-
+                # self.catch_error(
+                #     err_type=ValorMinMaxError,
+                #     err_message="Error: 'ConcentracionSustanciaMarcaje' no está en el rango min 1 o max 1000.")
 
     # @exception_wrapper
     def _validate_monthly_report(self) -> None:
