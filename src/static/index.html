@@ -277,24 +277,114 @@
                     } else {
                         cls = 'hljs-string'; /* Strings - amarillo */
                     }
-                }
-
-                // Si es un valor booleano
-                else if (/true|false/.test(match)) {
-                    cls = 'hljs-literal'; /* Literales */
-                }
-                // Si es null
-                else if (/null/.test(match)) {
-                    cls = 'hljs-literal'; /* Literales */
-                }
-
-                // Si es un número
-                else if (/^-?\d+(\.\d+)?([eE][+\-]?\d+)?$/.test(match)) {
-                    cls = 'hljs-number'; /* Números */
+                } else if (/true|false/.test(match)) {
+                    cls = 'hljs-literal';
+                } else if (/null/.test(match)) {
+                    cls = 'hljs-literal';
+                } else if (/^-?\d+(\.\d+)?([eE][+\-]?\d+)?$/.test(match)) {
+                    cls = 'hljs-number';
                 }
 
                 return `<span class="${cls}">${match}</span>`;
             });
+        }
+
+        /**
+         * Navega hacia un elemento específico del JSON basado en un path
+         */
+        function navigateToJsonElement(sourcePath) {
+            if (!sourcePath || !currentJSON) {
+                console.warn('No se puede navegar: path o JSON no disponible');
+                return;
+            }
+
+            try {
+                const value = getValueFromPath(currentJSON, sourcePath);
+
+                if (value === undefined) {
+                    console.warn('No se encontró el elemento en el path:', sourcePath);
+                    showToast('No se pudo localizar el elemento', 'warning');
+                    return;
+                }
+
+                const jsonContent = document.getElementById('jsonContent');
+                const found = highlightValueInDOM(jsonContent, value, sourcePath);
+
+                if (found) {
+                    showToast('Elemento localizado', 'success');
+                } else {
+                    showToast('No se pudo resaltar el elemento', 'warning');
+                }
+
+            } catch (error) {
+                console.error('Error al navegar:', error);
+                showToast('Error al localizar elemento', 'error');
+            }
+        }
+
+        /**
+         * Obtiene el valor de un objeto siguiendo un path
+         */
+        function getValueFromPath(obj, path) {
+            const parts = path.split('.').flatMap(part => {
+                const matches = part.match(/([^\[]+)|\[(\d+)\]/g);
+                return matches ? matches.map(m => m.replace(/[\[\]]/g, '')) : [part];
+            });
+
+            let current = obj;
+
+            for (const part of parts) {
+                if (current === null || current === undefined) {
+                    return undefined;
+                }
+
+                if (!isNaN(part) && Array.isArray(current)) {
+                    current = current[parseInt(part)];
+                } else {
+                    current = current[part];
+                }
+            }
+
+            return current;
+        }
+
+        /**
+         * Resalta un valor específico en el DOM del JSON renderizado
+         */
+        function highlightValueInDOM(container, targetValue, sourcePath) {
+            const previousHighlights = container.querySelectorAll('.json-highlight');
+            previousHighlights.forEach(el => {
+                el.classList.remove('json-highlight');
+            });
+
+            const keyName = sourcePath.split('.').pop().replace(/\[\d+\]/g, '');
+            const valueStr = JSON.stringify(targetValue).replace(/^"|"$/g, '');
+
+            const allSpans = container.querySelectorAll('span');
+            let found = false;
+
+            for (let i = 0; i < allSpans.length; i++) {
+                const span = allSpans[i];
+                const text = span.textContent.trim();
+
+                if (text === `"${keyName}":` || text === `"${keyName}"`) {
+                    for (let j = i + 1; j < Math.min(i + 5, allSpans.length); j++) {
+                        const valueSpan = allSpans[j];
+                        const valueText = valueSpan.textContent.trim().replace(/^"|"$/g, '');
+
+                        if (valueText === valueStr) {
+                            valueSpan.classList.add('json-highlight');
+                            valueSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) break;
+                }
+            }
+
+            return found;
         }
 
         function displayResults(errors) {
@@ -329,11 +419,19 @@
                 let errorsHTML = '<div class="error-list">';
 
                 errors.forEach((error, index) => {
+                    const hasSource = error.source && error.source.trim() !== '' && error.source != 'Objeto no encontrado.';
+
                     errorsHTML += `
                         <div class="error-card" style="animation-delay: ${index * 0.1}s">
                             <div class="error-content">
                                 <div class="error-type">${error.type_error}</div>
                                 <div class="error-message">${error.error}</div>
+                                ${hasSource ? `
+                                    <!-- <div class="error-source">${error.source}</div> -->
+                                    <button class="error-navigate-btn" onclick="navigateToJsonElement('${error.source}')" type="button">
+                                        Ir a elemento
+                                    </button>
+                                ` : ''}
                             </div>
                         </div>
                     `;
@@ -369,13 +467,19 @@
             if (currentJSON) {
                 const jsonString = JSON.stringify(currentJSON, null, 2);
                 navigator.clipboard.writeText(jsonString).then(() => {
-                    showToast();
+                    showToast('✓ JSON copiado correctamente', 'success');
                 });
             }
         });
 
-        function showToast() {
+        function showToast(message = '✓ JSON copiado correctamente', type = 'success') {
             const toast = document.getElementById('toast');
+
+            toast.innerHTML = `
+                <div class="toast-icon">${type === 'success' ? '✓' : type === 'warning' ? 'X' : '❌'}</div>
+                ${message}
+            `;
+
             toast.classList.add('show');
             setTimeout(() => {
                 toast.classList.remove('show');
