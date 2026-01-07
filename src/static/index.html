@@ -362,8 +362,7 @@
             });
 
             const keyName = sourcePath.split('.').pop().replace(/\[\d+\]/g, '');
-            const valueStr = JSON.stringify(targetValue).replace(/^"|"$/g, '');
-
+            const isObject = typeof targetValue === 'object' && targetValue !== null;
             const allSpans = container.querySelectorAll('span');
             let found = false;
 
@@ -372,16 +371,11 @@
                 const text = span.textContent.trim();
 
                 if (text === `"${keyName}":` || text === `"${keyName}"`) {
-                    for (let j = i + 1; j < Math.min(i + 5, allSpans.length); j++) {
-                        const valueSpan = allSpans[j];
-                        const valueText = valueSpan.textContent.trim().replace(/^"|"$/g, '');
-
-                        if (valueText === valueStr) {
-                            valueSpan.classList.add('json-highlight');
-                            valueSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            found = true;
-                            break;
-                        }
+                    if (isObject) {
+                        found = highlightObjectBlock(allSpans, i);
+                    } else {
+                        const valueStr = JSON.stringify(targetValue).replace(/^"|"$/g, '');
+                        found = highlightPrimitiveValue(allSpans, i, valueStr);
                     }
 
                     if (found) break;
@@ -389,6 +383,72 @@
             }
 
             return found;
+        }
+
+        function highlightObjectBlock(allSpans, startIndex) {
+            let braceCount = 0;
+            let foundOpeningBrace = false;
+            let highlightedSpans = [];
+
+            // Buscar la llave de apertura y resaltar todo el bloque
+            for (let j = startIndex; j < allSpans.length; j++) {
+                const spanText = allSpans[j].textContent.trim();
+
+                // Detectar llave de apertura
+                if ((spanText === '{' || spanText === '[') && !foundOpeningBrace) {
+                    foundOpeningBrace = true;
+                    braceCount = 1;
+                    highlightedSpans.push(allSpans[j]);
+                    continue;
+                }
+
+                if (foundOpeningBrace) {
+                    highlightedSpans.push(allSpans[j]);
+
+                    // Contar llaves para encontrar el cierre correspondiente
+                    if (spanText === '{' || spanText === '[') {
+                        braceCount++;
+                    } else if (spanText === '}' || spanText === ']') {
+                        braceCount--;
+
+                        // Encontramos el cierre del objeto
+                        if (braceCount === 0) {
+                            // Aplicar highlight a todos los spans del bloque
+                            highlightedSpans.forEach(span => {
+                                span.classList.add('json-highlight');
+                            });
+
+                            // Scroll al primer elemento (la llave de apertura)
+                            highlightedSpans[0].scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        function highlightPrimitiveValue(allSpans, startIndex, valueStr) {
+            for (let j = startIndex + 1; j < Math.min(startIndex + 5, allSpans.length); j++) {
+                const valueSpan = allSpans[j];
+                const valueText = valueSpan.textContent.trim().replace(/^"|"$/g, '');
+
+                if (valueText === valueStr) {
+                    valueSpan.classList.add('json-highlight');
+                    valueSpan.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         function displayResults(errors) {
@@ -423,7 +483,7 @@
                 let errorsHTML = '<div class="error-list">';
 
                 errors.forEach((error, index) => {
-                    const hasSource = error.source && error.source.trim() !== '' && error.source != 'Objeto no encontrado.';
+                    const hasSource = error.source && error.source.trim() !== '' && error.source !== 'Objeto no encontrado.' && !error.source.includes('None');
 
                     errorsHTML += `
                         <div class="error-card" style="animation-delay: ${index * 0.1}s">
