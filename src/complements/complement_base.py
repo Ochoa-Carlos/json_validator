@@ -242,6 +242,8 @@ class ComplementBuilder:
 
     @exception_wrapper
     def _validate_nacional(self) -> None:
+        """Validate Nacional objs list.\n
+        :return: None."""
         if (national := self.current_complement.get("Nacional")) is None:
             return
 
@@ -262,44 +264,26 @@ class ComplementBuilder:
                     key="RfcClienteOProveedor",
                     source=f"{national_parent}.RfcClienteOProveedor"
                     )
-                # self.catch_error(
-                #     err_type=ClaveError,
-                #     err_message="Error: clave 'RfcClienteOProveedor' no encontrada.")
             if custom_client_name is None:
                 self._nonfound_key_error(
                     key="NombreClienteOProveedor",
                     source=f"{national_parent}.NombreClienteOProveedor"
                     )
-                # self.catch_error(
-                #     err_type=ClaveError,
-                #     err_message="Error: clave 'NombreClienteOProveedor' no encontrada.")
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
                 self._regex_error(
                     key="RfcClienteOProveedor", value=custom_client_rfc, pattern=RFC_REGEX,
                     source=f"{national_parent}.RfcClienteOProveedor"
                     )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'RfcClienteOProveedor'
-                # con valor {custom_client_rfc} no cumple con el regex {RFC_REGEX}")
             if custom_client_name and not 10 <= len(custom_client_name) <= 150:
                 self._longitud_error(
                     key="NombreClienteOProveedor", value=custom_client_name, min_long=10, max_long=150,
                     source=f"{national_parent}.NombreClienteOProveedor"
                     )
-                # self.catch_error(
-                #     err_type=LongitudError,
-                #     err_message=f"Error: clave 'NombreClienteOProveedor'
-                # con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 300.")
             if supplier_permission and not re.match(PERMISSION_PROOVE_REGEX, supplier_permission):
                 self._regex_error(
                     key="PermisoProveedor", value=supplier_permission, pattern=PERMISSION_PROOVE_REGEX,
                     source=f"{national_parent}.PermisoProveedor"
                     )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'PermisoProveedor'
-                # con valor {supplier_permission} no cumple con el regex {PERMISSION_PROOVE_REGEX}")
 
     @exception_wrapper
     def __validate_national_cfdi(self) -> None:
