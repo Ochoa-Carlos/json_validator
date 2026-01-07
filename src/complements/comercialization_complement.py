@@ -344,34 +344,31 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def _validate_extranjero(self):
+        """Validate Extrajero objs.\n
+        :return: None."""
         if (foreign := self.current_complement.get("Extranjero")) is None:
             return
+        # foreign_parent = "Extranjero"
 
         for fore_elem in foreign:
+            fore_parent = f"Extranjero[{foreign.index(fore_elem)}]"
             if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=fore_elem,
                                                                     dict_type=complement_foreign):
                 type_err = err.get("type_err")
                 err_message = err.get("err_message")
-                self.catch_error(err_type=type_err, err_message=err_message)
+                self.catch_error(err_type=type_err, err_message=err_message, source=fore_parent)
                 return
 
             import_export_permission = fore_elem.get("PermisoImportacionOExportacion")
             pedimentos = fore_elem.get("Pedimentos")
 
             if import_export_permission is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'PermisoImportacionOExportacion' no se encuentra."
-                    )
+                self._nonfound_key_error(key="PermisoImportacionOExportacion", source=f"{fore_parent}.Pedimentos")
             if import_export_permission and not re.match(IMPORT_PERMISSION_REGEX, import_export_permission):
                 self._regex_error(
                     key="PermisoImportacionOExportacion", value=import_export_permission,
-                    pattern=IMPORT_PERMISSION_REGEX,
+                    pattern=IMPORT_PERMISSION_REGEX, source=f"{fore_parent}.PermisoImportacionOExportacion"
                 )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'PermisoImportacionOExportacion'
-                # con valor {import_export_permission} no cumple con el patron {IMPORT_PERMISSION_REGEX}")
 
             if pedimentos:
                 for pedimento in pedimentos:
@@ -379,6 +376,8 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def __validate_pedimentos(self, pedimento: dict) -> None:
+        """Validate Pedimentos objs.\n
+        :return: None."""
         intern_extrac_point = pedimento.get("PuntoDeInternacionOExtraccion")
         origin_destiny_country = pedimento.get("PaisOrigenODestino")
         aduana_transp_med = pedimento.get("MedioDeTransEntraOSaleAduana")
@@ -390,126 +389,61 @@ class ComercializationComplement(ComplementBuilder):
         measure_unit = documented_volume.get("UnidadDeMedida")
 
         if intern_extrac_point is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PuntoDeInternacionOExtraccion' no se encuentra."
-                )
+            self._nonfound_key_error(key="PuntoDeInternacionOExtraccion")
         if origin_destiny_country is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PaisOrigenODestino' no se encuentra."
-                )
+            self._nonfound_key_error(key="PaisOrigenODestino")
         if aduana_transp_med is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'MedioDeTransEntraOSaleAduana' no se encuentra."
-                )
+            self._nonfound_key_error(key="MedioDeTransEntraOSaleAduana")
         if aduanal_pedimento is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PedimentoAduanal' no se encuentra."
-                )
+            self._nonfound_key_error(key="PedimentoAduanal")
         if incoterm is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Incoterms' no se encuentra."
-                )
+            self._nonfound_key_error(key="Incoterms")
         if import_export_price is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PrecioDeImportacionOExportacion' no se encuentra."
-                )
+            self._nonfound_key_error(key="PrecioDeImportacionOExportacion")
         if documented_volume is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'VolumenDocumentado' no se encuentra."
-                )
+            self._nonfound_key_error(key="VolumenDocumentado")
         if num_value is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: valor 'ValorNumerico' no se encuentra en clave 'ValorDocumentado'."
-                )
+            self._nonfound_key_error(key="ValorNumerico")
         if measure_unit is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: valor 'UnidadDeMedida' no se encuentra en clave 'ValorDocumentado'."
-                )
+            self._nonfound_key_error(key="UnidadDeMedida")
+
         if intern_extrac_point and not re.match(INTERN_SPOT_REGEX, intern_extrac_point):
             self._regex_error(
                 key="PuntoDeInternacionOExtraccion", value=intern_extrac_point, pattern=INTERN_SPOT_REGEX,
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PuntoDeInternacionOExtraccion'
-            # con valor {intern_extrac_point} no cumple con el patron {INTERN_SPOT_REGEX}")
         if intern_extrac_point and not 2 <= len(intern_extrac_point) <= 3:
             self._min_max_value_error(
                 key="PuntoDeInternacion", value=intern_extrac_point, min_val=2, max_val=3,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'PuntoDeInternacion'
-            # con valor {intern_extrac_point} no tiene la longitud min 2 o max 3.")
         if origin_destiny_country and origin_destiny_country not in CountryCode:
             self._value_error(
                 key="PaisOrigenODestino", value=origin_destiny_country
                 )
-            # self.catch_error(
-            #     err_type=ValorError,
-            #     err_message=f"Error: valor '{origin_destiny_country}'
-            # en clave 'PaisOrigenODestino' no válido.")
         if aduana_transp_med and aduana_transp_med not in [item.value for item in AduanaEntrance]:
             self._value_error(
                 key="MedioDeTransporteAduana", value=aduana_transp_med
                 )
-            # self.catch_error(
-            #     err_type=ValorError,
-            #     err_message=f"Error: valor '{aduana_transp_med}'
-            # en clave 'MedioDeTransporteAduana' no válido.")
         if aduanal_pedimento and not re.match(ADUANAL_PEDIMENTO, aduanal_pedimento):
             self._regex_error(
                 key="PedimentoAduanal", value=aduanal_pedimento, pattern=ADUANAL_PEDIMENTO,
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PedimentoAduanal'
-            # con valor {aduanal_pedimento} no cumple con el patron {ADUANAL_PEDIMENTO}")
         if aduanal_pedimento and len(aduanal_pedimento) != 21:
             self._longitud_error(
                 key="PedimentoAduanal", value=aduanal_pedimento, min_long=21, max_long=21,
             )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message=f"Error: clave 'PedimentoAduanal'
-            # con valor '{aduanal_pedimento} no cumple con la longitud de 21.'")
         if incoterm and incoterm not in IncotermCode.__members__:
             self._value_error(
                 key="Incoterms", value=incoterm
                 )
-            # self.catch_error(
-            #     err_type=ValorError,
-            #     err_message=f"Error: clave 'Incoterms' con valor {incoterm} no válido.")
         if import_export_price and not 0 <= import_export_price <= 100000000000:
             self._min_max_value_error(
                 key="PrecioDeImportacion", value=import_export_price, min_val=0, max_val=100000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'PrecioDeImportacion'
-            # con valor {import_export_price} no tiene el valor min 0 o max 100000000000.")
         if num_value and not 0 <= num_value <= 100000000000:
             self._min_max_value_error(
                 key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'ValorNumerico'
-            # con valor {num_value} no está en el valor min 0 o max 100000000000.")
         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
             self._regex_error(
                 key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'UnidadDeMedida'
-            # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
