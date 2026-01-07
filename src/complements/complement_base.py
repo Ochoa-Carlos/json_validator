@@ -409,30 +409,25 @@ class ComplementBuilder:
 
     @exception_wrapper
     def _validate_extranjero(self) -> None:
+        """Validate Extrajero objs.\n
+        :return: None."""
         if (foreign := self.current_complement.get("Extranjero")) is None:
             return
         import_permission = foreign.get("PermisoImportacion")
-        pedimentos = foreign.get("Pedimentos")
+        ped_parent = "Pedimentos"
 
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=foreign, dict_type=complement_foreign):
             type_err = err.get("type_err")
             err_message = err.get("err_message")
-            self.catch_error(err_type=type_err, err_message=err_message)
+            self.catch_error(err_type=type_err, err_message=err_message, source=ped_parent)
         if import_permission is None:
             self._nonfound_key_error(key="PermisoImportacion")
-            # self.catch_error(err_type=ClaveError, err_message="Error: clave 'PermisoImportacion' no se encuentra.")
 
         if import_permission and not re.match(IMPORT_PERMISSION_REGEX, import_permission):
             self._regex_error(
                 key="PermisoImportacion", value=import_permission, pattern=IMPORT_PERMISSION_REGEX,
+                source=f"{ped_parent}.PermisoImportacion"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PermisoImportacion'
-            # con valor {import_permission} no cumple con el regex {IMPORT_PERMISSION_REGEX}")
-
-        # for pedimento in pedimentos:
-        #     self.__validate_pedimentos(pedimento=pedimento)
 
     @exception_wrapper
     def __validate_extranjero_pedimentos(self) -> None:
