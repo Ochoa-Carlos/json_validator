@@ -306,10 +306,6 @@
                     showToast('No se pudo localizar el elemento', 'warning');
                     return;
                 }
-                if (value === sanitizeRawJsonString(value)) {
-                    showToast('El valor es NaN o inválido y fue sanitizado', 'warning');
-                    return;
-                }
 
                 const jsonContent = document.getElementById('jsonContent');
                 const found = highlightValueInDOM(jsonContent, value, sourcePath);
