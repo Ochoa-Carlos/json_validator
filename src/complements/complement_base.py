@@ -287,6 +287,8 @@ class ComplementBuilder:
 
     @exception_wrapper
     def __validate_national_cfdi(self) -> None:
+        """Validate Nacional Cfdis obj list.\n
+        :return: None."""
         if (national := self.current_complement.get("Nacional")) is None:
             return
         for national_item in national:
@@ -294,6 +296,7 @@ class ComplementBuilder:
 
             if cfdis := national_item.get("CFDIs"):
                 for cfdi in cfdis:
+                    cfdi_parent = f"CFDIs[{cfdis.index(cfdi)}]"
                     cfdi_val = cfdi.get("Cfdi")
                     cfdi_type = cfdi.get("TipoCfdi")
                     purchase_price = cfdi.get("PrecioCompra")
@@ -306,49 +309,34 @@ class ComplementBuilder:
                     transaction_date = cfdi.get("FechaYHoraTransaccion")
                     documented_volum = cfdi.get("VolumenDocumentado")
 
-                    cfdi_parent = f"CFDIs[{cfdis.index(cfdi)}]"
                     if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=cfdi,
                                                                         dict_type=complement_cfdis):
                         type_err = err.get("type_err")
                         err_message = err.get("err_message")
-                        self.catch_error(err_type=type_err, err_message=err_message)
+                        self.catch_error(err_type=type_err, err_message=err_message,
+                                         source=f"{national_parent}.{cfdi_parent}")
 
                     if cfdi_val is None:
                         self._nonfound_key_error(
-                            key="Cfdi",
+                            key="Cfdi", source=f"{national_parent}.{cfdi_parent}"
                             )
-                        # self.catch_error(
-                        #     err_type=ClaveError,
-                        #     err_message="Error: clave 'Cfdi' no se encuentra.")
                     if cfdi_type is None:
                         self._nonfound_key_error(
-                            key="TipoCfdi",
+                            key="TipoCfdi", source=f"{national_parent}.{cfdi_parent}"
                             )
-                        # self.catch_error(
-                        #     err_type=ClaveError,
-                        #     err_message="Error: clave 'TipoCfdi' no se encuentra.")
                     if cfdi_type and cfdi_type not in [cfdi.value for cfdi in CfdiType]:
                         self._value_error(
                             key="TipoCfdi", value=cfdi_type,
                             source=f"{national_parent}.{cfdi_parent}.TipoCfdi"
                             )
-                        # self.catch_error(
-                        #     err_type=ClaveError,
-                        #     err_message=f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válido.")
                     if transaction_date is None:
                         self._nonfound_key_error(
-                            key="FechaYHoraTransaccion",
+                            key="FechaYHoraTransaccion", source=f"{national_parent}.{cfdi_parent}"
                             )
-                        # self.catch_error(
-                        #     err_type=ClaveError,
-                        #     err_message="Error: clave 'FechaYHoraTransaccion' no se encuentra.")
                     if documented_volum is None:
                         self._nonfound_key_error(
-                            key="VolumenDocumentado",
+                            key="VolumenDocumentado", source=f"{national_parent}.{cfdi_parent}"
                             )
-                        # self.catch_error(
-                        #     err_type=ClaveError,
-                        #     err_message="Error: clave 'VolumenDocumentado' no se encuentra.")
                     if documented_volum:
                         num_value = documented_volum.get("ValorNumerico")
                         measure_unit = documented_volum.get("UnidadDeMedida")
@@ -357,119 +345,67 @@ class ComplementBuilder:
                                 key="ValorNumerico",
                                 source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado"
                                 )
-                            # self.catch_error(
-                            #     err_type=ClaveError,
-                            #     err_message="Error: clave 'ValorNumerico'
-                            # no se encuentra en clave 'VolumenDocumentado'.")
                         if measure_unit is None:
                             self._nonfound_key_error(
                                 key="UnidadDeMedida",
                                 source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado"
                                 )
-                            # self.catch_error(
-                            #     err_type=ClaveError,
-                            #     err_message="Error: clave 'UnidadDeMedida'
-                            # no se encuentra en clave 'VolumenDocumentado'.")
                         if num_value and not 0 <= num_value <= 100000000000:
                             self._min_max_value_error(
                                 key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
                                 source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado.ValorNumerico"
                                 )
-                            # self.catch_error(
-                            #     err_type=ValorMinMaxError,
-                            #     err_message=f"Error: clave 'ValorNumerico'
-                            # con valor {num_value} no tiene el valor min 0 o max 100000000000.")
                         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
                             self._regex_error(
                                 key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
                                 source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado.UnidadDeMedida"
                                 )
-                            # self.catch_error(
-                            #     err_type=RegexError,
-                            #     err_message=f"Error: clave 'UnidadDeMedida'
-                            # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
 
                     if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
                         self._regex_error(
                             key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
                             source=f"{national_parent}.{cfdi_parent}.Cfdi"
                             )
-                        # self.catch_error(
-                        #     err_type=RegexError,
-                        #     err_message=f"Error: clave 'Cfdi'
-                        # con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}")
                     if purchase_price and not 0 <= purchase_price <= 1000000000000:
                         self._min_max_value_error(
                             key="PrecioCompra", value=purchase_price, min_val=0, max_val=1000000000000,
                             source=f"{national_parent}.{cfdi_parent}.PrecioCompra"
                             )
-                        # self.catch_error(
-                        #     err_type=ValorMinMaxError,
-                        #     err_message=f"Error: Clave 'PrecioCompra'
-                        # con valor '{purchase_price}' no tiene el valor min 0 o max 1000000000000.")
                     if consideration and not 1 <= consideration <= 1000000000000:
                         self._min_max_value_error(
                             key="Contraprestacion", value=consideration, min_val=0, max_val=1000000000000,
                             source=f"{national_parent}.{cfdi_parent}.Contraprestacion"
                             )
-                        # self.catch_error(
-                        #     err_type=ValorMinMaxError,
-                        #     err_message=f"Error: Clave 'Contraprestacion'
-                        # con valor '{consideration}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_fee and not 1 <= alm_fee <= 1000000000000:
                         self._min_max_value_error(
                             key="CargoPorCapacidadAlmac", value=alm_fee, min_val=1, max_val=1000000000000,
                             source=f"{national_parent}.{cfdi_parent}.CargoPorCapacidadAlmac"
                             )
-                        # self.catch_error(
-                        #     err_type=ValorMinMaxError,
-                        #     err_message=f"Error: Clave 'Contraprestacion'
-                        # con valor '{alm_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_cap_fee and not 1 <= alm_cap_fee <= 1000000000000:
                         self._min_max_value_error(
                             key="CargoPorCapacidadAlmac", value=alm_cap_fee, min_val=1, max_val=1000000000000,
                             source=f"{national_parent}.{cfdi_parent}.CargoPorCapacidadAlmac"
                             )
-                        # self.catch_error(
-                        #     err_type=ValorMinMaxError,
-                        #     err_message=f"Error: Clave 'CargoPorCapacidadALmac'
-                        # con valor '{alm_cap_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_use_fee and not 1 <= alm_use_fee <= 1000000000000:
                         self._min_max_value_error(
                             key="CargoPorUsoAlmac", value=alm_use_fee, min_val=1, max_val=1000000000000,
                             source=f"{national_parent}.{cfdi_parent}.CargoPorUsoAlmac"
                             )
-                        # self.catch_error(
-                        #     err_type=ValorMinMaxError,
-                        #     err_message=f"Error: Clave 'CargoPorUsoAlmac'
-                        # con valor '{alm_use_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if alm_volum_fee and not 1 <= alm_volum_fee <= 1000000000000:
                         self._min_max_value_error(
                             key="CargoVolumetricoAlmac", value=alm_volum_fee, min_val=1, max_val=1000000000000,
                             source=f"{national_parent}.{cfdi_parent}.CargoVolumetricoAlmac"
                             )
-                        # self.catch_error(
-                        #     err_type=ValorMinMaxError,
-                        #     err_message=f"Error: Clave 'CargoVolumetricoAlmac'
-                        # con valor '{alm_volum_fee}' no tiene el valor min 0 o max 1000000000000.")
                     if discount and not 1 <= discount <= 1000000000000:
                         self._min_max_value_error(
                             key="Descuento", value=discount, min_val=1, max_val=1000000000000,
                             source=f"{national_parent}.{cfdi_parent}.Descuento"
                             )
-                        # self.catch_error(
-                        #     err_type=ValorMinMaxError,
-                        #     err_message=f"Error: Clave 'Descuento'
-                        # con valor '{discount}' no tiene el valor min 0 o max 1000000000000.")
                     if transaction_date and not re.match(UTC_FORMAT_REGEX, transaction_date):
                         self._regex_error(
                             key="FechaYHoraTransaccion", value=transaction_date, pattern=UTC_FORMAT_REGEX,
                             source=f"{national_parent}.{cfdi_parent}.FechaYHoraTransaccion"
                             )
-                        # self.catch_error(
-                        #     err_type=RegexError,
-                        #     err_message=f"Error: clave 'FechaYHoraTransaccion'
-                        # con valor {transaction_date} no se expresa en formato yyyy-mm-ddThh:mm:ss+-hh:mm")
 
     @exception_wrapper
     def _validate_extranjero(self) -> None:
