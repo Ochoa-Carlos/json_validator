@@ -65,7 +65,6 @@ class ComplementBuilder:
 
         if comp_type not in {en.value for en in ComplementTypeEnum}:
             self._value_error(key="TipoComplemento", value=comp_type)
-            # self.catch_error(err_type=TipadoError, err_message=f"Error: TipoComplemento {comp_type} no válido.")
 
     @exception_wrapper
     def _validate_transporte(self) -> None:
@@ -138,14 +137,17 @@ class ComplementBuilder:
 
     @exception_wrapper
     def _validate_dictamen(self) -> None:
+        """Validate Dictamen object.\n
+        :return: None."""
         if (dictamen := self.current_complement.get("Dictamen")) is None:
             return
+        dictamen_parent = "Dictamen"
 
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=dictamen,
                                                                dict_type=complement_dictamen):
             type_err = err.get("type_err")
             err_message = err.get("err_message")
-            self.catch_error(err_type=type_err, err_message=err_message)
+            self.catch_error(err_type=type_err, err_message=err_message, source=dictamen_parent)
         dictamen_rfc = dictamen.get("RfcDictamen")
         dictamen_lote = dictamen.get("LoteDictamen")
         dictamen_folio = dictamen.get("NumeroFolioDictamen")
@@ -153,64 +155,42 @@ class ComplementBuilder:
         dictamen_result = dictamen.get("ResultadoDictamen")
 
         if dictamen_rfc is None:
-            self._nonfound_key_error(key="RfcDictamen")
-            # self.catch_error(ClaveError, "Error: clave 'RfcDictamen no encontrada.")
+            print("parent", "Dictamen.RfcDictamen")
+            self._nonfound_key_error(key="RfcDictamen", source=dictamen_parent)
         if dictamen_lote is None:
-            self._nonfound_key_error(key="LoteDictamen")
-            # self.catch_error(ClaveError, "Error: clave 'LoteDictamen' no encontrada.")
+            self._nonfound_key_error(key="LoteDictamen", source=dictamen_parent)
         if dictamen_folio is None:
-            self._nonfound_key_error(key="NumeroFolioDictamen")
-            # self.catch_error(ClaveError, "Error: clave 'NumeroFolioDictamen' no encontrada.")
+            self._nonfound_key_error(key="NumeroFolioDictamen", source=dictamen_parent)
         if dictamen_date is None:
-            self._nonfound_key_error(key="FechaEmisionDictamen")
-            # self.catch_error(ClaveError, "Error: clave 'FechaEmisionDictamen' no encontrada.")
+            self._nonfound_key_error(key="FechaEmisionDictamen", source=dictamen_parent)
         if dictamen_result is None:
-            self._nonfound_key_error(key="ResultadoDictamen")
-            # self.catch_error(ClaveError, "Error: clave 'ResultadoDictamen' no encontrada.")
+            self._nonfound_key_error(key="ResultadoDictamen", source=dictamen_parent)
 
         if dictamen_rfc and not re.match(RFC_PERSONA_MORAL_REGEX, dictamen_rfc):
             self._regex_error(
                 key="RfcDictamen", value=dictamen_rfc, pattern=RFC_PERSONA_MORAL_REGEX,
+                source=f"{dictamen_parent}.RfcDictamen"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'RfcDictamen'
-            # con valor '{dictamen_rfc} no cumple con el regex {RFC_PERSONA_MORAL_REGEX}'")
         if dictamen_lote and not 1 <= len(dictamen_lote) <= 50:
             self._longitud_error(
                 key="LoteDictamen", value=dictamen_lote, min_long=1, max_long=50,
+                source=f"{dictamen_parent}.LoteDictamen"
                 )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message=f"Error:
-            # clave 'LoteDictamen' con valor '{dictamen_lote}' no se encuentra en el rango min 1 o max 50."
-            #     )
         if dictamen_folio and not re.match(FOLIO_DICTAMEN_REGEX, dictamen_folio):
             self._regex_error(
                 key="NumeroFolioDictamen", value=dictamen_folio, pattern=FOLIO_DICTAMEN_REGEX,
+                source=f"{dictamen_parent}.NumeroFolioDictamen"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error:
-            # clave 'NumeroFolioDictamen' con valor {dictamen_folio} no cumple con el regex {FOLIO_DICTAMEN_REGEX}"
-            #     )
         if dictamen_date and not re.match(DATE_REGEX, dictamen_date):
             self._regex_error(
                 key="FechaEmisionDictamen", value=dictamen_date, pattern=DATE_REGEX,
+                source=f"{dictamen_parent}.FechaEmisionDictamen"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error:
-            # clave 'FechaEmisionDictamen' con valor {dictamen_date} no se expresa en formato yyyy-mm-dd"
-            #     )
         if dictamen_result and not 10 <= len(dictamen_result) <= 300:
             self._longitud_error(
                 key="ResultadoDictamen", value=dictamen_result, min_long=10, max_long=300,
+                source=f"{dictamen_parent}.ResultadoDictamen"
                 )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message=f"Error: clave 'ResultadoDictamen'
-            # con valor {dictamen_result} no se encuentra en el rango min 10 o max 300.")
 
     @exception_wrapper
     def _validate_certificado(self) -> None:
