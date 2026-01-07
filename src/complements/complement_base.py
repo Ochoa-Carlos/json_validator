@@ -573,15 +573,15 @@ class ComplementBuilder:
 
     @exception_wrapper
     def _validate_aclaracion(self) -> None:
+        """Validate aclaracionn
+        :return: None."""
         if (clarif := self.current_complement.get("Aclaracion")) is None:
             return
         if clarif and not 10 <= len(clarif) <= 600:
             self._longitud_error(
                 key="Aclaracion", value=clarif, min_long=10, max_long=600,
+                source="Aclaracion"
                 )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message="Error: valor 'Aclaracion' no cumple con la longitud min 10 o max 600.")
 
     def _current_complement(self) -> dict:
         return self.current_complement[self._comp_index]
