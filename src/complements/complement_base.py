@@ -194,9 +194,12 @@ class ComplementBuilder:
 
     @exception_wrapper
     def _validate_certificado(self) -> None:
+        """Validate Certificado object.\n
+        :return: None."""
         if (certified := self.current_complement.get("Certificado")) is None:
             return
 
+        cert_parent = "Certificado"
         certified_rfc = certified.get("RfcCertificado")
         certified_folio = certified.get("NumeroFolioCertificado")
         certified_date = certified.get("FechaEmisionCertificado")
@@ -206,53 +209,36 @@ class ComplementBuilder:
                                                                dict_type=complement_certified):
             type_err = err.get("type_err")
             err_message = err.get("err_message")
-            self.catch_error(err_type=type_err, err_message=err_message)
+            self.catch_error(err_type=type_err, err_message=err_message, source=cert_parent)
         if certified_rfc is None:
-            self._nonfound_key_error(key="RfcCertificado")
-            # self.catch_error(ClaveError, "Error: clave 'RfcCertificado' no encontrada.")
+            self._nonfound_key_error(key="RfcCertificado", source=cert_parent)
         if certified_folio is None:
-            self._nonfound_key_error(key="NumeroFolioCertificado")
-            # self.catch_error(ClaveError, "Error: clave 'NumeroFolioCertificado' no encontrada.")
+            self._nonfound_key_error(key="NumeroFolioCertificado", source=cert_parent)
         if certified_date is None:
-            self._nonfound_key_error(key="FechaEmisionCertificado")
-            # self.catch_error(ClaveError, "Error: clave 'FechaEmisionCertificado' no encontrada.")
+            self._nonfound_key_error(key="FechaEmisionCertificado", source=cert_parent)
         if certified_result is None:
-            self._nonfound_key_error(key="ResultadoCertificado")
-            # self.catch_error(ClaveError, "Error: clave 'ResultadoCertificado' no encontrada.")
+            self._nonfound_key_error(key="ResultadoCertificado", source=cert_parent)
 
         if certified_rfc and not re.match(RFC_PERSONA_MORAL_REGEX, certified_rfc):
             self._regex_error(
                 key="RfcCertificado", value=certified_rfc, pattern=RFC_PERSONA_MORAL_REGEX,
+                source=f"{cert_parent}.RfcCertificado"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'RfcCertificado'
-            # con valor {certified_rfc} no cumple con el regex {RFC_PERSONA_MORAL_REGEX}")
         if certified_folio and not re.match(FOLIO_CERTIFIED_REGEX, certified_folio):
             self._regex_error(
                 key="NumeroFolioCertificado", value=certified_folio, pattern=FOLIO_CERTIFIED_REGEX,
+                source=f"{cert_parent}.NumeroFolioCertificado"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'NumeroFolioCertificado'
-            # con valor {certified_folio} no cumple con el regex {FOLIO_CERTIFIED_REGEX}")
         if certified_date and not re.match(DATE_REGEX, certified_date):
             self._regex_error(
                 key="FechaEmisionCertificado", value=certified_date, pattern=DATE_REGEX,
+                source=f"{cert_parent}.FechaEmisionCertificado"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'FechaEmisionCertificado'
-            # con valor {certified_date} no se expresa en formato yyyy-mm-dd")
         if certified_result and not 10 <= len(certified_result) <= 300:
             self._longitud_error(
                 key="ResultadoCertificado", value=certified_result, min_long=10, max_long=300,
+                source=f"{cert_parent}.ResultadoCertificado"
                 )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message=f"Error: clave 'ResultadoCertificado'
-            # con valor {certified_result} no se encuentra en el rango min 10 o max 300."
-            #     )
 
     @exception_wrapper
     def _validate_nacional(self) -> None:
