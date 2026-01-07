@@ -344,34 +344,31 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def _validate_extranjero(self):
+        """Validate Extrajero objs.\n
+        :return: None."""
         if (foreign := self.current_complement.get("Extranjero")) is None:
             return
+        # foreign_parent = "Extranjero"
 
         for fore_elem in foreign:
+            fore_parent = f"Extranjero[{foreign.index(fore_elem)}]"
             if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=fore_elem,
                                                                     dict_type=complement_foreign):
                 type_err = err.get("type_err")
                 err_message = err.get("err_message")
-                self.catch_error(err_type=type_err, err_message=err_message)
+                self.catch_error(err_type=type_err, err_message=err_message, source=fore_parent)
                 return
 
             import_export_permission = fore_elem.get("PermisoImportacionOExportacion")
             pedimentos = fore_elem.get("Pedimentos")
 
             if import_export_permission is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'PermisoImportacionOExportacion' no se encuentra."
-                    )
+                self._nonfound_key_error(key="PermisoImportacionOExportacion", source=f"{fore_parent}.Pedimentos")
             if import_export_permission and not re.match(IMPORT_PERMISSION_REGEX, import_export_permission):
                 self._regex_error(
                     key="PermisoImportacionOExportacion", value=import_export_permission,
-                    pattern=IMPORT_PERMISSION_REGEX,
+                    pattern=IMPORT_PERMISSION_REGEX, source=f"{fore_parent}.PermisoImportacionOExportacion"
                 )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'PermisoImportacionOExportacion'
-                # con valor {import_export_permission} no cumple con el patron {IMPORT_PERMISSION_REGEX}")
 
             if pedimentos:
                 for pedimento in pedimentos:
@@ -379,6 +376,7 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def __validate_pedimentos(self, pedimento: dict) -> None:
+        ped_parent = "Pedimentos"
         intern_extrac_point = pedimento.get("PuntoDeInternacionOExtraccion")
         origin_destiny_country = pedimento.get("PaisOrigenODestino")
         aduana_transp_med = pedimento.get("MedioDeTransEntraOSaleAduana")
@@ -390,10 +388,12 @@ class ComercializationComplement(ComplementBuilder):
         measure_unit = documented_volume.get("UnidadDeMedida")
 
         if intern_extrac_point is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PuntoDeInternacionOExtraccion' no se encuentra."
-                )
+            print("asdasdasd", ped_parent)
+            self._nonfound_key_error(key="PuntoDeInternacionOExtraccion", source=ped_parent)
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'PuntoDeInternacionOExtraccion' no se encuentra."
+            #     )
         if origin_destiny_country is None:
             self.catch_error(
                 err_type=ClaveError,
