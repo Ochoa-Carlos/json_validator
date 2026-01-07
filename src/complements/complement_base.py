@@ -442,7 +442,7 @@ class ComplementBuilder:
                     if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
                         self._regex_error(
                             key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
-                            source=f"{national_parent}.{cfdi_parent}.VolumenDocumentado.UnidadDeMedida"
+                            source=f"{national_parent}.{cfdi_parent}.Cfdi"
                             )
                         # self.catch_error(
                         #     err_type=RegexError,
