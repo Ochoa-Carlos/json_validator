@@ -1,6 +1,6 @@
 """This module handles product validations."""
 import re
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 from src.condensed_gas_validator import CondensedGasValidator
 from src.constants import (SUBPRODUCTO_REGEX, petroleo_caracteres,
@@ -103,10 +103,12 @@ class ProductValidator:
 
         if octanaje_gas := self.current_product.get("ComposOctanajeGasolina"):
             if  product_key != "PR07":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'ComposOctanajeGasolina' solo pertenece a ClaveProducto 'PR07'."
+                self._product_key_error(
+                    product_key=ProductEnum.PR07.value, subproduct_key="ComposOctanajeGasolina",
                     )
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'ComposOctanajeGasolina' solo pertenece a ClaveProducto 'PR07'.")
             if not 87 <= octanaje_gas <= 130:
                 self._min_max_value_error(
                     key="ComposOctanajeGasolina", value=octanaje_gas, min_val=87, max_val=130,
@@ -121,11 +123,13 @@ class ProductValidator:
 
         if nofossil_fuel := self.current_product.get("GasolinaConCombustibleNoFosil"):
             if product_key != "PR07":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'GasolinaConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR07'"
+                self._product_key_error(
+                    product_key=ProductEnum.PR07.value, subproduct_key="GasolinaConCombustibleNoFosil",
                     )
-            if nofossil_fuel not in ["Sí", "No"]:
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'GasolinaConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR07'")
+            if nofossil_fuel not in [SiNoEnum.SI.value, SiNoEnum.NO.value]:
                 self._value_error(
                     key="GasolinaConCombustibleNoFosil", value=nofossil_fuel,
                     )
@@ -139,10 +143,12 @@ class ProductValidator:
 
         if nofossil_ingas_fuel := self.current_product.get("ComposDeCombustibleNoFosilEnGasolina"):
             if product_key != "PR07":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'ComposDeCombustibleNoFosilEnGasolina' solo pertenece a ClaveProducto 'PR07'"
+                self._product_key_error(
+                    product_key=ProductEnum.PR07.value, subproduct_key="ComposDeCombustibleNoFosilEnGasolina",
                     )
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'ComposDeCombustibleNoFosilEnGasolina' solo pertenece a ClaveProducto 'PR07'")
             if not 1 <= nofossil_ingas_fuel <= 99:
                 self._min_max_value_error(
                     key="ComposDeCombustibleNoFosilEnGasolina", value=nofossil_ingas_fuel,
@@ -158,11 +164,13 @@ class ProductValidator:
 
         if diesel_nofossil_fuel := self.current_product.get("DieselConCombustibleNoFosil"):
             if product_key != "PR03":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'DieseConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR03'"
+                self._product_key_error(
+                    product_key=ProductEnum.PR03.value, subproduct_key="DieseConCombustibleNoFosil",
                     )
-            if diesel_nofossil_fuel not in ["Sí", "No"]:
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'DieseConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR03'")
+            if diesel_nofossil_fuel not in [SiNoEnum.SI.value, SiNoEnum.NO.value]:
                 self._value_error(
                     key="DieseConCombustibleNoFosil", value=diesel_nofossil_fuel,
                     )
@@ -191,11 +199,13 @@ class ProductValidator:
 
         if turbosine_nofossil_fuel := self.current_product.get("TurbosinaConCombustibleNoFosil"):
             if product_key != "PR11":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'TurbosinaConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR11'"
+                self._product_key_error(
+                    product_key=ProductEnum.PR11.value, subproduct_key="TurbosinaConCombustibleNoFosil",
                     )
-            if turbosine_nofossil_fuel not in ["Sí", "No"]:
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'TurbosinaConCombustibleNoFosil' solo pertenece a ClaveProducto 'PR11'")
+            if turbosine_nofossil_fuel not in [SiNoEnum.SI.value, SiNoEnum.NO.value]:
                 self._value_error(
                     key="TurbosinaConCombustibleNoFosil", value=turbosine_nofossil_fuel,
                     )
@@ -206,7 +216,7 @@ class ProductValidator:
     @exception_wrapper
     def _validate_combustible_nofosil_enturbosina(self) -> None:
         if turbosine_nofossil_fuel := self.current_product.get("TurbosinaConCombustibleNoFosil"):
-            if turbosine_nofossil_fuel == "Sí":
+            if turbosine_nofossil_fuel == SiNoEnum.SI.value:
                 nofossil_fuel_turobssine = self.current_product.get("ComposDeCombustibleNoFosilEnTurbosina")
                 if not 1 <= nofossil_fuel_turobssine <= 99:
                     self._min_max_value_error(
@@ -223,10 +233,12 @@ class ProductValidator:
 
         if propane_gaslp := self.current_product.get("ComposDePropanoEnGasLP"):
             if product_key != "PR12":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'ComposDePropanoEnGasLP' solo pertenece a ClaveProducto 'PR12'"
+                self._product_key_error(
+                    product_key=ProductEnum.PR12.value, subproduct_key="ComposDePropanoEnGasLP",
                     )
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'ComposDePropanoEnGasLP' solo pertenece a ClaveProducto 'PR12'")
             if not 0.01 <= propane_gaslp <= 99.99:
                 self._min_max_value_error(
                     key="ComposDePropanoEnGasLP", value=propane_gaslp, min_val=0.01, max_val=99.99,
@@ -241,10 +253,12 @@ class ProductValidator:
 
         if propane_gaslp := self.current_product.get("ComposDeButanoEnGasLP"):
             if product_key != "PR12":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'ComposDeButanoEnGasLP' solo pertenece a ClaveProducto 'PR12'"
+                self._product_key_error(
+                    product_key=ProductEnum.PR12.value, subproduct_key="ComposDeButanoEnGasLP",
                     )
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'ComposDeButanoEnGasLP' solo pertenece a ClaveProducto 'PR12'")
             if not 0.01 <= propane_gaslp <= 99.99:
                 self._min_max_value_error(
                     key="ComposDeButanoEnGasLP", value=propane_gaslp, min_val=0.01, max_val=99.99,
@@ -275,14 +289,16 @@ class ProductValidator:
 
         if sulfur_compos := self.current_product.get("ComposDeAzufreEnPetroleo"):
             if product_key != "PR08":
-                self.catch_error(
-                    err_type=ClaveProductoError,
-                    err_message="Error: 'ComposDeAzufreEnPetroleo' solo pertenece a ClaveProducto 'PR08'."
+                self._product_key_error(
+                    product_key=ProductEnum.PR08.value, subproduct_key="ComposDeAzufreEnPetroleo",
                     )
+                # self.catch_error(
+                #     err_type=ClaveProductoError,
+                #     err_message="Error: 'ComposDeAzufreEnPetroleo' solo pertenece a ClaveProducto 'PR08'.")
             if self.caracter not in petroleo_caracteres:
                 self.catch_error(
                     err_type=CaracterError,
-                    err_message=f"Error: 'ComposDeAzufreEnPetroleo' solo pertenece a los caracteres {petroleo_caracteres}"
+                    err_message=f"Error:ComposDeAzufreEnPetroleo solo pertenece a los caracteres {petroleo_caracteres}"
                     )
             if not 0.1 <= sulfur_compos <= 10:
                 self._min_max_value_error(
@@ -574,6 +590,41 @@ class ProductValidator:
             # "source": source,
             "source": f"Producto[{self.products.index(self.current_product)}].{source}"
             }
+
+    def _product_key_error(
+            self,
+            product_key: Union[ProductEnum, List[str], str],
+            subproduct_key: Union[str, List[str]],
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param product_key: ClaveProducto element.\n
+        :param subproduct_key: ClaveSubProducto element.\n
+        :param value: value that unmatch range.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ClaveProductoError,
+            err_message=f"Error: clave {subproduct_key} solo debe expresarse en ClaveProducto {product_key}.",
+            source=source
+        )
+
+    def _product_error(
+            self,
+            custom_message: str,
+            source: Optional[str] = None,
+        ) -> None:
+        """Store LongitudError in self.errors.\n
+        :param product_key: ClaveProducto element.\n
+        :param subproduct_key: ClaveSubProducto element.\n
+        :param value: value that unmatch range.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ProductoError,
+            err_message=custom_message,
+            source=source
+        )
 
     def _min_max_value_error(
             self,
