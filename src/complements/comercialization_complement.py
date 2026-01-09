@@ -288,10 +288,12 @@ class ComercializationComplement(ComplementBuilder):
 
             if pedimentos:
                 for pedimento in pedimentos:
-                    self.__validate_pedimentos(pedimento=pedimento)
+                    self.__validate_pedimentos(pedimento=pedimento,
+                                               pedi_parent=f"{fore_parent}.Pedimentos[{pedimentos.index(pedimento)}]"
+                                               )
 
     @exception_wrapper
-    def __validate_pedimentos(self, pedimento: dict) -> None:
+    def __validate_pedimentos(self, pedimento: dict, pedi_parent: str) -> None:
         """Validate Pedimentos objs.\n
         :return: None."""
         intern_extrac_point = pedimento.get("PuntoDeInternacionOExtraccion")
@@ -305,61 +307,72 @@ class ComercializationComplement(ComplementBuilder):
         measure_unit = documented_volume.get("UnidadDeMedida")
 
         if intern_extrac_point is None:
-            self._nonfound_key_error(key="PuntoDeInternacionOExtraccion")
+            self._nonfound_key_error(key="PuntoDeInternacionOExtraccion", source=f"{pedi_parent}")
         if origin_destiny_country is None:
-            self._nonfound_key_error(key="PaisOrigenODestino")
+            self._nonfound_key_error(key="PaisOrigenODestino", source=f"{pedi_parent}")
         if aduana_transp_med is None:
-            self._nonfound_key_error(key="MedioDeTransEntraOSaleAduana")
+            self._nonfound_key_error(key="MedioDeTransEntraOSaleAduana", source=f"{pedi_parent}")
         if aduanal_pedimento is None:
-            self._nonfound_key_error(key="PedimentoAduanal")
+            self._nonfound_key_error(key="PedimentoAduanal", source=f"{pedi_parent}")
         if incoterm is None:
-            self._nonfound_key_error(key="Incoterms")
+            self._nonfound_key_error(key="Incoterms", source=f"{pedi_parent}")
         if import_export_price is None:
             self._nonfound_key_error(key="PrecioDeImportacionOExportacion")
         if documented_volume is None:
-            self._nonfound_key_error(key="VolumenDocumentado")
+            self._nonfound_key_error(key="VolumenDocumentado", source=f"{pedi_parent}")
         if num_value is None:
-            self._nonfound_key_error(key="ValorNumerico")
+            self._nonfound_key_error(key="ValorNumerico", source=f"{pedi_parent}.VolumenDocumentado")
         if measure_unit is None:
-            self._nonfound_key_error(key="UnidadDeMedida")
+            self._nonfound_key_error(key="UnidadDeMedida", source=f"{pedi_parent}.VolumenDocumentado")
 
         if intern_extrac_point and not re.match(INTERN_SPOT_REGEX, intern_extrac_point):
             self._regex_error(
                 key="PuntoDeInternacionOExtraccion", value=intern_extrac_point, pattern=INTERN_SPOT_REGEX,
+                source=f"{pedi_parent}.PuntoDeInternacionOExtraccion"
             )
         if intern_extrac_point and not 2 <= len(intern_extrac_point) <= 3:
             self._min_max_value_error(
-                key="PuntoDeInternacion", value=intern_extrac_point, min_val=2, max_val=3,
+                key="PuntoDeInternacionOExtraccion", value=intern_extrac_point, min_val=2, max_val=3,
+                source=f"{pedi_parent}.PuntoDeInternacionOExtraccion"
             )
         if origin_destiny_country and origin_destiny_country not in CountryCode:
             self._value_error(
-                key="PaisOrigenODestino", value=origin_destiny_country
+                key="PaisOrigenODestino", value=origin_destiny_country,
+                source=f"{pedi_parent}.PaisOrigenODestino"
                 )
         if aduana_transp_med and aduana_transp_med not in [item.value for item in AduanaEntrance]:
             self._value_error(
-                key="MedioDeTransporteAduana", value=aduana_transp_med
+                key="MedioDeTransporteAduana", value=aduana_transp_med,
+                source=f"{pedi_parent}.MedioDeTransporteAduana"
                 )
         if aduanal_pedimento and not re.match(ADUANAL_PEDIMENTO, aduanal_pedimento):
+            print("entro aqui")
             self._regex_error(
                 key="PedimentoAduanal", value=aduanal_pedimento, pattern=ADUANAL_PEDIMENTO,
+                source=f"{pedi_parent}.PedimentoAduanal"
             )
         if aduanal_pedimento and len(aduanal_pedimento) != 21:
             self._longitud_error(
                 key="PedimentoAduanal", value=aduanal_pedimento, min_long=21, max_long=21,
+                source=f"{pedi_parent}.PedimentoAduanal"
             )
         if incoterm and incoterm not in IncotermCode.__members__:
             self._value_error(
-                key="Incoterms", value=incoterm
+                key="Incoterms", value=incoterm,
+                source=f"{pedi_parent}.Incoterms"
                 )
         if import_export_price and not 0 <= import_export_price <= 100000000000:
             self._min_max_value_error(
                 key="PrecioDeImportacion", value=import_export_price, min_val=0, max_val=100000000000,
+                source=f"{pedi_parent}.PrecioDeImportacion"
             )
         if num_value and not 0 <= num_value <= 100000000000:
             self._min_max_value_error(
                 key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
+                source=f"{pedi_parent}.VolumenDocumentado.ValorNumerico"
             )
         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
             self._regex_error(
                 key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
+                source=f"{pedi_parent}.VolumenDocumentado.UnidadDeMedida"
             )
