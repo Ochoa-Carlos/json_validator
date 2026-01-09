@@ -105,6 +105,8 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def __validate_transporte(self, transp: dict) -> None:
+        """Validate Transporte objs.\n
+        :return: None."""
         if transp is None:
             return
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=transp,
@@ -114,6 +116,7 @@ class ComercializationComplement(ComplementBuilder):
             self.catch_error(err_type=type_err, err_message=err_message)
             return
 
+        transp_parent = f"TerminalAlmYDist.Transporte"
         perm_transp = transp.get("PermisoTransporte")
         vehicle_key = transp.get("ClaveDeVehiculo")
         transp_fee = transp.get("TarifaDeTransporte")
@@ -122,39 +125,39 @@ class ComercializationComplement(ComplementBuilder):
         transp_volume_fee = transp.get("CargoVolumetricoTrans")
 
         if perm_transp is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PermisoTransporte' no encontrada."
-                )
+            self._nonfound_key_error(key="PermisoTransporte", source=transp_parent)
         if transp_fee is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TarifaDeTransporte' no encontrada."
-                )
+            self._nonfound_key_error(key="TarifaDeTransporte", source=transp_parent)
 
         if perm_transp and not re.match(TRANSPORT_PERM_REGEX, perm_transp):
             self._regex_error(
                 key="PermisoTransporte", value=perm_transp, pattern=TRANSPORT_PERM_REGEX,
+                source=f"{transp_parent}.PermisoTransporte"
             )
         if vehicle_key and 6 <= len(vehicle_key) <= 12:
             self._min_max_value_error(
                 key="ClaveDeVehiculo", value=vehicle_key, min_val=6, max_val=12,
+                source=f"{transp_parent}.ClaveDeVehiculo"
             )
         if transp_fee and not 0 <= transp_fee <= 1000000000000:
             self._min_max_value_error(
                 key="TarifaDeTransporte", value=transp_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.TarifaDeTransporte"
             )
         if transp_cap_fee and not 0 <= transp_cap_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorCapacidadTrans", value=transp_cap_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.CargoPorCapacidadTrans"
             )
         if transp_use_fee and not 0 <= transp_use_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorUsoTrans", value=transp_use_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.CargoPorUsoTrans"
             )
         if transp_volume_fee and not 0 <= transp_volume_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoVolumetricoTrans", value=transp_volume_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.CargoVolumetricoTrans"
             )
 
     @exception_wrapper
