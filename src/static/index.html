@@ -299,9 +299,9 @@
             }
 
             try {
-                const value = getValueFromPath(currentJSON, sourcePath);
+                const result = getValueFromPath(currentJSON, sourcePath);
 
-                if (value === undefined) {
+                if (result.value === undefined) {
                     console.warn('No se encontró el elemento en el path:', sourcePath);
                     showToast('No se pudo localizar el elemento', 'warning');
                     return;
@@ -311,8 +311,11 @@
                     return;
                 }
 
+                // console.log('Valor encontrado:', result.value);
+                // console.log('Bracket path:', result.bracketPath);
+
                 const jsonContent = document.getElementById('jsonContent');
-                const found = highlightValueInDOM(jsonContent, value, sourcePath);
+                const found = highlightValueInDOM(jsonContent, result.value, sourcePath, result.bracketPath);
 
                 if (found) {
                     showToast('Elemento localizado', 'success');
@@ -336,10 +339,22 @@
             });
 
             let current = obj;
+            let splittedPath = path.split('.');
+            let bracketPath = "";
+
+            for (let part = 0; part < splittedPath.length; part++) {
+                if (splittedPath[part].includes("[")) {
+                    let key = splittedPath[part].split("[")[0];
+                    let index = parseInt(splittedPath[part].split("[")[1].replace("]", ""));
+                    bracketPath += `["${key}"][${index}]`;
+                } else {
+                    bracketPath += `["${splittedPath[part]}"]`;
+                }
+            }
 
             for (const part of parts) {
                 if (current === null || current === undefined) {
-                    return undefined;
+                    return { value: undefined, bracketPath: bracketPath };
                 }
 
                 if (!isNaN(part) && Array.isArray(current)) {
@@ -349,40 +364,118 @@
                 }
             }
 
-            return current;
+            return { value: current, bracketPath: bracketPath };
         }
 
         /**
          * Resalta un valor específico en el DOM del JSON renderizado
          */
-        function highlightValueInDOM(container, targetValue, sourcePath) {
+        function highlightValueInDOM(container, targetValue, sourcePath, bracketPath) {
+            // Limpiar highlights previos
             const previousHighlights = container.querySelectorAll('.json-highlight');
-            previousHighlights.forEach(el => {
-                el.classList.remove('json-highlight');
-            });
+            previousHighlights.forEach(el => el.classList.remove('json-highlight'));
 
-            const keyName = sourcePath.split('.').pop().replace(/\[\d+\]/g, '');
-            const isObject = typeof targetValue === 'object' && targetValue !== null;
+            // console.log('Buscando con bracket path:', bracketPath);
+
             const allSpans = container.querySelectorAll('span');
-            let found = false;
+            const isObject = typeof targetValue === 'object' && targetValue !== null;
 
-            for (let i = 0; i < allSpans.length; i++) {
+            // Convertir el bracketPath a un patrón de búsqueda secuencial
+            // ["Producto"][0]["ReporteDeVolumenMensual"]["Recepciones"]...
+            const pathPattern = bracketPath.match(/\["([^"]+)"\]|\[(\d+)\]/g);
+
+            if (!pathPattern) {
+                console.warn('No se pudo parsear el bracket path');
+                return false;
+            }
+
+            console.log('Path pattern:', pathPattern);
+
+            let currentPatternIndex = 0;
+            let foundSpanIndex = -1;
+
+            for (let i = 0; i < allSpans.length && currentPatternIndex < pathPattern.length; i++) {
                 const span = allSpans[i];
                 const text = span.textContent.trim();
 
-                if (text === `"${keyName}":` || text === `"${keyName}"`) {
-                    if (isObject) {
-                        found = highlightObjectBlock(allSpans, i);
-                    } else {
-                        const valueStr = JSON.stringify(targetValue).replace(/^"|"$/g, '');
-                        found = highlightPrimitiveValue(allSpans, i, valueStr);
+                const currentPattern = pathPattern[currentPatternIndex];
+
+                // Extraer si es una key ["nombre"] o un índice [0]
+                const keyMatch = currentPattern.match(/\["([^"]+)"\]/);
+                const indexMatch = currentPattern.match(/\[(\d+)\]/);
+
+                if (keyMatch) {
+                    // Estamos buscando una clave
+                    const expectedKey = `"${keyMatch[1]}":`;
+
+                    if (text === expectedKey) {
+                        // console.log(`Encontrado "${keyMatch[1]}" en span ${i}`);
+                        currentPatternIndex++;
+
+                        // Si este es el último elemento del pattern, guardamos el índice
+                        if (currentPatternIndex === pathPattern.length) {
+                            foundSpanIndex = i;
+                            break;
+                        }
+                    }
+                } else if (indexMatch && currentPatternIndex > 0) {
+                    // El índice se maneja implícitamente al encontrar la key dentro del array correcto
+                    // Solo necesitamos saltar al elemento correcto
+                    const targetIndex = parseInt(indexMatch[1]);
+                    let arrayItemCount = 0;
+                    let braceDepth = 0;
+                    let foundArray = false;
+
+                    // Retroceder para encontrar el inicio del array
+                    for (let j = i - 1; j >= 0; j--) {
+                        const prevText = allSpans[j].textContent.trim();
+                        if (prevText === '[') {
+                            foundArray = true;
+                            // Ahora contar elementos hasta llegar al índice correcto
+                            braceDepth = 1;
+                            for (let k = j + 1; k < allSpans.length && arrayItemCount <= targetIndex; k++) {
+                                const itemText = allSpans[k].textContent.trim();
+
+                                if (itemText === '{' || itemText === '[') {
+                                    if (braceDepth === 1 && arrayItemCount === targetIndex) {
+                                        // Este es el elemento que buscamos
+                                        i = k - 1; // Ajustamos i para continuar desde aquí
+                                        currentPatternIndex++;
+                                        break;
+                                    }
+                                    braceDepth++;
+                                } else if (itemText === '}' || itemText === ']') {
+                                    braceDepth--;
+                                    if (braceDepth === 1) {
+                                        arrayItemCount++;
+                                    }
+                                    if (braceDepth === 0) break;
+                                }
+                            }
+                            break;
+                        }
                     }
 
-                    if (found) break;
+                    if (currentPatternIndex === pathPattern.length) {
+                        foundSpanIndex = i;
+                        break;
+                    }
                 }
             }
 
-            return found;
+            if (foundSpanIndex === -1) {
+                console.warn('No se encontró el elemento en el DOM');
+                return false;
+            }
+
+            // console.log('Elemento encontrado en span:', foundSpanIndex);
+
+            if (isObject) {
+                return highlightObjectBlock(allSpans, foundSpanIndex);
+            } else {
+                const valueStr = JSON.stringify(targetValue).replace(/^"|"$/g, '');
+                return highlightPrimitiveValue(allSpans, foundSpanIndex, valueStr);
+            }
         }
 
         function highlightObjectBlock(allSpans, startIndex) {
