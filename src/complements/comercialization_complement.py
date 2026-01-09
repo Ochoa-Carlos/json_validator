@@ -159,6 +159,8 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def _validate_nacional(self):
+        """Validate Nacional objs list.\n
+        :return: None."""
         if (national := self.current_complement.get("Nacional")) is None:
             return
 
@@ -170,28 +172,28 @@ class ComercializationComplement(ComplementBuilder):
                 self.catch_error(err_type=type_err, err_message=err_message)
                 return
 
+            national_parent = f"Nacional[{national.index(national_item)}]"
             custom_client_rfc = national_item.get("RfcClienteOProveedor")
             custom_client_name = national_item.get("NombreClienteOProveedor")
             custom_client_permission = national_item.get("PermisoClienteOProveedor")
             cfdis = national_item.get("CFDIs")
 
             if custom_client_rfc is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'RfcClienteOProveedor' no encontrada."
-                    )
+                self._nonfound_key_error(key="RfcClienteOProveedor", source=national_parent)
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
                 self._regex_error(
                     key="RfcClienteOProveedor", value=custom_client_rfc, pattern=RFC_REGEX,
+                    source=f"{national_parent}.RfcClienteOProveedor"
                 )
             if custom_client_name and not 10 <= len(custom_client_name) <= 150:
                 self._longitud_error(
                     key="NombreClienteOProveedor", value=custom_client_name, min_long=10, max_long=150,
+                    source=f"{national_parent}.NombreClienteOProveedor"
                 )
             if custom_client_permission and not re.match(PERMISSION_PROOVE_CLIENT_REGEX, custom_client_permission):
                 self._regex_error(
                     key="PermisoClienteOProveedor", value=custom_client_permission,
-                    pattern=PERMISSION_PROOVE_CLIENT_REGEX,
+                    pattern=PERMISSION_PROOVE_CLIENT_REGEX, source=f"{national_parent}.PermisoClienteOProveedor"
                 )
 
             if cfdis:
