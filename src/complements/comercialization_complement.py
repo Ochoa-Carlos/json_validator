@@ -82,53 +82,31 @@ class ComercializationComplement(ComplementBuilder):
             self._longitud_error(
                 key="TerminalAlmYDist", value=alm_dist_terminal, min_long=5, max_long=250,
             )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message=f"Error: clave 'TerminalAlmYDist'
-            # con valor {alm_dist_terminal} no tiene la longitud min 5 o max 250.")
         if alm_dist_alm and not re.match(PERMISSION_ALM_DIST_REGEX, alm_dist_alm):
             self._regex_error(
                 key="PermisoAlmYDist", value=alm_dist_alm, pattern=PERMISSION_ALM_DIST_REGEX,
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PermisoAlmYDist'
-            # con valor {alm_dist_alm} no cumple con el patrón {PERMISSION_ALM_DIST_REGEX}")
         if alm_fee and not 0 <= alm_fee <= 1000000000000:
             self._min_max_value_error(
                 key="TarifaDeAlmacenamiento", value=alm_fee, min_val=0, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'TarifaDeAlmacenamiento'
-            # con valor {alm_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if alm_cap_fee and not 0 <= alm_cap_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorCapacidadAlmac", value=alm_cap_fee, min_val=0, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoPorCapacidadAlmac'
-            # con valor {alm_cap_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if alm_use_fee and not 0 <= alm_use_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorUsoAlamc", value=alm_use_fee, min_val=0, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoPorUsoAlamc'
-            # con valor {alm_use_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if volume_alm_fee and not 0 <= volume_alm_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoVolumetricoAlmac", value=volume_alm_fee, min_val=0, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoVolumetricoAlmac'
-            # con valor {volume_alm_fee} no se encuentra en el rango min 0 o max 1000000000000.")
 
     @exception_wrapper
     def __validate_transporte(self, transp: dict) -> None:
+        """Validate Transporte objs.\n
+        :return: None."""
         if transp is None:
             return
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=transp,
@@ -138,6 +116,7 @@ class ComercializationComplement(ComplementBuilder):
             self.catch_error(err_type=type_err, err_message=err_message)
             return
 
+        transp_parent = "TerminalAlmYDist.Transporte"
         perm_transp = transp.get("PermisoTransporte")
         vehicle_key = transp.get("ClaveDeVehiculo")
         transp_fee = transp.get("TarifaDeTransporte")
@@ -146,67 +125,45 @@ class ComercializationComplement(ComplementBuilder):
         transp_volume_fee = transp.get("CargoVolumetricoTrans")
 
         if perm_transp is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PermisoTransporte' no encontrada."
-                )
+            self._nonfound_key_error(key="PermisoTransporte", source=transp_parent)
         if transp_fee is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TarifaDeTransporte' no encontrada."
-                )
+            self._nonfound_key_error(key="TarifaDeTransporte", source=transp_parent)
 
         if perm_transp and not re.match(TRANSPORT_PERM_REGEX, perm_transp):
             self._regex_error(
                 key="PermisoTransporte", value=perm_transp, pattern=TRANSPORT_PERM_REGEX,
+                source=f"{transp_parent}.PermisoTransporte"
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PermisoTransporte'
-            # con valor {perm_transp} no cumple con el patrón {TRANSPORT_PERM_REGEX}")
         if vehicle_key and 6 <= len(vehicle_key) <= 12:
             self._min_max_value_error(
                 key="ClaveDeVehiculo", value=vehicle_key, min_val=6, max_val=12,
+                source=f"{transp_parent}.ClaveDeVehiculo"
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'ClaveDeVehiculo'
-            # con valor {vehicle_key} no se encuentra en el rango min 6 o max 12.")
         if transp_fee and not 0 <= transp_fee <= 1000000000000:
             self._min_max_value_error(
                 key="TarifaDeTransporte", value=transp_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.TarifaDeTransporte"
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'TarifaDeTransporte'
-            # con valor {transp_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if transp_cap_fee and not 0 <= transp_cap_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorCapacidadTrans", value=transp_cap_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.CargoPorCapacidadTrans"
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoPorCapacidadTrans'
-            # con valor {transp_cap_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if transp_use_fee and not 0 <= transp_use_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorUsoTrans", value=transp_use_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.CargoPorUsoTrans"
             )
-            # self.catch_error(
-                # err_type=ValorMinMaxError,
-                # err_message=f"Error: clave 'CargoPorUsoTrans'
-            # con valor {transp_use_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if transp_volume_fee and not 0 <= transp_volume_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoVolumetricoTrans", value=transp_volume_fee, min_val=0, max_val=1000000000000,
+                source=f"{transp_parent}.CargoVolumetricoTrans"
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoVolumetricoTrans'
-            # con valor {transp_volume_fee} no se encuentra en el rango min 0 o max 1000000000000.")
 
     @exception_wrapper
     def _validate_nacional(self):
+        """Validate Nacional objs list.\n
+        :return: None."""
         if (national := self.current_complement.get("Nacional")) is None:
             return
 
@@ -218,48 +175,38 @@ class ComercializationComplement(ComplementBuilder):
                 self.catch_error(err_type=type_err, err_message=err_message)
                 return
 
+            national_parent = f"Nacional[{national.index(national_item)}]"
             custom_client_rfc = national_item.get("RfcClienteOProveedor")
             custom_client_name = national_item.get("NombreClienteOProveedor")
             custom_client_permission = national_item.get("PermisoClienteOProveedor")
             cfdis = national_item.get("CFDIs")
 
             if custom_client_rfc is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'RfcClienteOProveedor' no encontrada."
-                    )
+                self._nonfound_key_error(key="RfcClienteOProveedor", source=national_parent)
             if custom_client_rfc and not re.match(RFC_REGEX, custom_client_rfc):
                 self._regex_error(
                     key="RfcClienteOProveedor", value=custom_client_rfc, pattern=RFC_REGEX,
+                    source=f"{national_parent}.RfcClienteOProveedor"
                 )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'RfcClienteOProveedor'
-                # con valor {custom_client_rfc} no cumple con el patron {RFC_REGEX}")
             if custom_client_name and not 10 <= len(custom_client_name) <= 150:
                 self._longitud_error(
                     key="NombreClienteOProveedor", value=custom_client_name, min_long=10, max_long=150,
+                    source=f"{national_parent}.NombreClienteOProveedor"
                 )
-                # self.catch_error(
-                #     err_type=LongitudError,
-                #     err_message=f"Error: clave 'NombreClienteOProveedor'
-                # con valor '{custom_client_name}' no se encuentra en el rango min 10 o max 300.")
             if custom_client_permission and not re.match(PERMISSION_PROOVE_CLIENT_REGEX, custom_client_permission):
                 self._regex_error(
                     key="PermisoClienteOProveedor", value=custom_client_permission,
-                    pattern=PERMISSION_PROOVE_CLIENT_REGEX,
+                    pattern=PERMISSION_PROOVE_CLIENT_REGEX, source=f"{national_parent}.PermisoClienteOProveedor"
                 )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'PermisoClienteOProveedor'
-                # con valor {custom_client_permission} no cumple con el patron {PERMISSION_PROOVE_CLIENT_REGEX}")
 
             if cfdis:
                 for cfdi in cfdis:
-                    self.__validate_cfdi(cfdi=cfdi)
+                    self.__validate_cfdi(cfdi=cfdi, cfdi_parent=f"{national_parent}.CFDIs[{cfdis.index(cfdi)}]")
 
     @exception_wrapper
-    def __validate_cfdi(self, cfdi):
+    def __validate_cfdi(self, cfdi, cfdi_parent: str):
+        """Validate Cfdis objs list.\n
+        :return: None."""
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=cfdi,
                                                                     dict_type=com_comp_cfdis):
             type_err = err.get("type_err")
@@ -276,71 +223,40 @@ class ComercializationComplement(ComplementBuilder):
         measure_unit = documented_volum.get("UnidadDeMedida")
 
         if cfdi_val is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Cfdi' no se encuentra."
-                )
+            self._nonfound_key_error(key="Cfdi", source=cfdi_parent)
         if cfdi_type not in [cfdi.value for cfdi in CfdiType]:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message=f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válido."
-                )
+            self._value_error(key="TipoCfdi", value=cfdi_type, source=f"{cfdi_parent}.TipoCfdi")
         if consid_purch_sale_price is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PrecioVentaOCompraContrap' no se encuentra."
-                )
+            self._nonfound_key_error(key="PrecioVentaOCompraContrap", source=cfdi_parent)
         if documented_volum is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'VolumenDocumentado' no se encuentra."
-                )
+            self._nonfound_key_error(key="VolumenDocumentado", source=cfdi_parent)
         if transaction_date is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'FechaYHoraTransaccion' no se encuentra."
-                )
+            self._nonfound_key_error(key="FechaYHoraTransaccion", source=cfdi_parent)
         if num_value is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'."
-                )
+            self._nonfound_key_error(key="ValorNumerico", source=cfdi_parent)
         if measure_unit is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
-                )
+            self._nonfound_key_error(key="UnidadDeMedida", source=cfdi_parent)
+
         if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
             self._regex_error(
                 key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
+                source=f"{cfdi_parent}.Cfdi"
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el patron {CFDI_REGEX}")
         if consid_purch_sale_price and not 0 <= consid_purch_sale_price <= 1000000000000:
             self._min_max_value_error(
                 key="PrecioVentaOCompraOContrap", value=consid_purch_sale_price, min_val=0, max_val=1000000000000,
+                source=f"{cfdi_parent}.PrecioVentaOCompraOContrap"
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'PrecioVentaOCompraOContrap'
-            # con valor '{consid_purch_sale_price}' no tiene el valor min 0 o max 1000000000000.")
         if transaction_date and not re.match(UTC_FORMAT_REGEX, transaction_date):
             self._regex_error(
                 key="FechaYHoraTransaccion", value=transaction_date, pattern=UTC_FORMAT_REGEX,
+                source=f"{cfdi_parent}.FechaYHoraTransaccion"
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'FechaYHoraTransaccion'
-            # con valor {transaction_date} no cumple con el patron {UTC_FORMAT_REGEX}")
         if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
             self._regex_error(
                 key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
+                source=f"{cfdi_parent}.VolumenDocumentado.UnidadDeMedida"
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'UnidadDeMedida'
-            # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
 
     @exception_wrapper
     def _validate_extranjero(self):
