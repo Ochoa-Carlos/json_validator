@@ -42,6 +42,8 @@ class MonthlyVolumeReportValidator:
 
     @exception_wrapper
     def _validate_control_existencias(self) -> None:
+        """Validate ControlExistencias object.\n
+        :return: None."""
         if not (inv_control := self.monthly_report.get("ControlDeExistencias")):
             return
 
@@ -54,9 +56,11 @@ class MonthlyVolumeReportValidator:
         month_measure_date = inv_control.get("FechaYHoraEstaMedicionMes")
 
         if month_volume is None:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'VolumenExistenciasMes' no fue encontrada.")
+            self._nonfound_key_error(key="VolumenExistenciasMes")
+            # self.catch_error(err_type=ClaveError, err_message="Error: 'VolumenExistenciasMes' no fue encontrada.")
         if month_measure_date is None:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
+            self._nonfound_key_error(key="FechaYHoraEstaMedicionMes")
+            # self.catch_error(err_type=ClaveError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
         if month_volume and not -100000000000.0 <= month_volume <= 100000000000.0:
             self._min_max_value_error(
                 key="VolumenExistenciasMes", value=month_volume, min_val=-100000000000.0, max_val=100000000000.0,
@@ -74,8 +78,11 @@ class MonthlyVolumeReportValidator:
 
     @exception_wrapper
     def _validate_recepciones(self) -> None:
+        """Validate Recepciones object.\n
+        :return: None."""
         if (receptions := self.monthly_report.get("Recepciones")) is None:
-            self.catch_error(err_type=RecepcionesError, err_message="Error: 'Recepciones' no fue declarada.")
+            self._nonfound_key_error(key="Recepciones")
+            # self.catch_error(err_type=RecepcionesError, err_message="Error: 'Recepciones' no fue declarada.")
             # raise RecepcionesError("Error: 'Recepciones' no fue declarada.")
 
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=receptions, dict_type=recepctions_dict):
@@ -83,6 +90,7 @@ class MonthlyVolumeReportValidator:
             err_message = err.get("err_message")
             self.catch_error(err_type=type_err, err_message=err_message)
 
+        recep_parent = "Recepciones"
         total_receptions_month = receptions.get("TotalRecepcionesMes")
         amount_volume_reception_month = receptions.get("SumaVolumenRecepcionMes")
         month_documents = receptions.get("TotalDocumentosMes")
@@ -91,35 +99,33 @@ class MonthlyVolumeReportValidator:
         complement = receptions.get("Complemento")
 
         if total_receptions_month is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'TotalRecepcionesMes' no fue declarada."
-                )
+            self._nonfound_key_error(key="TotalRecepcionesMes", source=recep_parent)
+            # self.catch_error(err_type=RecepcionesError,err_message="Error: 'TotalRecepcionesMes' no fue declarada.")
         if amount_volume_reception_month is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'SumaVolumenRecepcionMes' no fue declarada."
-                )
+            self._nonfound_key_error(key="SumaVolumenRecepcionMes", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: 'SumaVolumenRecepcionMes' no fue declarada.")
         if month_documents is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'TotalDocumentosMes' no fue declarada."
-                )
+            self._nonfound_key_error(key="TotalDocumentosMes", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: 'TotalDocumentosMes' no fue declarada.")
         if amount_receptions_month is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'ImporteTotalRecepcionesMensual' no fue declarada."
-                )
+            self._nonfound_key_error(key="ImporteTotalRecepcionesMensual", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: 'ImporteTotalRecepcionesMensual' no fue declarada.")
         if complement is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'."
-                )
+            self._nonfound_key_error(key="Complemento", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'.")
 
         if total_receptions_month and not 0 <= total_receptions_month <= 100000000:
             self._min_max_value_error(
                 key="TotalRecepcionesMes", value=total_receptions_month, min_val=0, max_val=100000000,
-                source="Recepciones.TotalRecepcionesMes"
+                source=f"{recep_parent}.TotalRecepcionesMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -132,7 +138,7 @@ class MonthlyVolumeReportValidator:
         if month_documents and month_documents > 1000000:
             self._min_max_value_error(
                 key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=1000000,
-                source="Recepciones.TotalDocumentosMes"
+                source=f"{recep_parent}.TotalDocumentosMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -140,7 +146,7 @@ class MonthlyVolumeReportValidator:
         if amount_receptions_month and not 0 <= amount_receptions_month <= 100000000000.0:
             self._min_max_value_error(
                 key="ImporteTotalRecepcionesMensual", value=amount_receptions_month, min_val=0, max_val=100000000000.0,
-                source="Recepciones.ImporteTotalRecepcionesMensual"
+                source=f"{recep_parent}.ImporteTotalRecepcionesMensual"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -148,26 +154,28 @@ class MonthlyVolumeReportValidator:
 
     # @exception_wrapper
     def __validate_recepciones_complemento(self) -> None:
+        """Validate Recepciones Complemento list object.\n
+        :return: None."""
         receives = self.monthly_report.get("Recepciones")
         if (complement := receives.get("Complemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Complemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="Complemento")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'Complemento' no fue expresada.")
             return
 
         if not complement:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Complemento' vacía."
-                )
+            self._value_error(key="Complemento", value=complement)
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'Complemento' vacía.")
             return
 
         if (comp_type := complement[0].get("TipoComplemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TipoComplemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="TipoComplemento")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'TipoComplemento' no fue expresada.")
             return
 
         if self._check_complement(complement_type=comp_type):
@@ -187,10 +195,13 @@ class MonthlyVolumeReportValidator:
 
     @exception_wrapper
     def _validate_entregas(self) -> None:
+        """Validate Entregas object.\n
+        :return: None."""
         if (deliveries := self.monthly_report.get("Entregas")) is None:
             self.catch_error(err_type=EntregasError, err_message="Error: 'Entregas' no fue declarada")
             # raise EntregasError("Error: 'Entregas' no fue declarada")
 
+        deliv_parent = "Entregas"
         total_deliveries_month = deliveries.get("TotalEntregasMes")
         amount_volume_deliveries_month = deliveries.get("SumaVolumenEntregadoMes")
         month_documents = deliveries.get("TotalDocumentosMes")
@@ -202,23 +213,28 @@ class MonthlyVolumeReportValidator:
             err_message = err.get("err_message")
             self.catch_error(err_type=type_err, err_message=err_message)
         if total_deliveries_month is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'TotalEntregasMes' no fue declarada.")
+            self._nonfound_key_error(key="TotalEntregasMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'TotalEntregasMes' no fue declarada.")
         if amount_volume_deliveries_month is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'SumaVolumenEntregadoMes' no fue declarada.")
+            self._nonfound_key_error(key="SumaVolumenEntregadoMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'SumaVolumenEntregadoMes' no fue declarada.")
         if month_documents is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'TotalDocumentosMes' no fue declarada.")
+            self._nonfound_key_error(key="TotalDocumentosMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'TotalDocumentosMes' no fue declarada.")
         if amount_deliveries_month is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'ImporteTotalEntregasMes' no fue declarada.")
+            self._nonfound_key_error(key="ImporteTotalEntregasMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'ImporteTotalEntregasMes' no fue declarada.")
         if complement is None:
             self.catch_error(
                 err_type=EntregasError,
-                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Entregas'."
+                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Entregas'.",
+                source=deliv_parent
                 )
 
         if total_deliveries_month and not 0 <= total_deliveries_month <= 10000000:
             self._min_max_value_error(
                 key="TotalEntregasMes", value=total_deliveries_month, min_val=0, max_val=10000000,
-                source="Entregas.TotalEntregasMes"
+                source=f"{deliv_parent}.TotalEntregasMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -232,7 +248,7 @@ class MonthlyVolumeReportValidator:
         if month_documents and not 0 <= month_documents <= 100000000:
             self._min_max_value_error(
                 key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=100000000,
-                source="Entregas.TotalDocumentosMes"
+                source=f"{deliv_parent}.TotalDocumentosMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -243,7 +259,7 @@ class MonthlyVolumeReportValidator:
             self._min_max_value_error(
                 key="ImporteTotalEntregasMes", value=round(amount_deliveries_month, 3),
                 min_val=0, max_val=100000000000.0,
-                source="Entregas.ImporteTotalEntregasMes"
+                source=f"{deliv_parent}.ImporteTotalEntregasMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -252,13 +268,16 @@ class MonthlyVolumeReportValidator:
 
     # @exception_wrapper
     def __validate_entregas_complemento(self) -> None:
+        """Validate Entregas Complemento list object.\n
+        :return: None."""
         deliveries = self.monthly_report.get("Entregas")
+        deliv_parent = "Entregas"
 
         if (complement := deliveries.get("Complemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Complemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="Complemento", source=f"{deliv_parent}")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'Complemento' no fue expresada.")
             return
 
         if not complement:
@@ -269,10 +288,10 @@ class MonthlyVolumeReportValidator:
             return
 
         if (comp_type := complement[0].get("TipoComplemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TipoComplemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="TipoComplemento", source=f"{deliv_parent}.Complemento")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'TipoComplemento' no fue expresada.")
             return
 
         if self._check_complement(complement_type=comp_type):
@@ -283,7 +302,7 @@ class MonthlyVolumeReportValidator:
                 comp_errors = complement_obj.get_error_list()
                 for comp_err in comp_errors:
                     if source := comp_err.get("source"):
-                        comp_err["source"] = f"Entregas.{source}"
+                        comp_err["source"] = f"{deliv_parent}.{source}"
 
                 self._report_errors.extend(comp_errors)
                 # self._report_errors.extend(complement_obj.get_error_list())
@@ -307,6 +326,21 @@ class MonthlyVolumeReportValidator:
             "error": err_message,
             "source": source,
             }
+
+    def _nonfound_key_error(
+            self,
+            key: str,
+            source: Optional[str] = None,
+        ) -> None:
+        """Store ClaveError in self.errors.\n
+        :param key: Dict key element.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ClaveError,
+            err_message=f"Error: Elemento '{key}' no declarado.",
+            source=source
+        )
 
     def _min_max_value_error(
             self,
