@@ -195,10 +195,13 @@ class MonthlyVolumeReportValidator:
 
     @exception_wrapper
     def _validate_entregas(self) -> None:
+        """Validate Entregas object.\n
+        :return: None."""
         if (deliveries := self.monthly_report.get("Entregas")) is None:
             self.catch_error(err_type=EntregasError, err_message="Error: 'Entregas' no fue declarada")
             # raise EntregasError("Error: 'Entregas' no fue declarada")
 
+        deliv_parent = "Entregas"
         total_deliveries_month = deliveries.get("TotalEntregasMes")
         amount_volume_deliveries_month = deliveries.get("SumaVolumenEntregadoMes")
         month_documents = deliveries.get("TotalDocumentosMes")
@@ -210,23 +213,28 @@ class MonthlyVolumeReportValidator:
             err_message = err.get("err_message")
             self.catch_error(err_type=type_err, err_message=err_message)
         if total_deliveries_month is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'TotalEntregasMes' no fue declarada.")
+            self._nonfound_key_error(key="TotalEntregasMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'TotalEntregasMes' no fue declarada.")
         if amount_volume_deliveries_month is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'SumaVolumenEntregadoMes' no fue declarada.")
+            self._nonfound_key_error(key="SumaVolumenEntregadoMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'SumaVolumenEntregadoMes' no fue declarada.")
         if month_documents is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'TotalDocumentosMes' no fue declarada.")
+            self._nonfound_key_error(key="TotalDocumentosMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'TotalDocumentosMes' no fue declarada.")
         if amount_deliveries_month is None:
-            self.catch_error(err_type=EntregasError, err_message="Error: 'ImporteTotalEntregasMes' no fue declarada.")
+            self._nonfound_key_error(key="ImporteTotalEntregasMes")
+            # self.catch_error(err_type=EntregasError, err_message="Error: 'ImporteTotalEntregasMes' no fue declarada.")
         if complement is None:
             self.catch_error(
                 err_type=EntregasError,
-                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Entregas'."
+                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Entregas'.",
+                source=deliv_parent
                 )
 
         if total_deliveries_month and not 0 <= total_deliveries_month <= 10000000:
             self._min_max_value_error(
                 key="TotalEntregasMes", value=total_deliveries_month, min_val=0, max_val=10000000,
-                source="Entregas.TotalEntregasMes"
+                source=f"{deliv_parent}.TotalEntregasMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -240,7 +248,7 @@ class MonthlyVolumeReportValidator:
         if month_documents and not 0 <= month_documents <= 100000000:
             self._min_max_value_error(
                 key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=100000000,
-                source="Entregas.TotalDocumentosMes"
+                source=f"{deliv_parent}.TotalDocumentosMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -251,7 +259,7 @@ class MonthlyVolumeReportValidator:
             self._min_max_value_error(
                 key="ImporteTotalEntregasMes", value=round(amount_deliveries_month, 3),
                 min_val=0, max_val=100000000000.0,
-                source="Entregas.ImporteTotalEntregasMes"
+                source=f"{deliv_parent}.ImporteTotalEntregasMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
