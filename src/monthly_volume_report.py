@@ -78,8 +78,11 @@ class MonthlyVolumeReportValidator:
 
     @exception_wrapper
     def _validate_recepciones(self) -> None:
+        """Validate Recepciones object.\n
+        :return: None."""
         if (receptions := self.monthly_report.get("Recepciones")) is None:
-            self.catch_error(err_type=RecepcionesError, err_message="Error: 'Recepciones' no fue declarada.")
+            self._nonfound_key_error(key="Recepciones")
+            # self.catch_error(err_type=RecepcionesError, err_message="Error: 'Recepciones' no fue declarada.")
             # raise RecepcionesError("Error: 'Recepciones' no fue declarada.")
 
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=receptions, dict_type=recepctions_dict):
@@ -87,6 +90,7 @@ class MonthlyVolumeReportValidator:
             err_message = err.get("err_message")
             self.catch_error(err_type=type_err, err_message=err_message)
 
+        recep_parent = "Recepciones"
         total_receptions_month = receptions.get("TotalRecepcionesMes")
         amount_volume_reception_month = receptions.get("SumaVolumenRecepcionMes")
         month_documents = receptions.get("TotalDocumentosMes")
@@ -95,35 +99,33 @@ class MonthlyVolumeReportValidator:
         complement = receptions.get("Complemento")
 
         if total_receptions_month is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'TotalRecepcionesMes' no fue declarada."
-                )
+            self._nonfound_key_error(key="TotalRecepcionesMes", source=recep_parent)
+            # self.catch_error(err_type=RecepcionesError,err_message="Error: 'TotalRecepcionesMes' no fue declarada.")
         if amount_volume_reception_month is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'SumaVolumenRecepcionMes' no fue declarada."
-                )
+            self._nonfound_key_error(key="SumaVolumenRecepcionMes", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: 'SumaVolumenRecepcionMes' no fue declarada.")
         if month_documents is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'TotalDocumentosMes' no fue declarada."
-                )
+            self._nonfound_key_error(key="TotalDocumentosMes", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: 'TotalDocumentosMes' no fue declarada.")
         if amount_receptions_month is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: 'ImporteTotalRecepcionesMensual' no fue declarada."
-                )
+            self._nonfound_key_error(key="ImporteTotalRecepcionesMensual", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: 'ImporteTotalRecepcionesMensual' no fue declarada.")
         if complement is None:
-            self.catch_error(
-                err_type=RecepcionesError,
-                err_message="Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'."
-                )
+            self._nonfound_key_error(key="Complemento", source=recep_parent)
+            # self.catch_error(
+            #     err_type=RecepcionesError,
+            #     err_message="Error: Valor 'Complemento' no fue declarada en clave 'Recepciones'.")
 
         if total_receptions_month and not 0 <= total_receptions_month <= 100000000:
             self._min_max_value_error(
                 key="TotalRecepcionesMes", value=total_receptions_month, min_val=0, max_val=100000000,
-                source="Recepciones.TotalRecepcionesMes"
+                source=f"{recep_parent}.TotalRecepcionesMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -136,7 +138,7 @@ class MonthlyVolumeReportValidator:
         if month_documents and month_documents > 1000000:
             self._min_max_value_error(
                 key="TotalDocumentosMes", value=month_documents, min_val=0, max_val=1000000,
-                source="Recepciones.TotalDocumentosMes"
+                source=f"{recep_parent}.TotalDocumentosMes"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
@@ -144,7 +146,7 @@ class MonthlyVolumeReportValidator:
         if amount_receptions_month and not 0 <= amount_receptions_month <= 100000000000.0:
             self._min_max_value_error(
                 key="ImporteTotalRecepcionesMensual", value=amount_receptions_month, min_val=0, max_val=100000000000.0,
-                source="Recepciones.ImporteTotalRecepcionesMensual"
+                source=f"{recep_parent}.ImporteTotalRecepcionesMensual"
                 )
             # self.catch_error(
             #     err_type=ValorMinMaxError,
