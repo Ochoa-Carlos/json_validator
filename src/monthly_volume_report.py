@@ -154,26 +154,28 @@ class MonthlyVolumeReportValidator:
 
     # @exception_wrapper
     def __validate_recepciones_complemento(self) -> None:
+        """Validate Recepciones Complemento list object.\n
+        :return: None."""
         receives = self.monthly_report.get("Recepciones")
         if (complement := receives.get("Complemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Complemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="Complemento")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'Complemento' no fue expresada.")
             return
 
         if not complement:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Complemento' vacía."
-                )
+            self._value_error(key="Complemento", value=complement)
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'Complemento' vacía.")
             return
 
         if (comp_type := complement[0].get("TipoComplemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TipoComplemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="TipoComplemento")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'TipoComplemento' no fue expresada.")
             return
 
         if self._check_complement(complement_type=comp_type):
