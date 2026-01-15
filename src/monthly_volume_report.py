@@ -42,6 +42,8 @@ class MonthlyVolumeReportValidator:
 
     @exception_wrapper
     def _validate_control_existencias(self) -> None:
+        """Validate ControlExistencias object.\n
+        :return: None."""
         if not (inv_control := self.monthly_report.get("ControlDeExistencias")):
             return
 
@@ -54,9 +56,11 @@ class MonthlyVolumeReportValidator:
         month_measure_date = inv_control.get("FechaYHoraEstaMedicionMes")
 
         if month_volume is None:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'VolumenExistenciasMes' no fue encontrada.")
+            self._nonfound_key_error(key="VolumenExistenciasMes")
+            # self.catch_error(err_type=ClaveError, err_message="Error: 'VolumenExistenciasMes' no fue encontrada.")
         if month_measure_date is None:
-            self.catch_error(err_type=ClaveError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
+            self._nonfound_key_error(key="FechaYHoraEstaMedicionMes")
+            # self.catch_error(err_type=ClaveError, err_message="Error: 'FechaYHoraEstaMedicionMes' no fue encontrada.")
         if month_volume and not -100000000000.0 <= month_volume <= 100000000000.0:
             self._min_max_value_error(
                 key="VolumenExistenciasMes", value=month_volume, min_val=-100000000000.0, max_val=100000000000.0,
@@ -307,6 +311,21 @@ class MonthlyVolumeReportValidator:
             "error": err_message,
             "source": source,
             }
+
+    def _nonfound_key_error(
+            self,
+            key: str,
+            source: Optional[str] = None,
+        ) -> None:
+        """Store ClaveError in self.errors.\n
+        :param key: Dict key element.\n
+        :param source: Object reference where key and value are palced.\n
+        :return: None."""
+        self.catch_error(
+            err_type=ClaveError,
+            err_message=f"Error: Elemento '{key}' no declarado.",
+            source=source
+        )
 
     def _min_max_value_error(
             self,
