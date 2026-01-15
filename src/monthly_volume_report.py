@@ -268,13 +268,16 @@ class MonthlyVolumeReportValidator:
 
     # @exception_wrapper
     def __validate_entregas_complemento(self) -> None:
+        """Validate Entregas Complemento list object.\n
+        :return: None."""
         deliveries = self.monthly_report.get("Entregas")
+        deliv_parent = "Entregas"
 
         if (complement := deliveries.get("Complemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Complemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="Complemento", source=f"{deliv_parent}")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'Complemento' no fue expresada.")
             return
 
         if not complement:
@@ -285,10 +288,10 @@ class MonthlyVolumeReportValidator:
             return
 
         if (comp_type := complement[0].get("TipoComplemento")) is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TipoComplemento' no fue expresada."
-                )
+            self._nonfound_key_error(key="TipoComplemento", source=f"{deliv_parent}.Complemento")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'TipoComplemento' no fue expresada.")
             return
 
         if self._check_complement(complement_type=comp_type):
@@ -299,7 +302,7 @@ class MonthlyVolumeReportValidator:
                 comp_errors = complement_obj.get_error_list()
                 for comp_err in comp_errors:
                     if source := comp_err.get("source"):
-                        comp_err["source"] = f"Entregas.{source}"
+                        comp_err["source"] = f"{deliv_parent}.{source}"
 
                 self._report_errors.extend(comp_errors)
                 # self._report_errors.extend(complement_obj.get_error_list())
