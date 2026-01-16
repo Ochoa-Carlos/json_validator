@@ -51,6 +51,8 @@ class ComercializationComplement(ComplementBuilder):
 
     @exception_wrapper
     def __validate_almacenamiento(self, alm: dict) -> None:
+        """Validate Almacenamiento objs.\n
+        :return: None."""
         if alm is None:
             return
         if err := DictionaryTypeValidator().validate_dict_type(dict_to_validate=alm,
@@ -68,15 +70,15 @@ class ComercializationComplement(ComplementBuilder):
         volume_alm_fee = alm.get("CargoVolumetricoAlmac")
 
         if alm_dist_terminal is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TerminalAlmYDist' no encontrada"
-                )
+            self._nonfound_key_error(key="TerminalAlmYDist")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'TerminalAlmYDist' no encontrada")
         if alm_dist_alm is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PermisoAlmYDist' no encontrada"
-                )
+            self._nonfound_key_error(key="PermisoAlmYDist")
+            # self.catch_error(
+            #     err_type=ClaveError,
+            #     err_message="Error: clave 'PermisoAlmYDist' no encontrada")
 
         if alm_dist_terminal and not 5 <= len(alm_dist_terminal) <= 250:
             self._longitud_error(
