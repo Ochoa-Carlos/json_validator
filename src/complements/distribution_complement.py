@@ -14,7 +14,7 @@ from src.complements.enumerators import (AduanaEntrance, CfdiType, CountryCode,
 from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
                                    ValorError, ValorMinMaxError)
 from src.decorators import exception_wrapper
-
+from typing import Dict, Any
 
 class DistributionComplement(ComplementBuilder):
     """Validation of distribution complement type."""
@@ -231,95 +231,67 @@ class DistributionComplement(ComplementBuilder):
 
             if cfdis:
                 for cfdi in cfdis:
-                    self.__validate_cfdi(cfdi=cfdi)
+                    self.__validate_cfdi(cfdi=cfdi, cfdi_parent=f"{national_parent}.CFDIs[{cfdis.index(cfdi)}]")
 
     @exception_wrapper
-    def __validate_cfdi(self, cfdi):
+    def __validate_cfdi(self, cfdi: Dict[str, Any], cfdi_parent: str) -> None:
+        """Validate Cfdis objs list.\n
+        :return: None."""
         cfdi_val = cfdi.get("Cfdi")
         cfdi_type = cfdi.get("TipoCfdi")
         consid_purch_sale_price = cfdi.get("PrecioVentaOCompraOContrap")
         transaction_date = cfdi.get("FechaYHoraTransaccion")
         documented_volum = cfdi.get("VolumenDocumentado")
-        num_value = documented_volum.get("ValorNumerico")
-        measure_unit = documented_volum.get("UnidadDeMedida")
 
-        # if documented_volum:
-        #     num_value = documented_volum.get("ValorNumerico")
-        #     measure_unit = documented_volum.get("UnidadDeMedida")
-        #     if num_value is None:
-        #         self.catch_error(KeyError, "Error: clave 'ValorNumerico'
-        # no se encuentra en clave 'VolumenDocumentado'.")
-        #     if measure_unit is None:
-        #         self.catch_error(KeyError, "Error: clave 'UnidadDeMedida'
-        # no se encuentra en clave 'VolumenDocumentado'.")
         if cfdi_val is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Cfdi' no se encuentra."
-                )
+            self._nonfound_key_error(key="Cfdi", source=cfdi_parent)
         if cfdi_type not in [cfdi.value for cfdi in CfdiType]:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message=f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válido."
-                )
+            self._value_error(key="TipoCfdi", value=cfdi_type, source=cfdi_parent)
         if consid_purch_sale_price is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PrecioVentaOCompraContrap' no se encuentra."
-                )
+            self._nonfound_key_error(key="PrecioVentaOCompraContrap", source=cfdi_parent)
         if documented_volum is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'VolumenDocumentado' no se encuentra."
-                )
+            self._nonfound_key_error(key="VolumenDocumentado", source=cfdi_parent)
         if transaction_date is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'FechaYHoraTransaccion' no se encuentra."
-                )
-        if num_value is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'."
-                )
-        if measure_unit is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
-                )
+            self._nonfound_key_error(key="FechaYHoraTransaccion", source=cfdi_parent)
 
         if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
             self._regex_error(
                 key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
+                source=f"{cfdi_parent}.Cfdi"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el patron {CFDI_REGEX}")
         if consid_purch_sale_price and not 0 <= consid_purch_sale_price <= 1000000000000:
             self._min_max_value_error(
                 key="PrecioVentaOCompraOContrap", value=consid_purch_sale_price, min_val=0, max_val=1000000000000,
+                source=f"{cfdi_parent}.PrecioVentaOCompraOContrap"
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'PrecioVentaOCompraOContrap'
-            # con valor '{consid_purch_sale_price}' no tiene el valor min 0 o max 1000000000000.")
         if transaction_date and not re.match(UTC_FORMAT_REGEX, transaction_date):
             self._regex_error(
                 key="FechaYHoraTransaccion", value=transaction_date, pattern=UTC_FORMAT_REGEX,
+                source=f"{cfdi_parent}.FechaYHoraTransaccion"
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'FechaYHoraTransaccion'
-            # con valor {transaction_date} no cumple con el patron {UTC_FORMAT_REGEX}")
-        if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
-            self._regex_error(
-                key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
-                )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'UnidadDeMedida'
-            # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
-
+        if documented_volum:
+            num_value = documented_volum.get("ValorNumerico")
+            measure_unit = documented_volum.get("UnidadDeMedida")
+            if num_value is None:
+                self._nonfound_key_error(
+                    key="ValorNumerico",
+                    source=f"{cfdi_parent}.VolumenDocumentado"
+                    )
+            if measure_unit is None:
+                self._nonfound_key_error(
+                    key="UnidadDeMedida",
+                    source=f"{cfdi_parent}.VolumenDocumentado"
+                    )
+            if num_value and not 0 <= num_value <= 100000000000:
+                self._min_max_value_error(
+                    key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
+                    source=f"{cfdi_parent}.VolumenDocumentado.ValorNumerico"
+                    )
+            if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
+                self._regex_error(
+                    key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
+                    source=f"{cfdi_parent}.VolumenDocumentado.UnidadDeMedida"
+                    )
 
     @exception_wrapper
     def _validate_extranjero(self):
