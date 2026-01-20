@@ -1,5 +1,6 @@
 """This module handle Distribucion complemento."""
 import re
+from typing import Any, Dict
 
 from src.complements.complement_base import ComplementBuilder
 from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX,
@@ -11,10 +12,9 @@ from src.complements.constants import (ADUANAL_PEDIMENTO, CFDI_REGEX,
                                        UTC_FORMAT_REGEX)
 from src.complements.enumerators import (AduanaEntrance, CfdiType, CountryCode,
                                          IncotermCode)
-from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
-                                   ValorError, ValorMinMaxError)
+from src.custom_exceptions import ClaveError
 from src.decorators import exception_wrapper
-from typing import Dict, Any
+
 
 class DistributionComplement(ComplementBuilder):
     """Validation of distribution complement type."""
@@ -44,7 +44,9 @@ class DistributionComplement(ComplementBuilder):
         self.__validate_transporte(transp=transp)
 
     @exception_wrapper
-    def __validate_almacenamiento(self, alm: dict) -> None:
+    def __validate_almacenamiento(self, alm: Dict[str, Any]) -> None:
+        """Validate Almacenamiento objs.\n
+        :return: None."""
         if alm is None:
             return
 
@@ -72,53 +74,31 @@ class DistributionComplement(ComplementBuilder):
             self._longitud_error(
                 key="TerminalAlm", value=alm_terminal, min_long=5, max_long=250,
                 )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message=f"Error: clave 'TerminalAlm'
-            # con valor {alm_terminal} no tiene la longitud min 5 o max 250.")
         if alm_permission and not re.match(PERMISSION_ALM_REGEX, alm_permission):
             self._regex_error(
                 key="PermisoAlmYDist", value=alm_permission, pattern=PERMISSION_ALM_REGEX,
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PermisoAlmYDist'
-            # con valor {alm_permission} no cumple con el patrón {PERMISSION_ALM_REGEX}")
         if alm_fee and not 0 <= alm_fee <= 1000000000000:
             self._min_max_value_error(
                 key="TarifaDeAlmacenamiento", value=alm_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'TarifaDeAlmacenamiento'
-            # con valor {alm_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if alm_cap_fee and not 0 <= alm_cap_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorCapacidadAlmac", value=alm_cap_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoPorCapacidadAlmac'
-            # con valor {alm_cap_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if alm_use_fee and not 0 <= alm_use_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorUsoAlamc", value=alm_use_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoPorUsoAlamc'
-            # con valor {alm_use_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if volume_alm_fee and not 0 <= volume_alm_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoVolumetricoAlmac", value=volume_alm_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoVolumetricoAlmac'
-            # con valor {volume_alm_fee} no se encuentra en el rango min 0 o max 1000000000000.")
 
     @exception_wrapper
-    def __validate_transporte(self, transp: dict) -> None:
+    def __validate_transporte(self, transp: Dict[str, Any]) -> None:
+        """Validate Transporte objs.\n
+        :return: None."""
         if transp is None:
             return
 
@@ -143,58 +123,30 @@ class DistributionComplement(ComplementBuilder):
             self._regex_error(
                 key="PermisoTransporte", value=perm_transp, pattern=TRANSPORT_PERM_REGEX,
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PermisoTransporte'
-            # con valor {perm_transp} no cumple con el patrón {TRANSPORT_PERM_REGEX}")
         if vehicle_key and 6 <= len(vehicle_key) <= 12:
             self._min_max_value_error(
                 key="ClaveDeVehiculo", value=vehicle_key, min_val=6, max_val=12,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'ClaveDeVehiculo'
-            # con valor {vehicle_key} no se encuentra en el rango min 6 o max 12.")
         if transp_fee and not 0 <= transp_fee <= 1000000000000:
             self._min_max_value_error(
                 key="TarifaDeTransporte", value=transp_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'TarifaDeTransporte'
-            # con valor {transp_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if transp_cap_fee and not 0 <= transp_cap_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorCapacidadTransporte", value=transp_cap_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoPorCapacidadTransporte'
-            # con valor {transp_cap_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if transp_use_fee and not 0 <= transp_use_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorCapacidadTrans", value=transp_use_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoPorCapacidadTrans'
-            # con valor {transp_use_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if transp_volume_fee and not 0 <= transp_volume_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoVolumetricoTrans", value=transp_volume_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'CargoVolumetricoTrans'
-            # con valor {transp_volume_fee} no se encuentra en el rango min 0 o max 1000000000000.")
         if supply_fee and not 0 <= supply_fee <= 1000000000000:
             self._min_max_value_error(
                 key="TarifaDeSuministro", value=supply_fee, min_val=0, max_val=1000000000000,
                 )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: clave 'TarifaDeSuministro'
-            # con valor {supply_fee} no se encuentra en el rango min 0 o max 1000000000000.")
 
     @exception_wrapper
     def _validate_nacional(self):
