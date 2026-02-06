@@ -1,5 +1,6 @@
 """This module handle Transporte complemento."""
 import re
+from typing import Any, Dict
 
 from src.complements.complement_base import ComplementBuilder
 from src.complements.constants import (CFDI_REGEX, MEASURE_UNIT,
@@ -103,7 +104,8 @@ class TransportComplement(ComplementBuilder):
                     self.__validate_cfdi(cfdi=cfdi)
 
     @exception_wrapper
-    def __validate_cfdi(self, cfdi: dict) -> None:
+    def __validate_cfdi(self, cfdi: Dict[str, Any]) -> None:
+        """Validate cfdis obj."""
         cfdi_val = cfdi.get("Cfdi")
         cfdi_type = cfdi.get("TipoCfdi")
         consideration = cfdi.get("Contraprestacion")
@@ -131,9 +133,6 @@ class TransportComplement(ComplementBuilder):
             self._value_error(
                 key="TipoCfdi", value=cfdi_type
                 )
-            # self.catch_error(
-            #     err_type=ClaveError,
-            #     err_message=f"Error: clave 'TipoCfdi' con valor {cfdi_type} no válida.")
         if consideration is None:
             self.catch_error(
                 err_type=ClaveError,
@@ -171,79 +170,40 @@ class TransportComplement(ComplementBuilder):
                 self._min_max_value_error(
                     key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
                 )
-                # self.catch_error(
-                #     err_type=ValorMinMaxError,
-                #     err_message=f"Error: clave 'ValorNumerico'
-                # con valor {num_value} no tiene el valor min 0 o max 100000000000.")
             if measure_unit and not re.match(MEASURE_UNIT, measure_unit):
                 self._regex_error(
                     key="UnidadDeMedida", value=measure_unit, pattern=MEASURE_UNIT,
                 )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'UnidadDeMedida'
-                # con valor {measure_unit} no cumple con el patron {MEASURE_UNIT}.")
+
         if cfdi_val and not re.match(CFDI_REGEX, cfdi_val):
             self._regex_error(
                 key="Cfdi", value=cfdi_val, pattern=CFDI_REGEX,
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'Cfdi' con valor {cfdi_val} no cumple con el regex {CFDI_REGEX}"
-            #     )
         if consideration and not 1 <= consideration <= 1000000000000:
             self._min_max_value_error(
                 key="Contraprestacion", value=consideration, min_val=1, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'Contraprestacion'
-            # con valor '{consideration}' no tiene el valor min 1 o max 1000000000000.")
         if transp_fee and not 1 <= transp_fee <= 1000000000000:
             self._min_max_value_error(
                 key="TarifaDeTransporte", value=transp_fee, min_val=1, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'TarifaDeTransporte'
-            # con valor '{transp_fee}' no tiene el valor min 1 o max 1000000000000.")
         if trans_cap_fee and not 1 <= trans_cap_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorCapacidadDeTrans", value=trans_cap_fee, min_val=1, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'CargoPorCapacidadDeTrans'
-            # con valor '{trans_cap_fee}' no tiene el valor min 1 o max 1000000000000.")
         if trans_use_fee and not 1 <= trans_use_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoPorUsoTrans", value=trans_use_fee, min_val=1, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'CargoPorUsoTrans'
-            # con valor '{trans_use_fee}' no tiene el valor min 1 o max 1000000000000.")
         if trans_vol_fee and not 1 <= trans_vol_fee <= 1000000000000:
             self._min_max_value_error(
                 key="CargoVolumetricoTrans", value=trans_vol_fee, min_val=1, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'CargoVolumetricoTrans'
-            # con valor '{trans_vol_fee}' no tiene el valor min 1 o max 1000000000000.")
         if discount and not 1 <= discount <= 1000000000000:
             self._min_max_value_error(
                 key="Descuento", value=discount, min_val=1, max_val=1000000000000,
             )
-            # self.catch_error(
-            #     err_type=ValorMinMaxError,
-            #     err_message=f"Error: Clave 'Descuento'
-            # con valor '{discount}' no tiene el valor min 1 o max 1000000000000.")
         if transaction_date and not re.match(UTC_FORMAT_REGEX, transaction_date):
             self._regex_error(
                 key="FechaYHoraTransaccion", value=transaction_date, pattern=UTC_FORMAT_REGEX,
             )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'FechaYHoraTransaccion'
-            # con valor {transaction_date} no se expresa en formato yyyy-mm-ddThh:mm:ss+-hh:mm")
