@@ -28,6 +28,7 @@ class TransportComplement(ComplementBuilder):
 
     @exception_wrapper
     def _validate_terminal_alm_dist(self) -> None:
+        """Validate Alm y Dist obj."""
         if (alm_terminal := self.current_complement.get("TerminalAlmYDist")) is None:
             return
 
@@ -49,18 +50,10 @@ class TransportComplement(ComplementBuilder):
             self._longitud_error(
                 key="TerminalAlmYDist", value=alm_terminal, min_long=21, max_long=21,
                 )
-            # self.catch_error(
-            #     err_type=LongitudError,
-            #     err_message=f"Error: clave 'TerminalAlmYDist'
-            # con valor {alm_terminal} no tiene la longitud min 5 ó max 250.")
         if alm_permission and not re.match(PERMISSION_ALM_TRANSP_REGEX, alm_permission):
             self._regex_error(
                 key="RfcCliente", value=alm_permission, pattern=PERMISSION_ALM_TRANSP_REGEX,
                 )
-            # self.catch_error(
-            #     err_type=RegexError,
-            #     err_message=f"Error: clave 'PermisoAlmYDist'
-            # con valor {alm_permission} no cumple con el patrón {PERMISSION_ALM_TRANSP_REGEX}")
 
     @exception_wrapper
     def _validate_nacional(self):
