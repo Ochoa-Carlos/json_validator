@@ -7,8 +7,6 @@ from src.complements.constants import (CFDI_REGEX, MEASURE_UNIT,
                                        PERMISSION_ALM_TRANSP_REGEX, RFC_REGEX,
                                        UTC_FORMAT_REGEX)
 from src.complements.enumerators import CfdiType
-from src.custom_exceptions import (ClaveError, LongitudError, RegexError,
-                                   ValorMinMaxError)
 from src.decorators import exception_wrapper
 
 
@@ -36,15 +34,9 @@ class TransportComplement(ComplementBuilder):
         alm_permission = alm_terminal.get("PermisoAlmYDist")
 
         if alm_terminal is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TerminalAlmYDist' no encontrada"
-                )
+            self._nonfound_key_error(key="TerminalAlmYDist")
         if alm_permission is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'PermisoAlmYDist' no encontrada"
-                )
+            self._nonfound_key_error(key="PermisoAlmYDist")
 
         if alm_terminal and not 5 <= len(alm_terminal) <= 250:
             self._longitud_error(
@@ -67,15 +59,9 @@ class TransportComplement(ComplementBuilder):
             cfdis = national_item.get("CFDIs")
 
             if client_rfc is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'RfcCliente' no encontrada."
-                    )
+                self._nonfound_key_error(key="RfcCliente")
             if client_name is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: clave 'NombreCliente' no encontrada."
-                    )
+                self._nonfound_key_error(key="NombreCliente")
             if client_rfc and not re.match(RFC_REGEX, client_rfc):
                 self._regex_error(
                     key="RfcCliente", value=client_rfc, pattern=RFC_REGEX,
@@ -106,52 +92,26 @@ class TransportComplement(ComplementBuilder):
         measure_unit = documented_volum.get("UnidadDeMedida")
 
         if cfdi_val is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Cfdi' no se encuentra."
-                )
+            self._nonfound_key_error(key="Cfdi")
         if cfdi_type is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TipoCfdi' no se encuentra."
-                )
+            self._nonfound_key_error(key="TipoCfdi")
         if cfdi_type and cfdi_type not in [cfdi.value for cfdi in CfdiType]:
-            self._value_error(
-                key="TipoCfdi", value=cfdi_type
-                )
+            self._value_error(key="TipoCfdi", value=cfdi_type)
         if consideration is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'Contraprestacion' no se encuentra."
-                )
+            self._nonfound_key_error(key="Contraprestacion")
         if transp_fee is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'TarifaDeTransporte' no se encuentra."
-                )
+            self._nonfound_key_error(key="TarifaDeTransporte")
         if transaction_date is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'FechaYHoraTransaccion' no se encuentra."
-                )
+            self._nonfound_key_error(key="FechaYHoraTransaccion")
         if documented_volum is None:
-            self.catch_error(
-                err_type=ClaveError,
-                err_message="Error: clave 'VolumenDocumentado' no se encuentra."
-                )
+            self._nonfound_key_error(key="VolumenDocumentado")
         if documented_volum:
             num_value = documented_volum.get("ValorNumerico")
             measure_unit = documented_volum.get("UnidadDeMedida")
             if num_value is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: objeto 'ValorNumerico' no se encuentra en clave 'VolumenDocumentado'."
-                    )
+                self._nonfound_key_error(key="ValorNumerico")
             if measure_unit is None:
-                self.catch_error(
-                    err_type=ClaveError,
-                    err_message="Error: objeto 'UnidadDeMedida' no se encuentra en clave 'VolumenDocumentado'."
-                    )
+                self._nonfound_key_error(key="UnidadDeMedida")
             if num_value and not 0 <= num_value <= 100000000000:
                 self._min_max_value_error(
                     key="ValorNumerico", value=num_value, min_val=0, max_val=100000000000,
