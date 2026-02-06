@@ -64,6 +64,7 @@ class TransportComplement(ComplementBuilder):
 
     @exception_wrapper
     def _validate_nacional(self):
+        """Validate Nacional list."""
         if (national := self.current_complement.get("Nacional")) is None:
             return
 
@@ -86,18 +87,10 @@ class TransportComplement(ComplementBuilder):
                 self._regex_error(
                     key="RfcCliente", value=client_rfc, pattern=RFC_REGEX,
                 )
-                # self.catch_error(
-                #     err_type=RegexError,
-                #     err_message=f"Error: clave 'RfcCliente'
-                # con valor {client_rfc} no cumple con el patron {RFC_REGEX}")
             if client_name and not 10 <= len(client_name) <= 150:
                 self._longitud_error(
                     key="NombreCliente", value=client_name, min_long=10, max_long=150,
                 )
-                # self.catch_error(
-                #     err_type=LongitudError,
-                #     err_message=f"Error: clave 'NombreCliente'
-                # con valor '{client_name}' no se encuentra en el rango min 10 o max 300.")
 
             if cfdis:
                 for cfdi in cfdis:
