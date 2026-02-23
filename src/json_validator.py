@@ -1,9 +1,11 @@
+"""Json validation orchestrator."""
 import re
 import traceback
 
 from src.constants import (FILE_NAME_REGEX, MODALITY_PERMISSION_REGEX,
                            RFC_CONTR_REGEX, RFC_PERSONA_FISICA,
-                           UTC_FORMAT_REGEX, VERSION_REGEX, caracteres)
+                           UTC_FORMAT_REGEX, VERSION_REGEX, caracteres,
+                           monthly_json_schema)
 from src.custom_exceptions import (CaracterAsignatarioError,
                                    CaracterContratistaError,
                                    CaracterPermisionarioError,
@@ -53,7 +55,8 @@ class JsonValidator():
     def validate_json(self) -> None:
         """Return True or False if JSON are validated according type and bound."""
         try:
-            print("==================================== VALIDATE JSON ====================================")
+            logging.info(f"{'':*^20} Validando Json {'':*^20}")
+            self._validate_json_schema()
             self._validate_version()
             self._validate_rfc_contribuyente()
             self._validate_rfc_representante_legal()
@@ -74,6 +77,16 @@ class JsonValidator():
             self.catch_error(err_type=SystemError, err_message=f"Error al validar JSON {exc}")
             logging.warning(f"Error al validar JSON: {exc}")
             logging.warning(f": {traceback.format_exc()}")
+
+    @exception_wrapper
+    def _validate_json_schema(self) -> bool:
+        for key in self.json_report.keys():
+            if key not in monthly_json_schema:
+                print("entro")
+                self.catch_error(
+                    err_type=ValorError,
+                    err_message=f"Error: elemento '{key}' no definido en esquema.",
+                )
 
     # @wrapper_handler
     @exception_wrapper
