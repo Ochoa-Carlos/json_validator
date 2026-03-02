@@ -213,6 +213,11 @@ class ComercializationComplement(ComplementBuilder):
                                                                     dict_type=com_comp_cfdis):
             type_err = err.get("type_err")
             err_message = err.get("err_message")
+            print("=====================")
+            print("=====================")
+            print("=====================")
+            print(type_err)
+            print(err_message)
             self.catch_error(err_type=type_err, err_message=err_message)
             return
 
