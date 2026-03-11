@@ -1,8 +1,77 @@
 # Migración a AWS — Plan de Onboarding
 
+> **NOTA PARA CLAUDE CODE:** Este archivo es la fuente de verdad del proyecto de migración a AWS.
+> Al iniciar una nueva sesión, lee este archivo para retomar el contexto exacto.
+> Actualiza la sección "Estado actual" cada vez que se complete un paso.
+
 ## Objetivo
 Migrar json_validator a AWS aprovechando el Free Tier con fines educativos.
 Render se mantiene en paralelo como producción.
+
+---
+
+## Estado actual
+
+**Fase activa:** Fase 0 — Setup de AWS
+**Último paso completado:** Ninguno (planificación recién terminada)
+**Próximo paso:** 0.1 Crear cuenta AWS
+**Fecha de inicio:** 2026-03-10
+**Issues en GitHub:** #61 a #84
+**Milestones:** https://github.com/Ochoa-Carlos/json_validator/milestones
+
+### Progreso por fase
+
+| Fase | Estado | Issues |
+|------|--------|--------|
+| Fase 0: Setup AWS | `PENDIENTE` | #61, #62, #63, #64, #65 |
+| Fase 1: Preparar código | `PENDIENTE` | #66, #67, #68, #69 |
+| Fase 2: Frontend S3 + CloudFront | `PENDIENTE` | #70, #71, #72, #73, #74 |
+| Fase 3: Backend EC2 | `PENDIENTE` | #75, #76, #77, #78, #79, #80 |
+| Fase 4: CI/CD | `PENDIENTE` | #81, #82, #83, #84 |
+
+### Checklist detallado
+
+- [ ] 0.1 Crear cuenta AWS (#61)
+- [ ] 0.2 Activar MFA en cuenta root (#62)
+- [ ] 0.3 Crear usuario IAM para uso diario (#63)
+- [ ] 0.4 Instalar y configurar AWS CLI (#64)
+- [ ] 0.5 Configurar alertas de billing (#65)
+- [ ] 1.1 Agregar CORS a FastAPI (#66)
+- [ ] 1.2 Hacer URL de la API configurable en el frontend (#67)
+- [ ] 1.3 Probar frontend y backend desacoplados localmente (#68)
+- [ ] 1.4 Crear requirements-prod.txt (#69)
+- [ ] 2.1 Crear bucket S3 para hosting estático (#70)
+- [ ] 2.2 Subir archivos del frontend a S3 (#71)
+- [ ] 2.3 Configurar hosting estático en S3 (#72)
+- [ ] 2.4 Configurar bucket policy para lectura pública (#73)
+- [ ] 2.5 Crear distribución CloudFront (#74)
+- [ ] 3.1 Crear Key Pair para SSH (#75)
+- [ ] 3.2 Crear Security Group / firewall (#76)
+- [ ] 3.3 Lanzar instancia EC2 t2.micro (#77)
+- [ ] 3.4 Asignar Elastic IP (#78)
+- [ ] 3.5 Instalar Docker en EC2 y desplegar contenedor (#79)
+- [ ] 3.6 Conectar frontend (CloudFront) con backend (EC2) (#80)
+- [ ] 4.1 Crear usuario IAM para CI/CD (#81)
+- [ ] 4.2 Configurar GitHub Secrets (#82)
+- [ ] 4.3 Pipeline de deploy frontend (#83)
+- [ ] 4.4 Pipeline de deploy backend (#84)
+
+### Recursos AWS creados
+_(Se actualiza conforme se crean)_
+- **S3 Bucket:** pendiente
+- **CloudFront Distribution ID:** pendiente
+- **CloudFront URL:** pendiente
+- **EC2 Instance ID:** pendiente
+- **Elastic IP:** pendiente
+- **Key Pair:** pendiente
+- **Security Group:** pendiente
+
+### Decisiones tomadas
+- Opción B: S3 + CloudFront (frontend) + EC2 t2.micro (backend)
+- Mismo repo (no se clona). Render sigue en paralelo.
+- Sin dominio propio, se usan URLs generadas por AWS.
+- Post mes 11: migrar a serverless (Lambda) para $0 permanente.
+- Usuario no tiene experiencia con firewalls → explicar Security Groups en detalle.
 
 ## Arquitectura
 
