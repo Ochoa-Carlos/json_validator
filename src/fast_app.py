@@ -1,8 +1,10 @@
 """This module handle FastAPI inst."""
 import json
+import os
 from typing import Any, Dict, List, Union
 
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -11,7 +13,16 @@ from src.json_validator import JsonValidator
 
 app = FastAPI()
 
+app.add_middleware(
+    middleware_class=CORSMiddleware,
+    # allow_origins=os.getenv("ORIGINS", "*").split(","),
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"]
+    )
 app.mount("/static", StaticFiles(directory="src/static"), name="static")
+
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():

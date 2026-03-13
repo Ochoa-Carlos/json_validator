@@ -1,0 +1,23 @@
+FROM python:3.12.2-slim AS builder
+
+WORKDIR /usr/src/src
+
+COPY ./requirements-prod.txt .
+RUN apt-get update \
+    && apt-get clean 
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements-prod.txt
+
+
+FROM python:3.12.2-slim AS runner
+WORKDIR /usr/src/src
+
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+ENV TZ="America/Mexico_City"
+
+COPY . .
+
+CMD ["uvicorn", "src.fast_app:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "3001"]
