@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+    <script src="/static/config.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validador JSON</title>
@@ -159,8 +160,7 @@
                 // API call
                 let formData = new FormData();
                 formData.append("file", file);
-
-                let response = await fetch("/upload/", {
+                let response = await fetch(`${API_SERVICE}/upload/`, {
                     method: "POST",
                     body: formData
                 });
