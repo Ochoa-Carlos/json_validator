@@ -22,15 +22,31 @@ jobs:
       - name: Deploy Backend
 
         run: |
-          echo "Deploying Backend..."
-          echo "Writing SSH key..."
-          echo "${{ secrets.EC2_SSH_KEY }}" > ${{ runner.temp }}/ec2_ssh_key.txt
-          chmod 400 ${{ runner.temp }}/ec2_ssh_key.txt
+              echo "Deploying Backend..."              
 
-          ssh -o StrictHostKeyChecking=no -i ${{ runner.temp }}/ec2_ssh_key.txt ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            cd json_validator
-            git checkout main
-            git pull
-            docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d --build
-          EOF
+              # Obtener IP del runner
+              RUNNER_IP=$(curl -s ifconfig.me)
+              echo "Runner IP: $RUNNER_IP"
+
+              # Abrir puerto 22 para el runner
+              aws ec2 authorize-security-group-ingress --group-id ${{ secrets.EC2_SG_ID }} --protocol tcp --port 22 --cidr ${RUNNER_IP}/32 --region us-east-1
+
+              # Escribir SSH key
+              echo "${{ secrets.EC2_SSH_KEY }}" > ${{ runner.temp }}/ec2_ssh_key.txt
+              chmod 400 ${{ runner.temp }}/ec2_ssh_key.txt
+
+              # Deploy via SSH
+              ssh -o StrictHostKeyChecking=no -i ${{ runner.temp }}/ec2_ssh_key.txt ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+                cd json_validator
+                git checkout main
+                git pull
+                docker compose -f docker-compose.prod.yml up -d --build
+              EOF
+
+              # Cerrar puerto 22 para el runner
+              aws ec2 revoke-security-group-ingress --group-id ${{ secrets.EC2_SG_ID }} --protocol tcp --port 22 --cidr ${RUNNER_IP}/32 --region us-east-1
+
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_DEFAULT_REGION: us-east-1
