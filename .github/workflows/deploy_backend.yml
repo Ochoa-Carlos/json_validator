@@ -1,0 +1,36 @@
+name: Deploy Backend
+run-name: Deploy Backend by ${{ github.actor }}
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/**/*.py
+      - Dockerfile.prod
+      - requirements-prod.txt
+      - docker-compose.prod.yml
+
+jobs:
+  backend_cicd:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Repo
+        uses: actions/checkout@v4
+
+      - name: Deploy Backend
+
+        run: |
+          echo "Deploying Backend..."
+          echo "Writing SSH key..."
+          echo "${{ secrets.EC2_SSH_KEY }}" > ${{ runner.temp }}/ec2_ssk_key.txt
+          chmod 400 ${{ runner.temp }}/ec2_ssh_key.txt
+
+          ssh -o StrictHostKeyChecking=no -i ${{ runner.temp }}/ec2_ssh_key.txt ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            cd json_validator
+            git checkout main
+            git pull
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d --build
+          EOF
