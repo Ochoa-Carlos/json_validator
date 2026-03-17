@@ -1,3 +1,4 @@
+"""This module handle Gas Condensado validaciones"""
 import re
 from typing import Union
 
