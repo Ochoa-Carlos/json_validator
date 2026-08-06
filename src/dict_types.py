@@ -1,4 +1,3 @@
-from typing import Any
 from src.utils.definitions import CantidadMonetaria, ValorNumerico, PositiveNumber, PositiveNegativeNumber
 
 
@@ -26,21 +25,30 @@ product_dict = {
 
 complement = {
     "TipoComplemento": str,
-    # "Transporte": ,
-    # "Dictamen": ,
-    # "Certificado": ,
+    "Transporte": dict,
+    "Trasvase": list,
+    "Dictamen": dict,
+    "Certificado": dict,
     "Nacional": list,
     "Extranjero": list,
-    "Aclararcion": str
+    "Aclaracion": str,
 }
 
 complement_transport = {
     "PermisoTransporte": str,
-    "ClaveVehiculo": str,
+    "ClaveDeVehiculo": str,
     "TarifaDeTransporte": CantidadMonetaria,
-    "CargoPorCapacidadTransporte": CantidadMonetaria,
+    "CargoPorCapacidadTrans": CantidadMonetaria,
     "CargoPorUsoTrans": CantidadMonetaria,
-    "CargoVolumetricoTransporte": CantidadMonetaria,
+    "CargoVolumetricoTrans": CantidadMonetaria,
+}
+
+complement_trasvase = {
+    "NombreTrasvase": str,
+    "RfcTrasvase": str,
+    "PermisoTrasvase": str,
+    "DescripcionTrasvase": str,
+    "CfdiTrasvase": str,
 }
 
 complement_dictamen = {
@@ -76,16 +84,53 @@ complement_cfdis = {
     "CargoVolumetricoAlmac": CantidadMonetaria,
     "Descuento": CantidadMonetaria,
     "FechaYHoraTransaccion": str,
-    # "VolumenDocumentado": ,
+    "VolumenDocumentado": dict,
 }
 
-com_comp_cfdis = {
+com_complement = {
+    "TipoComplemento": str,
+    "TerminalAlmYDist": dict,
+    "Trasvase": list,
+    "Dictamen": dict,
+    "Certificado": dict,
+    "Nacional": list,
+    "Extranjero": list,
+    "Aclaracion": str,
+}
+
+com_terminal_alm_dist = {
+    "Almacenamiento": dict,
+    "Transporte": dict,
+}
+
+national_client_or_supplier = {
+    "RfcClienteOProveedor": str,
+    "NombreClienteOProveedor": str,
+    "PermisoClienteOProveedor": str,
+    "CFDIs": list,
+}
+
+cfdis_sale_purchase = {
     "Cfdi": str,
     "TipoCfdi": str,
     "PrecioVentaOCompraOContrap": CantidadMonetaria,
-    "VolumenDocumentado": CantidadMonetaria,
+    "VolumenDocumentado": dict,
     "FechaYHoraTransaccion": str,
-    # "VolumenDocumentado": ,
+}
+
+foreign_import_export = {
+    "PermisoImportacionOExportacion": str,
+    "Pedimentos": list,
+}
+
+pedimentos_import_export = {
+    "PuntoDeInternacionOExtraccion": str,
+    "PaisOrigenODestino": str,
+    "MedioDeTransEntraOSaleAduana": str,
+    "PedimentoAduanal": str,
+    "Incoterms": str,
+    "PrecioDeImportacionOExportacion": CantidadMonetaria,
+    "VolumenDocumentado": dict,
 }
 
 complement_foreign = {
@@ -100,7 +145,7 @@ compl_foreign_pedimentos = {
     "PedimentoAduanal": str,
     "Incoterms": str,
     "PrecioDeImportacion": CantidadMonetaria,
-    # "VolumenDocumentado": ,
+    "VolumenDocumentado": dict,
 }
 
 compl_volumen = {
@@ -115,6 +160,160 @@ terminal_alm = {
     "CargoPorCapacidadAlmac": CantidadMonetaria,
     "CargoPorUsoAlmac": CantidadMonetaria,
     "CargoVolumetricoAlmac": CantidadMonetaria,
+}
+
+transp_complement = {
+    "TipoComplemento": str,
+    "TerminalAlmYDist": dict,
+    "Trasvase": list,
+    "Dictamen": dict,
+    "Certificado": dict,
+    "Nacional": list,
+    "Aclaracion": str,
+}
+
+# En Transporte el objeto TerminalAlmYDist es plano: no anida Almacenamiento ni Transporte.
+transp_terminal_alm_dist = {
+    "TerminalAlmYDist": str,
+    "PermisoAlmYDist": str,
+}
+
+transp_cfdis = {
+    "Cfdi": str,
+    "TipoCfdi": str,
+    "Contraprestacion": CantidadMonetaria,
+    "TarifaDeTransporte": CantidadMonetaria,
+    "CargoPorCapacidadDeTrans": CantidadMonetaria,
+    "CargoPorUsoTrans": CantidadMonetaria,
+    "CargoVolumetricoTrans": CantidadMonetaria,
+    "Descuento": CantidadMonetaria,
+    "FechaYHoraTransaccion": str,
+    "VolumenDocumentado": dict,
+}
+
+exo_complement = {
+    "TipoComplemento": str,
+    "TerminalAlmYDist": dict,
+    "Trasvase": list,
+    "Dictamen": dict,
+    "Certificado": dict,
+    "Nacional": list,
+    "Extranjero": list,
+    "Aclaracion": str,
+}
+
+exo_terminal_alm_dist = {
+    "Almacenamiento": dict,
+    "Transporte": dict,
+}
+
+exo_storage = {
+    "TerminalAlmYDist": str,
+    "PermisoAlmYDist": str,
+    "TarifaDeAlmac": CantidadMonetaria,
+    "CargoPorCapacidadAlmac": CantidadMonetaria,
+    "CargoPorUsoAlmac": CantidadMonetaria,
+    "CargoVolumetricoAlmac": CantidadMonetaria,
+}
+
+exo_cfdis = {
+    "Cfdi": str,
+    "TipoCfdi": str,
+    "PrecioCompra": CantidadMonetaria,
+    "PrecioDeVentaAlPublico": CantidadMonetaria,
+    "PrecioVenta": CantidadMonetaria,
+    "FechaYHoraTransaccion": str,
+    "VolumenDocumentado": dict,
+}
+
+dis_complement = {
+    "TipoComplemento": str,
+    "TerminalAlmYTrans": dict,
+    "Trasvase": list,
+    "Dictamen": dict,
+    "Certificado": dict,
+    "Nacional": list,
+    "Extranjero": list,
+    "Aclaracion": str,
+}
+
+dis_terminal_alm_trans = {
+    "Almacenamiento": dict,
+    "Transporte": dict,
+}
+
+dis_storage = {
+    "TerminalAlm": str,
+    "PermisoAlmacenamiento": str,
+    "TarifaDeAlmacenamiento": CantidadMonetaria,
+    "CargoPorCapacidadAlmac": CantidadMonetaria,
+    "CargoPorUsoAlmac": CantidadMonetaria,
+    "CargoVolumetricoAlmac": CantidadMonetaria,
+}
+
+dis_transport = {
+    "PermisoTransporte": str,
+    "ClaveDeVehiculo": str,
+    "TarifaDeTransporte": CantidadMonetaria,
+    "CargoPorCapacidadTrans": CantidadMonetaria,
+    "CargoPorUsoTrans": CantidadMonetaria,
+    "CargoVolumetricoTrans": CantidadMonetaria,
+    "TarifaDeSuministro": CantidadMonetaria,
+}
+
+cdlrgn_complement = {
+    "TipoComplemento": str,
+    "TerminalAlmYTrans": dict,
+    "Trasvase": list,
+    "Dictamen": dict,
+    "Certificado": dict,
+    "Nacional": list,
+    "Extranjero": list,
+    "Aclaracion": str,
+}
+
+cdlrgn_terminal_alm_trans = {
+    "Almacenamiento": dict,
+    "Transporte": dict,
+}
+
+cdlrgn_storage = {
+    "TerminalAlm": str,
+    "PermisoAlmacenamiento": str,
+}
+
+cdlrgn_transport = {
+    "PermisoTransporte": str,
+    "ClaveDeVehiculo": str,
+}
+
+national_client = {
+    "RfcCliente": str,
+    "NombreCliente": str,
+    "CFDIs": list,
+}
+
+cdlrgn_cfdis = {
+    "Cfdi": str,
+    "TipoCfdi": str,
+    "Contraprestacion": CantidadMonetaria,
+    "FechaYHoraTransaccion": str,
+    "VolumenDocumentado": dict,
+}
+
+cdlrgn_foreign = {
+    "PermisoImportacionOExportacion": str,
+    "Pedimentos": list,
+}
+
+cdlrgn_foreign_pedimentos = {
+    "PuntoDeInternacionOExtraccion": str,
+    "PaisOrigenODestino": str,
+    "MedioDeTransEntraOSaleAduana": str,
+    "PedimentoAduanal": str,
+    "Incoterms": str,
+    "PrecioDeImportacion": CantidadMonetaria,
+    "VolumenDocumentado": dict,
 }
 
 # month_report_dict = {

@@ -4,7 +4,7 @@ class CantidadMonetaria(float):
     """CantidadMonetaria definition."""
     min_val = 0
     max_val = 1_000_000_000_000.0
-    max_decimals = 3
+    max_decimals = 5
     def __new__(cls, value):
         if isinstance(value, int):
             value = float(value)
@@ -16,7 +16,7 @@ class CantidadMonetaria(float):
             raise ValueError(f" está fuera del rango permitido {cls.min_val}-{cls.max_val}.")
 
         if "." in str(value) and len(str(value).split(".")[-1]) > cls.max_decimals:
-            raise ValueError(" tiene más de 3 decimales.")
+            raise ValueError(f" tiene más de {cls.max_decimals} decimales.")
 
         return super().__new__(cls, value)
 
@@ -24,7 +24,7 @@ class ValorNumerico(float):
     """ValorNumerico definition."""
     min_val = 0
     max_val = 1_000_000_000_00.0
-    max_decimals = 3
+    max_decimals = 5
     def __new__(cls, value):
         if isinstance(value, int):
             value = float(value)
@@ -36,7 +36,7 @@ class ValorNumerico(float):
             raise ValueError(f" está fuera del rango permitido {cls.min_val}-{cls.max_val}.")
 
         if "." in str(value) and len(str(value).split(".")[-1]) > cls.max_decimals:
-            raise ValueError(" tiene más de 3 decimales.")
+            raise ValueError(f" tiene más de {cls.max_decimals} decimales.")
 
         return super().__new__(cls, value)
 
