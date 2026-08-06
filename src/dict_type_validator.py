@@ -1,3 +1,5 @@
+from typing import Any
+
 from src.custom_exceptions import TipadoError
 
 
@@ -5,8 +7,11 @@ class DictionaryTypeValidator:
     """Class for validate values type in dictionaries."""
 
     @classmethod
-    def validate_dict_type(cls, dict_to_validate: dict, dict_type: dict[str, type]) -> bool:
-        """Validate type values in dictionary based on base dict typing."""
+    def validate_dict_type(cls, dict_to_validate: dict, dict_type: dict[str, type]) -> dict[str, Any] | None:
+        """Return the first type mismatch found, or None when every value matches its declared type.\n
+        :param dict_to_validate: Dictionary whose values will be checked.\n
+        :param dict_type: Mapping of key to expected type or SAT definition.\n
+        """
         for key, value in dict_to_validate.items():
             if key not in dict_type:
                 continue
