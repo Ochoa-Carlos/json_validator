@@ -4,7 +4,7 @@ from enum import Enum, IntEnum
 class ComplementTypeEnum(Enum):
     """Complement Enum."""
     ALMACENAMIENTO = "Almacenamiento"
-    CDLRGN = "CDLRGN"
+    CDLR = "CDLR"
     COMERCIALIZACION = "Comercializacion"
     DISTRIBUCION = "Distribucion"
     EXPENDIO = "Expendio"
